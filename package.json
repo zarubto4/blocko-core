@@ -1,0 +1,33 @@
+{
+  "name": "blocko-core",
+  "version": "0.1.80",
+  "description": "BLOCKOcore",
+  "main": "dist/index.js",
+  "typings": "dist/index",
+  "scripts": {
+    "build": "rimraf dist && tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@git.byzance.cz:js-components/blocko-core/"
+  },
+  "keywords": [
+    "blocko",
+    "core",
+    "blocko-core"
+  ],
+  "author": "David Hrádek (david@hradyho.net)",
+  "license": "UNLICENCED",
+  "dependencies": {
+    "atob": "^2.0.3",
+    "btoa": "^1.1.2",
+    "common-lib": "git+ssh://git@git.byzance.cz:js-components/common-lib.git#v0.0.27",
+    "node-fetch": "^1.6.3",
+    "script-engine": "git+ssh://git@git.byzance.cz:js-components/script-engine.git#v0.0.38",
+    "typescript": "^2.2.1",
+    "xmldom": "^0.1.27"
+  },
+  "devDependencies": {
+    "rimraf": "^2.6.1"
+  }
+}

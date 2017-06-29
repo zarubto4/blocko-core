@@ -1,0 +1,41 @@
+# Created by .ignore support plugin (hsz.mobi)
+
+# system files
+.DS_Store
+
+# IDEs
+.idea/
+.project/
+.vscode/
+*.swp
+
+# cache files for sublime text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+
+# workspace files are user-specific
+*.sublime-workspace
+
+# packaging systems files
+node_modules
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# Binaries
+*.bin
+
+# Sources
+ts/**/*.js
+tests/**/*.js
+tests/**/*.d.ts
+
+dump/*.heapsnapshot

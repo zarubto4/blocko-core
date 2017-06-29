@@ -1,0 +1,7 @@
+# ignored file for npm
+
+src
+tests
+CHANGELOG.txt
+README.md
+tsconfig.json
