@@ -8,9 +8,9 @@ export declare enum InterfaceBlockType {
     Outputs = 1,
 }
 export interface BlockoTargetInterface {
-    targetType: string;
     targetId: string;
     displayName: string;
+    color: string;
     interface: {
         digitalInputs?: {
             [name: string]: any;
@@ -33,8 +33,7 @@ export interface BlockoTargetInterface {
     };
 }
 export declare abstract class BaseInterfaceBlock extends Core.Block {
-    configJs: Core.ConfigProperty;
-    private _targetType;
+    private _color;
     private _displayName;
     private _targetId;
     private _interfaceType;
@@ -44,7 +43,6 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType);
     setInterface(iface: BlockoTargetInterface): void;
     readonly interface: any;
-    readonly targetType: string;
     readonly targetId: string;
     externalInputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
     inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;

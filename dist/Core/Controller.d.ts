@@ -68,9 +68,9 @@ export declare class Controller {
     private logCallbacks;
     registerLogCallback(callback: (block: Block, type: string, message: any) => void): void;
     _emitLog(block: Block, type: string, message: any): void;
-    setDigitalValue(targetType: string, targetId: string, name: string, value: boolean): void;
-    setAnalogValue(targetType: string, targetId: string, name: string, value: number): void;
-    setMessageValue(targetType: string, targetId: string, name: string, message: Message): void;
+    setDigitalValue(targetId: string, name: string, value: boolean): void;
+    setAnalogValue(targetId: string, name: string, value: number): void;
+    setMessageValue(targetId: string, name: string, message: Message): void;
     setInputConnectorValue(blockId: string, connectorName: string, value: number): void;
     setOutputConnectorValue(blockId: string, connectorName: string, value: number): void;
     getDigitalInputNames(): Array<any>;

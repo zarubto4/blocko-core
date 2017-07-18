@@ -150,19 +150,19 @@ export class Block {
         }
     }
 
-    protected addExternalInputConnector(targetType:string, targetId:string, name:string, type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
+    protected addExternalInputConnector(targetId:string, name:string, type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
         if (type == Types.ConnectorType.DigitalInput) {
-            var connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetType, targetId, name, ExternalConnectorType.Input);
+            var connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.AnalogInput) {
-            var connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetType, targetId, name, ExternalConnectorType.Input);
+            var connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetId, name, ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.MessageInput) {
-            var connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetType, targetId, name, ExternalConnectorType.Input, argTypes);
+            var connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetId, name, ExternalConnectorType.Input, argTypes);
             this.externalInputConnectors.push(connector);
             return connector;
         }
@@ -170,19 +170,19 @@ export class Block {
         return null;
     }
 
-    protected addExternalOutputConnector(targetType:string, targetId:string, name:string,  type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
+    protected addExternalOutputConnector(targetId:string, name:string,  type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
         if (type == Types.ConnectorType.DigitalOutput) {
-            var connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetType, targetId, name, ExternalConnectorType.Output);
+            var connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.AnalogOutput) {
-            var connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetType, targetId, name, ExternalConnectorType.Output);
+            var connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetId, name, ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.MessageOutput) {
-            var connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetType, targetId, name, ExternalConnectorType.Output, argTypes);
+            var connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetId, name, ExternalConnectorType.Output, argTypes);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }

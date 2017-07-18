@@ -10,14 +10,12 @@ export class ExternalConnector<T extends boolean|number|Message> {
     public type:ExternalConnectorType;
     protected value:T;
 
-    private _targetType:string;
     private _targetId:string;
     private _name:string;
 
-    public constructor(block:Block, targetType:string, targetId:string, name:string, type:ExternalConnectorType) {
+    public constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
         this.block = block;
         this._targetId = targetId;
-        this._targetType = targetType;
         this._name = name;
         this.type = type;
     }
@@ -47,25 +45,21 @@ export class ExternalConnector<T extends boolean|number|Message> {
         this._name = value;
     }
 
-    get targetType():string {
-        return this._targetType;
-    }
-
     get targetId():string {
         return this._targetId;
     }
 }
 
 export class ExternalDigitalConnector extends ExternalConnector<boolean> {
-    constructor(block:Block, targetType:string, targetId:string, name:string, type:ExternalConnectorType) {
-        super(block, targetType, targetId, name, type);
+    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+        super(block, targetId, name, type);
         this.value = false;
     }
 }
 
 export class ExternalAnalogConnector extends ExternalConnector<number> {
-    constructor(block:Block, targetType:string, targetId:string, name:string, type:ExternalConnectorType) {
-        super(block, targetType, targetId, name, type);
+    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+        super(block, targetId, name, type);
         this.value = 0;
     }
 }
@@ -74,8 +68,8 @@ export class ExternalMessageConnector extends ExternalConnector<Message> {
 
     private _argTypes:Types.Type[];
 
-    constructor(block:Block, targetType:string, targetId:string, name:string, type:ExternalConnectorType, argTypes:Types.Type[]) {
-        super(block, targetType, targetId, name, type);
+    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType, argTypes:Types.Type[]) {
+        super(block, targetId, name, type);
         this._argTypes = argTypes;
         this.value = null;
     }

@@ -174,28 +174,28 @@ class Controller {
     _emitLog(block, type, message) {
         this.logCallbacks.forEach(callback => callback(block, type, message));
     }
-    setDigitalValue(targetType, targetId, name, value) {
+    setDigitalValue(targetId, name, value) {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
-                if (connector.targetType == targetType && connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
+                if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
                     connector.setValue(value);
                 }
             });
         });
     }
-    setAnalogValue(targetType, targetId, name, value) {
+    setAnalogValue(targetId, name, value) {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
-                if (connector.targetType == targetType && connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
+                if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
                     connector.setValue(value);
                 }
             });
         });
     }
-    setMessageValue(targetType, targetId, name, message) {
+    setMessageValue(targetId, name, message) {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
-                if (connector.targetType == targetType && connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalMessageConnector) {
+                if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalMessageConnector) {
                     connector.setValue(message);
                 }
             });
@@ -227,7 +227,6 @@ class Controller {
             block.getExternalInputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
                     ret.push({
-                        targetType: connector.targetType,
                         targetId: connector.targetId,
                         name: connector.name,
                     });
@@ -242,7 +241,6 @@ class Controller {
             block.getExternalInputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
                     ret.push({
-                        targetType: connector.targetType,
                         targetId: connector.targetId,
                         name: connector.name,
                     });
@@ -257,7 +255,6 @@ class Controller {
             block.getExternalInputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalMessageConnector) {
                     ret.push({
-                        targetType: connector.targetType,
                         targetId: connector.targetId,
                         name: connector.name,
                     });
@@ -272,7 +269,6 @@ class Controller {
             block.getExternalOutputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
                     ret.push({
-                        targetType: connector.targetType,
                         targetId: connector.targetId,
                         name: connector.name,
                     });
@@ -287,7 +283,6 @@ class Controller {
             block.getExternalOutputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
                     ret.push({
-                        targetType: connector.targetType,
                         targetId: connector.targetId,
                         name: connector.name,
                     });
@@ -302,7 +297,6 @@ class Controller {
             block.getExternalOutputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalMessageConnector) {
                     ret.push({
-                        targetType: connector.targetType,
                         targetId: connector.targetId,
                         name: connector.name,
                     });
@@ -335,10 +329,9 @@ class Controller {
                 console.log("wrong targetInterface in interfaces");
                 return;
             }
-            var targetType = targetInterface.targetType;
             var targetId = targetInterface.targetId;
-            if (!targetType || !targetId) {
-                console.log("wrong targetType or targetId in interfaces");
+            if (!targetId) {
+                console.log("wrong targetId in interfaces");
                 return;
             }
             var inputsBlock = null;
@@ -346,19 +339,19 @@ class Controller {
             toDelete.forEach((block) => {
                 if (block instanceof InterfaceBlock_1.InputsInterfaceBlock) {
                     var b = block;
-                    if ((b.targetId == targetId) && (b.targetType == targetType)) {
+                    if (b.targetId == targetId) {
                         inputsBlock = b;
                     }
                 }
                 if (block instanceof InterfaceBlock_1.OutputsInterfaceBlock) {
                     var b = block;
-                    if ((b.targetId == targetId) && (b.targetType == targetType)) {
+                    if (b.targetId == targetId) {
                         outputsBlock = b;
                     }
                 }
             });
             if (!inputsBlock) {
-                inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(targetType + targetId + "_inputs", targetInterface);
+                inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(targetId + "_inputs", targetInterface);
                 inputsBlock.x = 50;
                 inputsBlock.y = posY;
                 this.addBlock(inputsBlock);
@@ -368,7 +361,7 @@ class Controller {
                 inputsBlock.setInterface(targetInterface);
             }
             if (!outputsBlock) {
-                outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(targetType + targetId + "_outputs", targetInterface);
+                outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(targetId + "_outputs", targetInterface);
                 outputsBlock.x = 120;
                 outputsBlock.y = posY;
                 this.addBlock(outputsBlock);
