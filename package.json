@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:blocko-core/"
+    "url": "git+ssh://git@github.com:ByzanceIoT/blocko-core/"
   },
   "keywords": [
     "blocko",
@@ -21,9 +21,9 @@
   "dependencies": {
     "atob": "^2.0.3",
     "btoa": "^1.1.2",
-    "common-lib": "git+ssh://git@github.com:/common-lib.git#v0.0.27",
+    "common-lib": "git+ssh://git@github.com:ByzanceIoT/common-lib.git#v0.0.27",
     "node-fetch": "^1.6.3",
-    "script-engine": "git+ssh://git@github.com:script-engine.git#v0.0.38",
+    "script-engine": "git+ssh://git@github.com:ByzanceIoT/script-engine.git#v0.0.38",
     "typescript": "^2.2.1",
     "xmldom": "^0.1.27"
   },
