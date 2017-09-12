@@ -11,21 +11,23 @@ export declare class ExternalConnector<T extends boolean | number | Message> {
     protected value: T;
     private _targetId;
     private _name;
-    constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType);
+    private _targetType;
+    constructor(block: Block, targetId: string, name: string, targetType: string, type: ExternalConnectorType);
     getValue(): T;
     setValue(value: T): void;
     name: string;
     readonly targetId: string;
+    readonly targetType: string;
 }
 export declare class ExternalDigitalConnector extends ExternalConnector<boolean> {
-    constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType);
+    constructor(block: Block, targetId: string, name: string, targetType: string, type: ExternalConnectorType);
 }
 export declare class ExternalAnalogConnector extends ExternalConnector<number> {
-    constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType);
+    constructor(block: Block, targetId: string, name: string, targetType: string, type: ExternalConnectorType);
 }
 export declare class ExternalMessageConnector extends ExternalConnector<Message> {
     private _argTypes;
-    constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType, argTypes: Types.Type[]);
+    constructor(block: Block, targetId: string, name: string, targetType: string, type: ExternalConnectorType, argTypes: Types.Type[]);
     readonly argTypes: Types.Type[];
     isArgTypesEqual(argTypes: Types.Type[]): boolean;
     setValue(value: Message): void;

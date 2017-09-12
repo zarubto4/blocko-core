@@ -104,38 +104,38 @@ class Block {
             this.inputConnectors.splice(index, 1);
         }
     }
-    addExternalInputConnector(targetId, name, type, argTypes = null) {
+    addExternalInputConnector(targetId, name, targetType, type, argTypes = null) {
         if (type == common_lib_1.Types.ConnectorType.DigitalInput) {
-            var connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input);
+            var connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, targetType, ExternalConnector_1.ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
         if (type == common_lib_1.Types.ConnectorType.AnalogInput) {
-            var connector = new ExternalConnector_1.ExternalAnalogConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input);
+            var connector = new ExternalConnector_1.ExternalAnalogConnector(this, targetId, name, targetType, ExternalConnector_1.ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
         if (type == common_lib_1.Types.ConnectorType.MessageInput) {
-            var connector = new ExternalConnector_1.ExternalMessageConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input, argTypes);
+            var connector = new ExternalConnector_1.ExternalMessageConnector(this, targetId, name, targetType, ExternalConnector_1.ExternalConnectorType.Input, argTypes);
             this.externalInputConnectors.push(connector);
             return connector;
         }
         console.log("Cannot add connector with type " + type + " as external input connector.");
         return null;
     }
-    addExternalOutputConnector(targetId, name, type, argTypes = null) {
+    addExternalOutputConnector(targetId, name, targetType, type, argTypes = null) {
         if (type == common_lib_1.Types.ConnectorType.DigitalOutput) {
-            var connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output);
+            var connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, targetType, ExternalConnector_1.ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
         if (type == common_lib_1.Types.ConnectorType.AnalogOutput) {
-            var connector = new ExternalConnector_1.ExternalAnalogConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output);
+            var connector = new ExternalConnector_1.ExternalAnalogConnector(this, targetId, name, targetType, ExternalConnector_1.ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
         if (type == common_lib_1.Types.ConnectorType.MessageOutput) {
-            var connector = new ExternalConnector_1.ExternalMessageConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output, argTypes);
+            var connector = new ExternalConnector_1.ExternalMessageConnector(this, targetId, name, targetType, ExternalConnector_1.ExternalConnectorType.Output, argTypes);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }

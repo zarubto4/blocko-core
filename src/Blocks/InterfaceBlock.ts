@@ -31,6 +31,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
     private _color:string = null;
     private _displayName:string = "";
     private _targetId:string = "";
+    private _targetType:string = "";
 
     private _interfaceType:InterfaceBlockType;
 
@@ -86,7 +87,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addInputConnector(n, Types.ConnectorType.DigitalInput, name);
                     }
-                    this.addExternalOutputConnector(this._targetId, name, Types.ConnectorType.DigitalOutput);
+                    this.addExternalOutputConnector(this._targetId, name, this._targetType, Types.ConnectorType.DigitalOutput);
                 }
             }
         }
@@ -111,7 +112,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addInputConnector(n, Types.ConnectorType.AnalogInput, name);
                     }
-                    this.addExternalOutputConnector(this._targetId, name, Types.ConnectorType.AnalogOutput);
+                    this.addExternalOutputConnector(this._targetId, name, this._targetType, Types.ConnectorType.AnalogOutput);
                 }
             }
         }
@@ -145,7 +146,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                         this.addInputConnector(n, Types.ConnectorType.MessageInput, name, argTypes);
                     }
 
-                    this.addExternalOutputConnector(this._targetId, name, Types.ConnectorType.MessageOutput, argTypes);
+                    this.addExternalOutputConnector(this._targetId, name, this._targetType, Types.ConnectorType.MessageOutput, argTypes);
                 }
             }
         }
@@ -171,7 +172,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addOutputConnector(n, Types.ConnectorType.DigitalOutput, name);
                     }
-                    this.addExternalInputConnector(this._targetId, name, Types.ConnectorType.DigitalInput);
+                    this.addExternalInputConnector(this._targetId, name, this._targetType, Types.ConnectorType.DigitalInput);
                 }
             }
         }
@@ -196,7 +197,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addOutputConnector(n, Types.ConnectorType.AnalogOutput, name);
                     }
-                    this.addExternalInputConnector(this._targetId, name, Types.ConnectorType.AnalogInput);
+                    this.addExternalInputConnector(this._targetId, name, this._targetType, Types.ConnectorType.AnalogInput);
                 }
             }
         }
@@ -229,7 +230,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                         this.addOutputConnector(n, Types.ConnectorType.MessageOutput, name, argTypes);
                     }
 
-                    this.addExternalInputConnector(this._targetId, name, Types.ConnectorType.MessageInput, argTypes);
+                    this.addExternalInputConnector(this._targetId, name, this._targetType, Types.ConnectorType.MessageInput, argTypes);
                 }
             }
         }

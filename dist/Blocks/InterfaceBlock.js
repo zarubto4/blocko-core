@@ -16,6 +16,7 @@ class BaseInterfaceBlock extends Core.Block {
         this._color = null;
         this._displayName = "";
         this._targetId = "";
+        this._targetType = "";
         this._deviceInputsCount = 0;
         this._deviceOutputsCount = 0;
         this._interfaceType = interfaceType;
@@ -55,7 +56,7 @@ class BaseInterfaceBlock extends Core.Block {
                     else {
                         this.addInputConnector(n, common_lib_1.Types.ConnectorType.DigitalInput, name);
                     }
-                    this.addExternalOutputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.DigitalOutput);
+                    this.addExternalOutputConnector(this._targetId, name, this._targetType, common_lib_1.Types.ConnectorType.DigitalOutput);
                 }
             }
         }
@@ -80,7 +81,7 @@ class BaseInterfaceBlock extends Core.Block {
                     else {
                         this.addInputConnector(n, common_lib_1.Types.ConnectorType.AnalogInput, name);
                     }
-                    this.addExternalOutputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.AnalogOutput);
+                    this.addExternalOutputConnector(this._targetId, name, this._targetType, common_lib_1.Types.ConnectorType.AnalogOutput);
                 }
             }
         }
@@ -110,7 +111,7 @@ class BaseInterfaceBlock extends Core.Block {
                     else {
                         this.addInputConnector(n, common_lib_1.Types.ConnectorType.MessageInput, name, argTypes);
                     }
-                    this.addExternalOutputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.MessageOutput, argTypes);
+                    this.addExternalOutputConnector(this._targetId, name, this._targetType, common_lib_1.Types.ConnectorType.MessageOutput, argTypes);
                 }
             }
         }
@@ -135,7 +136,7 @@ class BaseInterfaceBlock extends Core.Block {
                     else {
                         this.addOutputConnector(n, common_lib_1.Types.ConnectorType.DigitalOutput, name);
                     }
-                    this.addExternalInputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.DigitalInput);
+                    this.addExternalInputConnector(this._targetId, name, this._targetType, common_lib_1.Types.ConnectorType.DigitalInput);
                 }
             }
         }
@@ -160,7 +161,7 @@ class BaseInterfaceBlock extends Core.Block {
                     else {
                         this.addOutputConnector(n, common_lib_1.Types.ConnectorType.AnalogOutput, name);
                     }
-                    this.addExternalInputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.AnalogInput);
+                    this.addExternalInputConnector(this._targetId, name, this._targetType, common_lib_1.Types.ConnectorType.AnalogInput);
                 }
             }
         }
@@ -190,7 +191,7 @@ class BaseInterfaceBlock extends Core.Block {
                     else {
                         this.addOutputConnector(n, common_lib_1.Types.ConnectorType.MessageOutput, name, argTypes);
                     }
-                    this.addExternalInputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.MessageInput, argTypes);
+                    this.addExternalInputConnector(this._targetId, name, this._targetType, common_lib_1.Types.ConnectorType.MessageInput, argTypes);
                 }
             }
         }

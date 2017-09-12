@@ -12,12 +12,14 @@ export class ExternalConnector<T extends boolean|number|Message> {
 
     private _targetId:string;
     private _name:string;
+    private _targetType: string;
 
-    public constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+    public constructor(block:Block, targetId:string, name:string, targetType: string, type:ExternalConnectorType) {
         this.block = block;
         this._targetId = targetId;
         this._name = name;
         this.type = type;
+        this._targetType = targetType;
     }
 
     public getValue():T {
@@ -48,18 +50,22 @@ export class ExternalConnector<T extends boolean|number|Message> {
     get targetId():string {
         return this._targetId;
     }
+
+    get targetType():string {
+        return this.targetType;
+    }
 }
 
 export class ExternalDigitalConnector extends ExternalConnector<boolean> {
-    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
-        super(block, targetId, name, type);
+    constructor(block:Block, targetId:string, name:string, targetType: string, type:ExternalConnectorType) {
+        super(block, targetId, name, targetType, type);
         this.value = false;
     }
 }
 
 export class ExternalAnalogConnector extends ExternalConnector<number> {
-    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
-        super(block, targetId, name, type);
+    constructor(block:Block, targetId:string, name:string, targetType: string,  type:ExternalConnectorType) {
+        super(block, targetId, name, targetType, type);
         this.value = 0;
     }
 }
@@ -68,8 +74,8 @@ export class ExternalMessageConnector extends ExternalConnector<Message> {
 
     private _argTypes:Types.Type[];
 
-    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType, argTypes:Types.Type[]) {
-        super(block, targetId, name, type);
+    constructor(block:Block, targetId:string, name:string, targetType: string, type:ExternalConnectorType, argTypes:Types.Type[]) {
+        super(block, targetId, name, targetType, type);
         this._argTypes = argTypes;
         this.value = null;
     }

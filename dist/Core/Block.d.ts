@@ -46,8 +46,8 @@ export declare class Block {
     addInputConnector(name: string, type: Types.ConnectorType, displayName?: string, argTypes?: Types.Type[]): Connector;
     removeOutputConnector(connector: Connector): void;
     removeInputConnector(connector: Connector): void;
-    protected addExternalInputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes?: Types.Type[]): ExternalConnector<any>;
-    protected addExternalOutputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes?: Types.Type[]): ExternalConnector<any>;
+    protected addExternalInputConnector(targetId: string, name: string, targetType: string, type: Types.ConnectorType, argTypes?: Types.Type[]): ExternalConnector<any>;
+    protected addExternalOutputConnector(targetId: string, name: string, targetType: string, type: Types.ConnectorType, argTypes?: Types.Type[]): ExternalConnector<any>;
     protected removeExternalInputConnector(connector: ExternalConnector<any>): void;
     protected removeExternalOutputConnector(connector: ExternalConnector<any>): void;
     addConfigProperty(type: Types.ConfigPropertyType, id: string, displayName: string, defaultValue: any, config?: any): ConfigProperty;
