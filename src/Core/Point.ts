@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 12.04.16.
- */
+
 
 export class Point {
     public x:number;

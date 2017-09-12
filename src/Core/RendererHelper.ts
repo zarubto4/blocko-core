@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 26.09.16.
- */
+
 
 export class RendererHelper {
 

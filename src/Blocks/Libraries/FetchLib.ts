@@ -1,6 +1,3 @@
-/**
- * Created by David Uhlíř on 10.04.17.
- */
 
 /*
  * Fetchlib provides objects for wraping requests and responses for FetchService

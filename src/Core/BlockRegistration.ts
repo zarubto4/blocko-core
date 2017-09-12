@@ -1,6 +1,3 @@
-/**
- * Created by davidhradek on 12.04.16.
- */
 
 export interface BlockClass {
     new (id:string);

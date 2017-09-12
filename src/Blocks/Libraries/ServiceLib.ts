@@ -1,6 +1,4 @@
-/**
- * Created by David Uhlíř on 10.04.17.
- */
+
 import { Library, Machine } from 'script-engine';
 import { Service } from '../Services/Service';
 

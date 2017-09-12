@@ -1,6 +1,6 @@
 {
   "name": "blocko-core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "BLOCKOcore",
   "main": "dist/index.js",
   "typings": "dist/index",
@@ -16,7 +16,7 @@
     "core",
     "blocko-core"
   ],
-  "author": "David Hrádek (david@hradyho.net)",
+  "author": "Tomáš Záruba",
   "license": "UNLICENCED",
   "dependencies": {
     "atob": "^2.0.3",

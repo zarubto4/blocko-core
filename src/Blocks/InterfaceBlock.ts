@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 12.07.16.
- */
+
 
 import * as Core from '../Core/index';
 import {Connector, ConnectorEventType} from "../Core/Connector";

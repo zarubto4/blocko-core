@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 12.04.16.
- */
+
 
 import {IBlockRenderer, Block} from "./Block";
 import {Connection, IConnectionRenderer} from "./Connection";
@@ -301,7 +299,7 @@ export class Controller {
     // value setters
 
 //  From homer... controlls only external connectors
-    public setDigitalValue(targetId:string, name:string, value:boolean):void {
+    public setDigitalValue(targetId:string, name:string, connectorName: string, value:boolean):void {
         //  TODO optimise, find target by block, not by connectors in it!
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
@@ -312,7 +310,7 @@ export class Controller {
         });
     }
 
-    public setAnalogValue(targetId:string, name:string, value:number):void {
+    public setAnalogValue(targetId:string, name:string, connectorName: string, value:number):void {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
                 if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalAnalogConnector) {
@@ -322,7 +320,7 @@ export class Controller {
         });
     }
 
-    public setMessageValue(targetId:string, name:string, message:Message):void {
+    public setMessageValue(targetId:string, name:string, connectorName: string, message:Message):void {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
                 if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalMessageConnector) {

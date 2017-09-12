@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 12.01.17.
- */
+
 
 import {Library, Machine} from "script-engine";
 import {Types, Events, Libs} from "common-lib";

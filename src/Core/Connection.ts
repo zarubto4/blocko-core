@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 12.04.16.
- */
+
 
 import {Connector} from "./Connector";
 

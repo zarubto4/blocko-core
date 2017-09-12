@@ -1,6 +1,3 @@
-/**
- * Created by davidhradek on 12.04.16.
- */
 
 import * as Core from '../../Core/index';
 import {Types} from "common-lib";

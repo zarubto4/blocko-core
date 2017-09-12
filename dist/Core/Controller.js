@@ -174,7 +174,7 @@ class Controller {
     _emitLog(block, type, message) {
         this.logCallbacks.forEach(callback => callback(block, type, message));
     }
-    setDigitalValue(targetId, name, value) {
+    setDigitalValue(targetId, name, connectorName, value) {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
                 if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
@@ -183,7 +183,7 @@ class Controller {
             });
         });
     }
-    setAnalogValue(targetId, name, value) {
+    setAnalogValue(targetId, name, connectorName, value) {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
                 if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
@@ -192,7 +192,7 @@ class Controller {
             });
         });
     }
-    setMessageValue(targetId, name, message) {
+    setMessageValue(targetId, name, connectorName, message) {
         this.blocks.forEach((block) => {
             block.getExternalInputConnectors().forEach((connector) => {
                 if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalMessageConnector) {

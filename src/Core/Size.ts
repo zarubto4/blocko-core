@@ -1,6 +1,3 @@
-/**
- * Created by davidhradek on 11.07.16.
- */
 
 export class Size {
     public width:number;

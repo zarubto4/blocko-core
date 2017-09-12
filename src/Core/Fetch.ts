@@ -1,6 +1,4 @@
-/**
- * Created by David Uhlíř on 10.04.17.
- */
+
 import { Machine } from 'script-engine';
 
 declare const require;

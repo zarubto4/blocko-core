@@ -1,6 +1,4 @@
-/**
- * Created by David Uhlíř on 10.04.17.
- */
+
 
 import { FetchService } from './FetchService';
 import { FetchResponse, RequestDef, FetchExecutor, PromiseWraper } from '../../Core/Fetch';

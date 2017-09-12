@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 26.11.15.
- */
+
 
 import * as Core from "./Core/index";
 export {Core as Core};

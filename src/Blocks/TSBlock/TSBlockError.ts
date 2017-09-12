@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 12.01.17.
- */
+
 
 export class TSBlockError extends Error {
 

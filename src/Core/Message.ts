@@ -1,6 +1,4 @@
-/**
- * Created by davidhradek on 25.07.16.
- */
+
 
 import {Types} from "common-lib";
 
