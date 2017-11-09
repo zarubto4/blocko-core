@@ -233,13 +233,13 @@ class FetchExecutor {
                 }
             }
         }
+        let headers = new Headers();
+        headers.set('Accept', 'application/json');
+        headers.set('Content-Type', 'application/json');
+        headers.set('Cache', 'no-cache');
         let fetchParams = {
             method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Cache': 'no-cache'
-            },
+            headers: headers,
             body: JSON.stringify(paramsCopy)
         };
         let status = null;

@@ -8,6 +8,7 @@ export * from "./Libraries/FetchLib";
 export * from "./Services/XmlApiService";
 export * from "./Services/FetchService";
 export * from "./Services/RestApiService";
+export * from "./Services/CronService";
 export * from "./IO/AnalogInput";
 export * from "./IO/AnalogOutput";
 export * from "./IO/DigitalInput";

@@ -22,6 +22,7 @@
     "atob": "^2.0.3",
     "btoa": "^1.1.2",
     "common-lib": "git+ssh://git@github.com:ByzanceIoT/common-lib.git#v0.0.27",
+    "later": "RickCarlino/later",
     "node-fetch": "^1.6.3",
     "script-engine": "git+ssh://git@github.com:ByzanceIoT/script-engine.git#v0.0.39",
     "typescript": "^2.2.1",
