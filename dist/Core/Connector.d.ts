@@ -1,7 +1,7 @@
-import { Connection } from "./Connection";
-import { Block } from "./Block";
-import { Message } from "./Message";
-import { Types } from "common-lib";
+import { Connection } from './Connection';
+import { Block } from './Block';
+import { Message } from './Message';
+import { Types } from 'common-lib';
 export interface IConnectorRenderer {
     refresh(): void;
     destroy(): void;
