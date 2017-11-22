@@ -8,19 +8,18 @@ var ExternalConnectorType;
     ExternalConnectorType[ExternalConnectorType["Output"] = 1] = "Output";
 })(ExternalConnectorType = exports.ExternalConnectorType || (exports.ExternalConnectorType = {}));
 class ExternalConnector {
-    constructor(block, targetId, name, targetType, type) {
+    constructor(block, targetId, name, type) {
         this.block = block;
         this._targetId = targetId;
         this._name = name;
         this.type = type;
-        this._targetType = targetType;
     }
     getValue() {
         return this.value;
     }
     setValue(value) {
         this.value = value;
-        var type = Connector_1.ConnectorEventType.ValueChange;
+        let type = Connector_1.ConnectorEventType.ValueChange;
         if (this instanceof ExternalMessageConnector) {
             type = Connector_1.ConnectorEventType.NewMessage;
         }
@@ -40,28 +39,25 @@ class ExternalConnector {
     get targetId() {
         return this._targetId;
     }
-    get targetType() {
-        return this.targetType;
-    }
 }
 exports.ExternalConnector = ExternalConnector;
 class ExternalDigitalConnector extends ExternalConnector {
-    constructor(block, targetId, name, targetType, type) {
-        super(block, targetId, name, targetType, type);
+    constructor(block, targetId, name, type) {
+        super(block, targetId, name, type);
         this.value = false;
     }
 }
 exports.ExternalDigitalConnector = ExternalDigitalConnector;
 class ExternalAnalogConnector extends ExternalConnector {
-    constructor(block, targetId, name, targetType, type) {
-        super(block, targetId, name, targetType, type);
+    constructor(block, targetId, name, type) {
+        super(block, targetId, name, type);
         this.value = 0;
     }
 }
 exports.ExternalAnalogConnector = ExternalAnalogConnector;
 class ExternalMessageConnector extends ExternalConnector {
-    constructor(block, targetId, name, targetType, type, argTypes) {
-        super(block, targetId, name, targetType, type);
+    constructor(block, targetId, name, type, argTypes) {
+        super(block, targetId, name, type);
         this._argTypes = argTypes;
         this.value = null;
     }
@@ -78,3 +74,13 @@ class ExternalMessageConnector extends ExternalConnector {
     }
 }
 exports.ExternalMessageConnector = ExternalMessageConnector;
+class ExternalGroupConnector extends ExternalMessageConnector {
+    get kind() {
+        return this._kind;
+    }
+    constructor(block, targetId, name, type, argTypes, kind) {
+        super(block, targetId, name, type, argTypes);
+        this._kind = kind;
+    }
+}
+exports.ExternalGroupConnector = ExternalGroupConnector;

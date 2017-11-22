@@ -35,18 +35,18 @@ class Connector {
     }
     set value(value) {
         if (this.isDigital()) {
-            if (typeof value == "boolean") {
+            if (typeof value == 'boolean') {
                 this._boolValue = value;
             }
-            else if (typeof value == "number") {
+            else if (typeof value == 'number') {
                 this._boolValue = value ? true : false;
             }
         }
         if (this.isAnalog()) {
-            if (typeof value == "boolean") {
+            if (typeof value == 'boolean') {
                 this._numValue = value ? 1 : 0;
             }
-            else if (typeof value == "number") {
+            else if (typeof value == 'number') {
                 this._numValue = value;
             }
         }
@@ -54,7 +54,7 @@ class Connector {
     }
     connect(target) {
         if (this.canConnect(target)) {
-            var connection = new Connection_1.Connection(this, target);
+            let connection = new Connection_1.Connection(this, target);
             this.connections.push(connection);
             target.connections.push(connection);
             if (this.block && this.block.controller) {
@@ -65,7 +65,7 @@ class Connector {
         return null;
     }
     _removeConnection(connection) {
-        var index = this.connections.indexOf(connection);
+        let index = this.connections.indexOf(connection);
         if (index > -1) {
             this.connections.splice(index, 1);
         }
@@ -113,7 +113,7 @@ class Connector {
         return true;
     }
     get stringArgTypes() {
-        var out = [];
+        let out = [];
         if (this.argTypes) {
             this.argTypes.forEach((argType) => {
                 out.push(common_lib_1.Types.TypeToStringTable[argType]);
@@ -122,14 +122,14 @@ class Connector {
         return out;
     }
     _outputSetValue(value) {
-        var boolVal = null;
-        var numVal = null;
-        var msgVal = null;
-        if (typeof value == "boolean") {
+        let boolVal = null;
+        let numVal = null;
+        let msgVal = null;
+        if (typeof value == 'boolean') {
             boolVal = value;
             numVal = boolVal ? 1 : 0;
         }
-        if (typeof value == "number") {
+        if (typeof value == 'number') {
             numVal = value;
             boolVal = !!numVal;
         }
@@ -174,17 +174,17 @@ class Connector {
             this.block._outputEvent(this, ConnectorEventType.NewMessage, msgVal);
             return;
         }
-        console.log("Cannot call setValue on not-output connectors!");
+        console.log('Cannot call setValue on not-output connectors!');
     }
     _inputSetValue(value) {
-        var boolVal = null;
-        var numVal = null;
-        var msgVal = null;
-        if (typeof value == "boolean") {
+        let boolVal = null;
+        let numVal = null;
+        let msgVal = null;
+        if (typeof value == 'boolean') {
             boolVal = value;
             numVal = boolVal ? 1 : 0;
         }
-        if (typeof value == "number") {
+        if (typeof value == 'number') {
             numVal = value;
             boolVal = !!numVal;
         }
@@ -220,7 +220,7 @@ class Connector {
             }
             return;
         }
-        console.log("Cannot call _inputSetValue on not-inputs connectors!");
+        console.log('Cannot call _inputSetValue on not-inputs connectors!');
     }
 }
 exports.Connector = Connector;

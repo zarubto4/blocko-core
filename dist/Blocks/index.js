@@ -26,3 +26,4 @@ __export(require("./Logic/Not"));
 __export(require("./Logic/Or"));
 __export(require("./Logic/Xor"));
 __export(require("./InterfaceBlock"));
+__export(require("./InterfaceBlockGroup"));

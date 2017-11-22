@@ -31,7 +31,6 @@ export abstract class BaseInterfaceBlock extends Core.Block {
     private _color:string = null;
     private _displayName:string = "";
     private _targetId:string = "";
-    private _targetType:string = "";
 
     private _interfaceType:InterfaceBlockType;
 
@@ -47,11 +46,11 @@ export abstract class BaseInterfaceBlock extends Core.Block {
 
     public setInterface(iface:BlockoTargetInterface):void {
 
-        var wantedInputsOrder = [];
-        var wantedOutputsOrder = [];
+        let wantedInputsOrder = [];
+        let wantedOutputsOrder = [];
 
-        var inputsToDelete = this.getInputConnectors().slice(0);
-        var outputsToDelete = this.getOutputConnectors().slice(0);
+        let inputsToDelete = this.getInputConnectors().slice(0);
+        let outputsToDelete = this.getOutputConnectors().slice(0);
 
         this.getExternalInputConnectors().slice(0).forEach((con) => this.removeExternalInputConnector(con));
         this.getExternalOutputConnectors().slice(0).forEach((con) => this.removeExternalOutputConnector(con));
@@ -65,18 +64,18 @@ export abstract class BaseInterfaceBlock extends Core.Block {
         this._targetId = iface["targetId"];
         this._displayName = iface["displayName"] || this._targetId;
 
-        var inOutInterfaces = iface["interface"];
+        let inOutInterfaces = iface["interface"];
 
-        var digitalInputs = inOutInterfaces["digitalInputs"];
+        let digitalInputs = inOutInterfaces["digitalInputs"];
         if (digitalInputs) {
-            for (var name in digitalInputs) {
+            for (let name in digitalInputs) {
                 if (!digitalInputs.hasOwnProperty(name)) continue;
 
                 this._deviceInputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Inputs) {
-                    var n = "d_"+name;
+                    let n = "d_"+name;
                     wantedInputsOrder.push(n);
-                    var c = null;
+                    let c = null;
                     inputsToDelete.forEach((con:Connector) => {
                         if ((con.name == n) && (con.type == Types.ConnectorType.DigitalInput)) {
                             c = con;
@@ -87,21 +86,21 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addInputConnector(n, Types.ConnectorType.DigitalInput, name);
                     }
-                    this.addExternalOutputConnector(this._targetId, name, this._targetType, Types.ConnectorType.DigitalOutput);
+                    this.addExternalOutputConnector(this._targetId, name, Types.ConnectorType.DigitalOutput);
                 }
             }
         }
 
-        var analogInputs = inOutInterfaces["analogInputs"];
+        let analogInputs = inOutInterfaces["analogInputs"];
         if (analogInputs) {
-            for (var name in analogInputs) {
+            for (let name in analogInputs) {
                 if (!analogInputs.hasOwnProperty(name)) continue;
 
                 this._deviceInputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Inputs) {
-                    var n = "a_"+name;
+                    let n = "a_"+name;
                     wantedInputsOrder.push(n);
-                    var c = null;
+                    let c = null;
                     inputsToDelete.forEach((con:Connector) => {
                         if ((con.name == n) && (con.type == Types.ConnectorType.AnalogInput)) {
                             c = con;
@@ -112,24 +111,24 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addInputConnector(n, Types.ConnectorType.AnalogInput, name);
                     }
-                    this.addExternalOutputConnector(this._targetId, name, this._targetType, Types.ConnectorType.AnalogOutput);
+                    this.addExternalOutputConnector(this._targetId, name, Types.ConnectorType.AnalogOutput);
                 }
             }
         }
 
-        var messageInputs = inOutInterfaces["messageInputs"];
+        let messageInputs = inOutInterfaces["messageInputs"];
         if (messageInputs) {
-            for (var name in messageInputs) {
+            for (let name in messageInputs) {
                 if (!messageInputs.hasOwnProperty(name)) continue;
 
                 this._deviceInputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Inputs) {
 
-                    var argTypes = MessageHelpers.argTypesFromStringArgTypes(messageInputs[name].messageTypes);
+                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(messageInputs[name].messageTypes);
 
-                    var n = "m_"+name;
+                    let n = "m_"+name;
                     wantedInputsOrder.push(n);
-                    var c = null;
+                    let c = null;
                     inputsToDelete.forEach((con:Connector) => {
                         if ((con.name == n) && (con.type == Types.ConnectorType.MessageInput)) {
                             c = con;
@@ -146,22 +145,22 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                         this.addInputConnector(n, Types.ConnectorType.MessageInput, name, argTypes);
                     }
 
-                    this.addExternalOutputConnector(this._targetId, name, this._targetType, Types.ConnectorType.MessageOutput, argTypes);
+                    this.addExternalOutputConnector(this._targetId, name, Types.ConnectorType.MessageOutput, argTypes);
                 }
             }
         }
 
 
-        var digitalOutputs = inOutInterfaces["digitalOutputs"];
+        let digitalOutputs = inOutInterfaces["digitalOutputs"];
         if (digitalOutputs) {
-            for (var name in digitalOutputs) {
+            for (let name in digitalOutputs) {
                 if (!digitalOutputs.hasOwnProperty(name)) continue;
 
                 this._deviceOutputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Outputs) {
-                    var n = "d_"+name;
+                    let n = "d_"+name;
                     wantedOutputsOrder.push(n);
-                    var c = null;
+                    let c = null;
                     outputsToDelete.forEach((con:Connector) => {
                         if ((con.name == n) && (con.type == Types.ConnectorType.DigitalOutput)) {
                             c = con;
@@ -172,21 +171,21 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addOutputConnector(n, Types.ConnectorType.DigitalOutput, name);
                     }
-                    this.addExternalInputConnector(this._targetId, name, this._targetType, Types.ConnectorType.DigitalInput);
+                    this.addExternalInputConnector(this._targetId, name, Types.ConnectorType.DigitalInput);
                 }
             }
         }
 
-        var analogOutputs = inOutInterfaces["analogOutputs"];
+        let analogOutputs = inOutInterfaces["analogOutputs"];
         if (analogOutputs) {
-            for (var name in analogOutputs) {
+            for (let name in analogOutputs) {
                 if (!analogOutputs.hasOwnProperty(name)) continue;
 
                 this._deviceOutputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Outputs) {
-                    var n = "a_"+name;
+                    let n = "a_"+name;
                     wantedOutputsOrder.push(n);
-                    var c = null;
+                    let c = null;
                     outputsToDelete.forEach((con:Connector) => {
                         if ((con.name == n) && (con.type == Types.ConnectorType.AnalogOutput)) {
                             c = con;
@@ -197,24 +196,24 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                     } else {
                         this.addOutputConnector(n, Types.ConnectorType.AnalogOutput, name);
                     }
-                    this.addExternalInputConnector(this._targetId, name, this._targetType, Types.ConnectorType.AnalogInput);
+                    this.addExternalInputConnector(this._targetId, name, Types.ConnectorType.AnalogInput);
                 }
             }
         }
 
-        var messageOutputs = inOutInterfaces["messageOutputs"];
+        let messageOutputs = inOutInterfaces["messageOutputs"];
         if (messageOutputs) {
-            for (var name in messageOutputs) {
+            for (let name in messageOutputs) {
                 if (!messageOutputs.hasOwnProperty(name)) continue;
 
                 this._deviceOutputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Outputs) {
 
-                    var argTypes = MessageHelpers.argTypesFromStringArgTypes(messageOutputs[name].messageTypes);
+                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(messageOutputs[name].messageTypes);
 
-                    var n = "m_"+name;
+                    let n = "m_"+name;
                     wantedOutputsOrder.push(n);
-                    var c = null;
+                    let c = null;
                     outputsToDelete.forEach((con:Connector) => {
                         if ((con.name == n) && (con.type == Types.ConnectorType.MessageOutput)) {
                             c = con;
@@ -230,7 +229,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                         this.addOutputConnector(n, Types.ConnectorType.MessageOutput, name, argTypes);
                     }
 
-                    this.addExternalInputConnector(this._targetId, name, this._targetType, Types.ConnectorType.MessageInput, argTypes);
+                    this.addExternalInputConnector(this._targetId, name, Types.ConnectorType.MessageInput, argTypes);
                 }
             }
         }
@@ -268,7 +267,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
     public externalInputEvent(connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message):void {
         if (!connector) return;
 
-        var name = "";
+        let name = "";
         if (connector instanceof ExternalAnalogConnector) {
             name = "a_"+connector.name;
         }
@@ -279,7 +278,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
             name = "m_"+connector.name;
         }
 
-        var con = this.getOutputConnectorByName(name);
+        let con = this.getOutputConnectorByName(name);
         if (con) {
             con._outputSetValue(value);
         }
@@ -288,8 +287,8 @@ export abstract class BaseInterfaceBlock extends Core.Block {
     public inputChanged(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message):void {
         if (!connector) return;
 
-        var type = connector.name.substr(0, 1);
-        var name = connector.name.substr(2);
+        let type = connector.name.substr(0, 1);
+        let name = connector.name.substr(2);
 
         this.getExternalOutputConnectors().forEach((con:ExternalConnector<any>) => {
             if (con.name == name) {
@@ -309,8 +308,8 @@ export abstract class BaseInterfaceBlock extends Core.Block {
 // RENDER
 
     public rendererGetBlockSize():Size {
-        var maxCon = Math.max(this._deviceInputsCount, this._deviceOutputsCount);
-        var height = Math.max(139, 139 + ((maxCon-6) * 20));
+        let maxCon = Math.max(this._deviceInputsCount, this._deviceOutputsCount);
+        let height = Math.max(139, 139 + ((maxCon-6) * 20));
         return new Size(49+10, height);
     }
 
@@ -337,10 +336,9 @@ export abstract class BaseInterfaceBlock extends Core.Block {
         return "#48b5af";
     }
 
-
     public rendererCustomSvgPath(size:Size):string {
-        var roundRadius = 2;
-        var waveWide = 15;
+        let roundRadius = 2;
+        let waveWide = 15;
         if (this._interfaceType == InterfaceBlockType.Outputs) {
             return "m0 0 l" + (size.width - roundRadius) + " 0 c" + (roundRadius / 2) + " 0 " + roundRadius + " " + (roundRadius / 2) + " " + roundRadius + " " + roundRadius + " l0 " + (size.height - (2 * roundRadius)) + " c0 " + (roundRadius / 2) + " -" + (roundRadius / 2) + " " + roundRadius + " -" + roundRadius + " " + roundRadius + " l-" + (size.width - roundRadius) + " 0 c" + waveWide + " -" + (size.height / 2) + " -" + waveWide + " -" + (size.height / 2) + " 0 -" + size.height + " z"
         }

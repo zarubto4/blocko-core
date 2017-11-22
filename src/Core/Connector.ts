@@ -1,9 +1,9 @@
 
 
-import {Connection} from "./Connection";
-import {Block} from "./Block";
-import {Message, MessageHelpers} from "./Message";
-import {Types} from "common-lib";
+import {Connection} from './Connection';
+import {Block} from './Block';
+import {Message, MessageHelpers} from './Message';
+import {Types} from 'common-lib';
 
 export interface IConnectorRenderer {
     refresh():void;
@@ -55,16 +55,16 @@ export class Connector {
 
     set value(value:number|boolean) {
         if (this.isDigital()) {
-            if (typeof value == "boolean") {
+            if (typeof value == 'boolean') {
                 this._boolValue = <boolean>value;
-            } else if (typeof value == "number") {
+            } else if (typeof value == 'number') {
                 this._boolValue = value?true:false;
             }
         }
         if (this.isAnalog()) {
-            if (typeof value == "boolean") {
+            if (typeof value == 'boolean') {
                 this._numValue = value?1:0;
-            } else if (typeof value == "number") {
+            } else if (typeof value == 'number') {
                 this._numValue = <number>value;
             }
         }
@@ -73,7 +73,7 @@ export class Connector {
 
     public connect(target:Connector):Connection {
         if (this.canConnect(target)) {
-            var connection:Connection = new Connection(this, target);
+            let connection:Connection = new Connection(this, target);
             this.connections.push(connection);
             target.connections.push(connection);
 
@@ -87,7 +87,7 @@ export class Connector {
     }
 
     public _removeConnection(connection:Connection) {
-        var index = this.connections.indexOf(connection);
+        let index = this.connections.indexOf(connection);
         if (index > -1) {
             this.connections.splice(index, 1);
         }
@@ -153,7 +153,7 @@ export class Connector {
 
 
     get stringArgTypes():string[] {
-        var out:string[] = [];
+        let out:string[] = [];
         if (this.argTypes) {
             this.argTypes.forEach((argType:Types.Type) => {
                 out.push(Types.TypeToStringTable[argType]);
@@ -162,17 +162,17 @@ export class Connector {
         return out;
     }
 
-// This is "inner" method, call it only if you know what you do!!
+// This is 'inner' method, call it only if you know what you do!!
     public _outputSetValue(value:boolean|number|Message|any[]) {
 
-        var boolVal:boolean = null;
-        var numVal:number = null;
-        var msgVal:Message = null;
-        if (typeof value == "boolean") {
+        let boolVal:boolean = null;
+        let numVal:number = null;
+        let msgVal:Message = null;
+        if (typeof value == 'boolean') {
             boolVal = <boolean>value;
             numVal = boolVal?1:0;
         }
-        if (typeof value == "number") {
+        if (typeof value == 'number') {
             numVal = <number>value;
             boolVal = !!numVal;
         }
@@ -211,20 +211,20 @@ export class Connector {
             this.block._outputEvent(this, ConnectorEventType.NewMessage, msgVal);
             return;
         }
-        console.log("Cannot call setValue on not-output connectors!");
+        console.log('Cannot call setValue on not-output connectors!');
     }
 
-    // This is "inner" method, call it only if you know what you do!!
+    // This is 'inner' method, call it only if you know what you do!!
     public _inputSetValue(value:boolean|number|Message) {
 
-        var boolVal:boolean = null;
-        var numVal:number = null;
-        var msgVal:Message = null;
-        if (typeof value == "boolean") {
+        let boolVal:boolean = null;
+        let numVal:number = null;
+        let msgVal:Message = null;
+        if (typeof value == 'boolean') {
             boolVal = <boolean>value;
             numVal = boolVal?1:0;
         }
-        if (typeof value == "number") {
+        if (typeof value == 'number') {
             numVal = <number>value;
             boolVal = !!numVal;
         }
@@ -254,6 +254,6 @@ export class Connector {
             }
             return;
         }
-        console.log("Cannot call _inputSetValue on not-inputs connectors!");
+        console.log('Cannot call _inputSetValue on not-inputs connectors!');
     }
 }

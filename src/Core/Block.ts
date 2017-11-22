@@ -2,8 +2,8 @@
 import {Connector, ConnectorEventType} from "./Connector";
 import {
     ExternalConnector, ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnectorType,
-    ExternalMessageConnector
-} from "./ExternalConnector";
+    ExternalMessageConnector, ExternalGroupConnector
+} from './ExternalConnector';
 import {ConfigProperty} from "./ConfigProperty";
 import {Controller} from "./Controller";
 import {Connection} from "./Connection";
@@ -111,7 +111,7 @@ export class Block {
 
     public addOutputConnector(name:string, type:Types.ConnectorType, displayName:string = null, argTypes:Types.Type[] = null):Connector {
         if (type == Types.ConnectorType.DigitalOutput || type == Types.ConnectorType.AnalogOutput || type == Types.ConnectorType.MessageOutput) {
-            var connector:Connector = new Connector(this, name, displayName, type, argTypes);
+            let connector:Connector = new Connector(this, name, displayName, type, argTypes);
             this.outputConnectors.push(connector);
             return connector;
         }
@@ -121,7 +121,7 @@ export class Block {
 
     public addInputConnector(name:string, type:Types.ConnectorType, displayName:string = null, argTypes:Types.Type[] = null):Connector {
         if (type == Types.ConnectorType.DigitalInput || type == Types.ConnectorType.AnalogInput || type == Types.ConnectorType.MessageInput) {
-            var connector:Connector = new Connector(this, name, displayName, type, argTypes);
+            let connector:Connector = new Connector(this, name, displayName, type, argTypes);
             this.inputConnectors.push(connector);
             return connector;
         }
@@ -132,7 +132,7 @@ export class Block {
     public removeOutputConnector(connector:Connector):void {
         if (!connector) return;
         this.disconnectConnectionFromConnector(connector);
-        var index = this.outputConnectors.indexOf(connector);
+        let index = this.outputConnectors.indexOf(connector);
         if (index > -1) {
             this.outputConnectors.splice(index, 1);
         }
@@ -141,25 +141,30 @@ export class Block {
     public removeInputConnector(connector:Connector):void {
         if (!connector) return;
         this.disconnectConnectionFromConnector(connector);
-        var index = this.inputConnectors.indexOf(connector);
+        let index = this.inputConnectors.indexOf(connector);
         if (index > -1) {
             this.inputConnectors.splice(index, 1);
         }
     }
 
-    protected addExternalInputConnector(targetId:string, name:string, targetType: string, type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
+    protected addExternalInputConnector(targetId:string, name:string, type:Types.ConnectorType, argTypes:Types.Type[] = null, kind: string = null):ExternalConnector<any> {
         if (type == Types.ConnectorType.DigitalInput) {
-            var connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, targetType, ExternalConnectorType.Input);
+            let connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.AnalogInput) {
-            var connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetId, name, targetType,  ExternalConnectorType.Input);
+            let connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetId, name, ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.MessageInput) {
-            var connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetId, name, targetType, ExternalConnectorType.Input, argTypes);
+            let connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetId, name, ExternalConnectorType.Input, argTypes);
+            this.externalInputConnectors.push(connector);
+            return connector;
+        }
+        if (type == Types.ConnectorType.GroupInput) {
+            let connector:ExternalConnector<any> = new ExternalGroupConnector(this, targetId, name, ExternalConnectorType.Input, argTypes, kind);
             this.externalInputConnectors.push(connector);
             return connector;
         }
@@ -167,19 +172,24 @@ export class Block {
         return null;
     }
 
-    protected addExternalOutputConnector(targetId:string, name:string, targetType: string, type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
+    protected addExternalOutputConnector(targetId:string, name:string, type:Types.ConnectorType, argTypes:Types.Type[] = null, kind:string = null):ExternalConnector<any> {
         if (type == Types.ConnectorType.DigitalOutput) {
-            var connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, targetType, ExternalConnectorType.Output);
+            let connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.AnalogOutput) {
-            var connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetId, name, targetType, ExternalConnectorType.Output);
+            let connector:ExternalConnector<any> = new ExternalAnalogConnector(this, targetId, name, ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
         if (type == Types.ConnectorType.MessageOutput) {
-            var connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetId, name, targetType, ExternalConnectorType.Output, argTypes);
+            let connector:ExternalConnector<any> = new ExternalMessageConnector(this, targetId, name, ExternalConnectorType.Output, argTypes);
+            this.externalOutputsConnectors.push(connector);
+            return connector;
+        }
+        if (type == Types.ConnectorType.GroupOutput) {
+            let connector:ExternalConnector<any> = new ExternalGroupConnector(this, targetId, name, ExternalConnectorType.Output, argTypes, kind);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
@@ -189,7 +199,7 @@ export class Block {
 
     protected removeExternalInputConnector(connector:ExternalConnector<any>):void {
         if (!connector) return;
-        var index = this.externalInputConnectors.indexOf(connector);
+        let index = this.externalInputConnectors.indexOf(connector);
         if (index > -1) {
             this.externalInputConnectors.splice(index, 1);
         }
@@ -197,7 +207,7 @@ export class Block {
 
     protected removeExternalOutputConnector(connector:ExternalConnector<any>):void {
         if (!connector) return;
-        var index = this.externalOutputsConnectors.indexOf(connector);
+        let index = this.externalOutputsConnectors.indexOf(connector);
         if (index > -1) {
             this.externalOutputsConnectors.splice(index, 1);
         }
@@ -206,7 +216,7 @@ export class Block {
     // config properties
 
     public addConfigProperty(type:Types.ConfigPropertyType, id:string, displayName:string, defaultValue:any, config?:any) {
-        var configProperty:ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, config);
+        let configProperty:ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, config);
         this.configProperties.push(configProperty);
         return configProperty;
     }
@@ -217,7 +227,7 @@ export class Block {
 
     public removeConfigProperty(configProperty:ConfigProperty):void {
         if (!configProperty) return;
-        var index = this.configProperties.indexOf(configProperty);
+        let index = this.configProperties.indexOf(configProperty);
         if (index > -1) {
             this.configProperties.splice(index, 1);
         }
@@ -272,7 +282,7 @@ export class Block {
 
     protected outputChanged(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message):void {
         connector.connections.forEach(connection => {
-            var cOther:Connector = connection.getOtherConnector(connector);
+            let cOther:Connector = connection.getOtherConnector(connector);
             cOther._inputSetValue(value);
         });
     }
@@ -340,7 +350,7 @@ export class Block {
     }
 
     public getConfigData():any {
-        var config = {};
+        let config = {};
         this.configProperties.forEach((configProperty:ConfigProperty) => {
             config[configProperty.name] = configProperty.value;
         });
@@ -348,7 +358,7 @@ export class Block {
     }
 
     public getConfigPropertyByName(name:string):ConfigProperty {
-        var cp:ConfigProperty = null;
+        let cp:ConfigProperty = null;
         this.configProperties.forEach((configProperty:ConfigProperty) => {
             if (configProperty.name == name) {
                 cp = configProperty;
@@ -359,9 +369,9 @@ export class Block {
 
     public setConfigData(json:any):void {
 
-        for (var key in json) {
+        for (let key in json) {
             if (json.hasOwnProperty(key)) {
-                var cp:ConfigProperty = this.getConfigPropertyByName(key);
+                let cp:ConfigProperty = this.getConfigPropertyByName(key);
                 if (cp) {
                     cp.value = json[key];
                 }
@@ -373,7 +383,7 @@ export class Block {
     }
 
     private disconnectConnectionFromConnector(connector:Connector):void {
-        var toDisconnect:Array<Connection> = connector.connections.splice(0);
+        let toDisconnect:Array<Connection> = connector.connections.splice(0);
         toDisconnect.forEach((connection:Connection) => {
             connection.disconnect();
         });
@@ -396,7 +406,7 @@ export class Block {
     }
 
     public getOutputConnectorByName(name:string):Connector {
-        var connector:Connector = null;
+        let connector:Connector = null;
         this.outputConnectors.forEach((c:Connector) => {
             if (c.name == name) {
                 connector = c;
@@ -406,7 +416,7 @@ export class Block {
     }
 
     public getInputConnectorByName(name:string):Connector {
-        var connector:Connector = null;
+        let connector:Connector = null;
         this.inputConnectors.forEach((c:Connector) => {
             if (c.name == name) {
                 connector = c;
@@ -445,8 +455,8 @@ export class Block {
     }
 
     public rendererGetBlockSize():Size {
-        var maxCon = Math.max(this.inputConnectors.length, this.outputConnectors.length);
-        var height = Math.max(69, 69 + ((maxCon-2) * 20));
+        let maxCon = Math.max(this.inputConnectors.length, this.outputConnectors.length);
+        let height = Math.max(69, 69 + ((maxCon-2) * 20));
         return new Size(59, height);
     }
 

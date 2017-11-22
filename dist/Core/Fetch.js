@@ -282,7 +282,7 @@ class FetchRequest {
         this.body = body;
     }
 }
-FetchRequest.PROXY_SERVER_URL = 'http://127.0.0.1:3000/fetch/';
+FetchRequest.PROXY_SERVER_URL = 'http://127.0.0.1:4000/fetch/';
 exports.FetchRequest = FetchRequest;
 class FetchResponse {
     constructor(status, headers, body) {

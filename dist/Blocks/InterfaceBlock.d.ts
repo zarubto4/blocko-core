@@ -36,7 +36,6 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     private _color;
     private _displayName;
     private _targetId;
-    private _targetType;
     private _interfaceType;
     private _deviceInputsCount;
     private _deviceOutputsCount;

@@ -12,14 +12,12 @@ export class ExternalConnector<T extends boolean|number|Message> {
 
     private _targetId:string;
     private _name:string;
-    private _targetType: string;
 
-    public constructor(block:Block, targetId:string, name:string, targetType: string, type:ExternalConnectorType) {
+    public constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
         this.block = block;
         this._targetId = targetId;
         this._name = name;
         this.type = type;
-        this._targetType = targetType;
     }
 
     public getValue():T {
@@ -28,7 +26,7 @@ export class ExternalConnector<T extends boolean|number|Message> {
 
     public setValue(value:T):void {
         this.value = value;
-        var type = ConnectorEventType.ValueChange;
+        let type = ConnectorEventType.ValueChange;
         if (this instanceof ExternalMessageConnector) {
             type = ConnectorEventType.NewMessage;
         }
@@ -50,22 +48,18 @@ export class ExternalConnector<T extends boolean|number|Message> {
     get targetId():string {
         return this._targetId;
     }
-
-    get targetType():string {
-        return this.targetType;
-    }
 }
 
 export class ExternalDigitalConnector extends ExternalConnector<boolean> {
-    constructor(block:Block, targetId:string, name:string, targetType: string, type:ExternalConnectorType) {
-        super(block, targetId, name, targetType, type);
+    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+        super(block, targetId, name, type);
         this.value = false;
     }
 }
 
 export class ExternalAnalogConnector extends ExternalConnector<number> {
-    constructor(block:Block, targetId:string, name:string, targetType: string,  type:ExternalConnectorType) {
-        super(block, targetId, name, targetType, type);
+    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+        super(block, targetId, name, type);
         this.value = 0;
     }
 }
@@ -74,8 +68,8 @@ export class ExternalMessageConnector extends ExternalConnector<Message> {
 
     private _argTypes:Types.Type[];
 
-    constructor(block:Block, targetId:string, name:string, targetType: string, type:ExternalConnectorType, argTypes:Types.Type[]) {
-        super(block, targetId, name, targetType, type);
+    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType, argTypes:Types.Type[]) {
+        super(block, targetId, name, type);
         this._argTypes = argTypes;
         this.value = null;
     }
@@ -94,5 +88,19 @@ export class ExternalMessageConnector extends ExternalConnector<Message> {
         if (this.isArgTypesEqual(value.argTypes)) {
             super.setValue(value);
         }
+    }
+}
+
+export class ExternalGroupConnector extends ExternalMessageConnector {
+
+    private _kind: string;
+
+    get kind(): string {
+        return this._kind;
+    }
+
+    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType, argTypes:Types.Type[], kind: string) {
+        super(block, targetId, name, type, argTypes);
+        this._kind = kind;
     }
 }

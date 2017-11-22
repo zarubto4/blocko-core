@@ -6,7 +6,7 @@ import { ServicesHandler } from "../Blocks/Libraries/ServiceLib";
 import { Service } from "../Blocks/Services/Service";
 import { ExternalConnector } from "./ExternalConnector";
 import { BlockoTargetInterface } from "../Blocks/InterfaceBlock";
-import { Message } from "./Message";
+import { Message } from './Message';
 export interface IRendererFactory {
     factoryBlockRenderer(block: Block): IBlockRenderer;
     factoryConnectionRenderer(connection: Connection): IConnectionRenderer;
@@ -29,7 +29,7 @@ export declare class Controller {
     readonly servicesHandler: ServicesHandler;
     registerBlocks(blocksClass: Array<BlockClass>): void;
     registerBlock(blockClass: BlockClass): void;
-    getBlockClassByVisutalType(visualType: string): BlockClass;
+    getBlockClassByVisualType(visualType: string): BlockClass;
     private blockAddedCallbacks;
     registerBlockAddedCallback(callback: (block: Block) => void): void;
     addBlock(block: Block): void;
@@ -68,9 +68,9 @@ export declare class Controller {
     private logCallbacks;
     registerLogCallback(callback: (block: Block, type: string, message: any) => void): void;
     _emitLog(block: Block, type: string, message: any): void;
-    setDigitalValue(targetId: string, name: string, connectorName: string, value: boolean): void;
-    setAnalogValue(targetId: string, name: string, connectorName: string, value: number): void;
-    setMessageValue(targetId: string, name: string, connectorName: string, message: Message): void;
+    setDigitalValue(targetId: string, groupIds: string[], name: string, value: boolean): void;
+    setAnalogValue(targetId: string, groupIds: string[], name: string, value: number): void;
+    setMessageValue(targetId: string, groupIds: string[], name: string, message: Message): void;
     setInputConnectorValue(blockId: string, connectorName: string, value: number): void;
     setOutputConnectorValue(blockId: string, connectorName: string, value: number): void;
     getDigitalInputNames(): Array<any>;

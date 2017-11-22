@@ -5,6 +5,8 @@ const ServiceLib_1 = require("../Blocks/Libraries/ServiceLib");
 const ExternalConnector_1 = require("./ExternalConnector");
 const InterfaceBlock_1 = require("../Blocks/InterfaceBlock");
 const TSBlock_1 = require("../Blocks/TSBlock/TSBlock");
+const Message_1 = require("./Message");
+const InterfaceBlockGroup_1 = require("../Blocks/InterfaceBlockGroup");
 class Controller {
     constructor() {
         this.safeRun = false;
@@ -43,12 +45,12 @@ class Controller {
         });
     }
     registerBlock(blockClass) {
-        var b = new blockClass("register");
-        var blockRegistration = new BlockRegistration_1.BlockRegistration(blockClass, b.type, b.visualType, b.rendererGetDisplayName());
+        let b = new blockClass("register");
+        let blockRegistration = new BlockRegistration_1.BlockRegistration(blockClass, b.type, b.visualType, b.rendererGetDisplayName());
         this.blocksRegister.push(blockRegistration);
     }
-    getBlockClassByVisutalType(visualType) {
-        var blockClass = null;
+    getBlockClassByVisualType(visualType) {
+        let blockClass = null;
         this.blocksRegister.forEach((blockRegistration) => {
             if (blockRegistration.visualType == visualType) {
                 blockClass = blockRegistration.blockClass;
@@ -92,7 +94,7 @@ class Controller {
         this.connectionRemovedCallbacks.push(callback);
     }
     _removeConnection(connection) {
-        var index = this.connections.indexOf(connection);
+        let index = this.connections.indexOf(connection);
         if (index > -1) {
             this.connections.splice(index, 1);
             this.connectionRemovedCallbacks.forEach(callback => callback(connection));
@@ -102,21 +104,21 @@ class Controller {
         this.blockRemovedCallbacks.push(callback);
     }
     _removeBlock(block) {
-        var index = this.blocks.indexOf(block);
+        let index = this.blocks.indexOf(block);
         if (index > -1) {
             this.blocks.splice(index, 1);
             this.blockRemovedCallbacks.forEach(callback => callback(block));
         }
     }
     removeAllBlocks() {
-        var toDelete = this.blocks.slice(0);
+        let toDelete = this.blocks.slice(0);
         toDelete.forEach((block) => {
             block.remove();
         });
         this.blockIndex = 0;
     }
     getBlockById(id) {
-        var block = null;
+        let block = null;
         this.blocks.forEach((b) => {
             if (b.id == id) {
                 block = b;
@@ -125,7 +127,7 @@ class Controller {
         return block;
     }
     getFreeBlockId() {
-        var id = "";
+        let id = "";
         do {
             this.blockIndex++;
             id = "B-" + this.blockIndex;
@@ -174,37 +176,83 @@ class Controller {
     _emitLog(block, type, message) {
         this.logCallbacks.forEach(callback => callback(block, type, message));
     }
-    setDigitalValue(targetId, name, connectorName, value) {
-        this.blocks.forEach((block) => {
-            block.getExternalInputConnectors().forEach((connector) => {
-                if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
-                    connector.setValue(value);
+    setDigitalValue(targetId, groupIds, name, value) {
+        this.blocks.find(block => {
+            let found = false;
+            let group = false;
+            block.getExternalInputConnectors().find(connector => {
+                if ((connector.targetId == targetId || groupIds.find(i => { if (i == connector.targetId) {
+                    group = true;
+                    return true;
+                } return false; })) && connector.name == name) {
+                    found = true;
+                    if (group && connector instanceof ExternalConnector_1.ExternalMessageConnector) {
+                        connector.setValue(new Message_1.Message(['string', 'number'], [targetId, value]));
+                    }
+                    else if (connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
+                        connector.setValue(value);
+                    }
+                    return true;
                 }
+                return false;
             });
+            return found;
         });
     }
-    setAnalogValue(targetId, name, connectorName, value) {
-        this.blocks.forEach((block) => {
-            block.getExternalInputConnectors().forEach((connector) => {
-                if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
-                    connector.setValue(value);
+    setAnalogValue(targetId, groupIds, name, value) {
+        this.blocks.find(block => {
+            let found = false;
+            let group = false;
+            block.getExternalInputConnectors().find(connector => {
+                if ((connector.targetId == targetId || groupIds.find(i => { if (i == connector.targetId) {
+                    group = true;
+                    return true;
+                } return false; })) && connector.name == name) {
+                    found = true;
+                    if (group && connector instanceof ExternalConnector_1.ExternalMessageConnector) {
+                        connector.setValue(new Message_1.Message(['string', 'number'], [targetId, value]));
+                    }
+                    else if (connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
+                        connector.setValue(value);
+                    }
+                    return true;
                 }
+                return false;
             });
+            return found;
         });
     }
-    setMessageValue(targetId, name, connectorName, message) {
-        this.blocks.forEach((block) => {
-            block.getExternalInputConnectors().forEach((connector) => {
-                if (connector.targetId == targetId && connector.name == name && connector instanceof ExternalConnector_1.ExternalMessageConnector) {
-                    connector.setValue(message);
+    setMessageValue(targetId, groupIds, name, message) {
+        this.blocks.find(block => {
+            let found = false;
+            let group = false;
+            block.getExternalInputConnectors().find(connector => {
+                if ((connector.targetId == targetId || groupIds.find(i => { if (i == connector.targetId) {
+                    group = true;
+                    return true;
+                } return false; })) && connector.name == name && connector instanceof ExternalConnector_1.ExternalMessageConnector) {
+                    found = true;
+                    if (group) {
+                        let argTypes = Message_1.MessageHelpers.stringArgTypesFromArgTypes(message.argTypes);
+                        argTypes.unshift('string');
+                        let values = message.values;
+                        values.unshift(targetId);
+                        connector.setValue(new Message_1.Message(argTypes, values));
+                    }
+                    else {
+                        connector.setValue(message);
+                    }
+                    return true;
                 }
+                return false;
             });
+            return found;
         });
     }
     setInputConnectorValue(blockId, connectorName, value) {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
-                var connector = block.getInputConnectorByName(connectorName);
+                let connector = block.getInputConnectorByName(connectorName);
                 if (connector) {
                     connector._inputSetValue(value);
                 }
@@ -214,7 +262,7 @@ class Controller {
     setOutputConnectorValue(blockId, connectorName, value) {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
-                var connector = block.getOutputConnectorByName(connectorName);
+                let connector = block.getOutputConnectorByName(connectorName);
                 if (connector) {
                     connector._outputSetValue(value);
                 }
@@ -222,7 +270,7 @@ class Controller {
         });
     }
     getDigitalInputNames() {
-        var ret = [];
+        let ret = [];
         this.blocks.forEach(block => {
             block.getExternalInputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
@@ -236,7 +284,7 @@ class Controller {
         return ret;
     }
     getAnalogInputNames() {
-        var ret = [];
+        let ret = [];
         this.blocks.forEach(block => {
             block.getExternalInputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
@@ -250,7 +298,7 @@ class Controller {
         return ret;
     }
     getMessageInputNames() {
-        var ret = [];
+        let ret = [];
         this.blocks.forEach(block => {
             block.getExternalInputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalMessageConnector) {
@@ -264,7 +312,7 @@ class Controller {
         return ret;
     }
     getDigitalOutputNames() {
-        var ret = [];
+        let ret = [];
         this.blocks.forEach(block => {
             block.getExternalOutputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
@@ -278,7 +326,7 @@ class Controller {
         return ret;
     }
     getAnalogOutputNames() {
-        var ret = [];
+        let ret = [];
         this.blocks.forEach(block => {
             block.getExternalOutputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
@@ -292,7 +340,7 @@ class Controller {
         return ret;
     }
     getMessageOutputNames() {
-        var ret = [];
+        let ret = [];
         this.blocks.forEach(block => {
             block.getExternalOutputConnectors().forEach(connector => {
                 if (connector instanceof ExternalConnector_1.ExternalMessageConnector) {
@@ -317,36 +365,50 @@ class Controller {
             console.log("interfaces is not array");
             return;
         }
-        var toDelete = [];
+        let toDelete = [];
         this.blocks.forEach((block) => {
-            if ((block instanceof InterfaceBlock_1.InputsInterfaceBlock) || (block instanceof InterfaceBlock_1.OutputsInterfaceBlock)) {
+            if (block instanceof InterfaceBlock_1.InputsInterfaceBlock || block instanceof InterfaceBlock_1.OutputsInterfaceBlock || block instanceof InterfaceBlockGroup_1.InputsInterfaceBlockGroup || block instanceof InterfaceBlockGroup_1.OutputsInterfaceBlockGroup) {
                 toDelete.push(block);
             }
         });
-        var posY = 50;
+        let posY = 50;
         interfaces.forEach((targetInterface) => {
             if (typeof targetInterface != "object") {
                 console.log("wrong targetInterface in interfaces");
                 return;
             }
-            var targetId = targetInterface.targetId;
+            let targetId = targetInterface.targetId;
             if (!targetId) {
                 console.log("wrong targetId in interfaces");
                 return;
             }
-            var inputsBlock = null;
-            var outputsBlock = null;
+            let inputsBlock = null;
+            let outputsBlock = null;
+            let inputsBlockGroup = null;
+            let outputsBlockGroup = null;
             toDelete.forEach((block) => {
                 if (block instanceof InterfaceBlock_1.InputsInterfaceBlock) {
-                    var b = block;
+                    let b = block;
                     if (b.targetId == targetId) {
                         inputsBlock = b;
                     }
                 }
                 if (block instanceof InterfaceBlock_1.OutputsInterfaceBlock) {
-                    var b = block;
+                    let b = block;
                     if (b.targetId == targetId) {
                         outputsBlock = b;
+                    }
+                }
+                if (block instanceof InterfaceBlockGroup_1.InputsInterfaceBlockGroup) {
+                    let b = block;
+                    if (b.targetId == targetId) {
+                        inputsBlockGroup = b;
+                    }
+                }
+                if (block instanceof InterfaceBlockGroup_1.OutputsInterfaceBlockGroup) {
+                    let b = block;
+                    if (b.targetId == targetId) {
+                        outputsBlockGroup = b;
                     }
                 }
             });
@@ -370,6 +432,26 @@ class Controller {
                 toDelete.splice(toDelete.indexOf(outputsBlock), 1);
                 outputsBlock.setInterface(targetInterface);
             }
+            if (!inputsBlockGroup) {
+                inputsBlockGroup = new InterfaceBlockGroup_1.InputsInterfaceBlockGroup(targetId + "_inputs", targetInterface);
+                inputsBlockGroup.x = 50;
+                inputsBlockGroup.y = posY;
+                this.addBlock(inputsBlockGroup);
+            }
+            else {
+                toDelete.splice(toDelete.indexOf(inputsBlockGroup), 1);
+                inputsBlockGroup.setInterface(targetInterface);
+            }
+            if (!outputsBlockGroup) {
+                outputsBlockGroup = new InterfaceBlockGroup_1.OutputsInterfaceBlockGroup(targetId + "_outputs", targetInterface);
+                outputsBlockGroup.x = 120;
+                outputsBlockGroup.y = posY;
+                this.addBlock(outputsBlockGroup);
+            }
+            else {
+                toDelete.splice(toDelete.indexOf(outputsBlockGroup), 1);
+                outputsBlockGroup.setInterface(targetInterface);
+            }
             posY += 200;
         });
         toDelete.forEach((block) => {
@@ -377,10 +459,10 @@ class Controller {
         });
     }
     getDataJson() {
-        var json = {};
+        let json = {};
         json["blocks"] = {};
         this.blocks.forEach((block) => {
-            var blockJson = {};
+            let blockJson = {};
             blockJson["type"] = block.type;
             blockJson["visualType"] = block.visualType;
             blockJson["config"] = block.getConfigData();
@@ -388,11 +470,11 @@ class Controller {
             blockJson["editor"]["x"] = block.x;
             blockJson["editor"]["y"] = block.y;
             blockJson["outputs"] = {};
-            var outputs = block.getOutputConnectors();
+            let outputs = block.getOutputConnectors();
             outputs.forEach((connector) => {
-                var connectionsJson = [];
+                let connectionsJson = [];
                 connector.connections.forEach((connection) => {
-                    var otherConnector = connection.getOtherConnector(connector);
+                    let otherConnector = connection.getOtherConnector(connector);
                     connectionsJson.push({
                         "block": otherConnector.block.id,
                         "connector": otherConnector.name
@@ -400,7 +482,7 @@ class Controller {
                 });
                 blockJson["outputs"][connector.name] = connectionsJson;
             });
-            if ((block instanceof InterfaceBlock_1.InputsInterfaceBlock) || (block instanceof InterfaceBlock_1.OutputsInterfaceBlock)) {
+            if (block instanceof InterfaceBlock_1.InputsInterfaceBlock || block instanceof InterfaceBlock_1.OutputsInterfaceBlock || block instanceof InterfaceBlockGroup_1.InputsInterfaceBlockGroup || block instanceof InterfaceBlockGroup_1.OutputsInterfaceBlockGroup) {
                 blockJson["interface"] = block.interface;
             }
             if (block instanceof TSBlock_1.TSBlock) {
@@ -413,22 +495,22 @@ class Controller {
     }
     setDataJson(jsonString) {
         try {
-            var json = JSON.parse(jsonString);
+            let json = JSON.parse(jsonString);
             if (json && json["blocks"]) {
                 this.removeAllBlocks();
-                var blocks = json["blocks"];
-                for (var id in blocks) {
+                let blocks = json["blocks"];
+                for (let id in blocks) {
                     if (blocks.hasOwnProperty(id)) {
-                        var block = blocks[id];
-                        var bc = this.getBlockClassByVisutalType(block["visualType"]);
-                        var blockObj = null;
+                        let block = blocks[id];
+                        let bc = this.getBlockClassByVisualType(block["visualType"]);
+                        let blockObj = null;
                         if (bc == TSBlock_1.TSBlock) {
                             blockObj = new TSBlock_1.TSBlock(id, "", block["designJson"]);
                         }
                         else {
                             blockObj = new bc(id);
                         }
-                        if ((block["interface"]) && ((blockObj instanceof InterfaceBlock_1.InputsInterfaceBlock) || (blockObj instanceof InterfaceBlock_1.OutputsInterfaceBlock))) {
+                        if (block["interface"] && (blockObj instanceof InterfaceBlock_1.InputsInterfaceBlock || blockObj instanceof InterfaceBlock_1.OutputsInterfaceBlock || blockObj instanceof InterfaceBlockGroup_1.InputsInterfaceBlockGroup || blockObj instanceof InterfaceBlockGroup_1.OutputsInterfaceBlockGroup)) {
                             blockObj.setInterface(block["interface"]);
                         }
                         blockObj.x = block["editor"]["x"];
@@ -440,20 +522,20 @@ class Controller {
                         blockObj.setConfigData(block["config"]);
                     }
                 }
-                for (var id in blocks) {
+                for (let id in blocks) {
                     if (blocks.hasOwnProperty(id)) {
-                        var block = blocks[id];
-                        var b1 = this.getBlockById(id);
-                        var outputs = block["outputs"];
-                        for (var outputName in outputs) {
+                        let block = blocks[id];
+                        let b1 = this.getBlockById(id);
+                        let outputs = block["outputs"];
+                        for (let outputName in outputs) {
                             if (outputs.hasOwnProperty(outputName)) {
-                                var connections = outputs[outputName];
+                                let connections = outputs[outputName];
                                 connections.forEach((connParams) => {
-                                    var b2name = connParams["block"];
-                                    var inputName = connParams["connector"];
-                                    var c1 = b1.getOutputConnectorByName(outputName);
-                                    var b2 = this.getBlockById(b2name);
-                                    var c2 = b2.getInputConnectorByName(inputName);
+                                    let b2name = connParams["block"];
+                                    let inputName = connParams["connector"];
+                                    let c1 = b1.getOutputConnectorByName(outputName);
+                                    let b2 = this.getBlockById(b2name);
+                                    let c2 = b2.getInputConnectorByName(inputName);
                                     c1.connect(c2);
                                 });
                             }

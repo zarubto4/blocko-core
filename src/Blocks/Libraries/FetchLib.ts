@@ -37,7 +37,7 @@ export class FetchLib implements Library {
             RESET_CONTENT = 205,
             PARTIAL_CONTENT = 206,
             MULTI_STATUS = 207,
-            MULTIPLE_CHOISES = 300,
+            MULTIPLE_CHOICES = 300,
             MOVED_PERMANENTLY = 301,
             FOUND = 302,
             SEE_OTHER = 303,
@@ -60,7 +60,7 @@ export class FetchLib implements Library {
             PRECONDITION_FAILED = 412,
             ENTITY_TOO_LARGE = 413,
             URI_TOO_LONG = 414,
-            UNSOPPORTED_MEDIA_TYPE = 415,
+            UNSUPPORTED_MEDIA_TYPE = 415,
             REQUEST_RANGE_NOT_SATISFIABLE = 416,
             EXPECTATION_FAILED = 417,
             IAM_TEAPOD = 418,
@@ -80,7 +80,7 @@ export class FetchLib implements Library {
             GATEWAY_TIMEOUT = 504,
             HTTP_VERSION_NOT_SUPPORTED = 505,
             VARIANT_ALSO_NEGOTIATES = 506,
-            INSUFFIACIENT_STORAGE = 507,
+            INSUFFICIENT_STORAGE = 507,
             BANDWIDTH_LIMIT_EXCEEDED = 509,
             NOT_EXTENDED = 510
         }

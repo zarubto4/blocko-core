@@ -428,7 +428,7 @@ export class FetchRequest implements RequestDef {
      * Our byzance proxy url
      * 
      */
-    static PROXY_SERVER_URL = 'http://127.0.0.1:3000/fetch/';// 'http://192.168.65.30:3000/fetch/';//'https://someproxyshit.biz/fetch-proxy';
+    static PROXY_SERVER_URL = 'http://127.0.0.1:4000/fetch/';// 'http://192.168.65.30:3000/fetch/';//'https://someproxyshit.biz/fetch-proxy';
 
     public constructor(method: RequestMethod, url: string, body: any = null) {
         this.method = method;
