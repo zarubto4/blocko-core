@@ -81,6 +81,7 @@ export declare class Controller {
     getMessageOutputNames(): Array<string>;
     setError(blockId: string, enabled: boolean): void;
     setInterfaces(interfaces: BlockoTargetInterface[]): void;
+    setGroups(interfaces: BlockoTargetInterface[]): void;
     getDataJson(): string;
     setDataJson(jsonString: string): string;
 }

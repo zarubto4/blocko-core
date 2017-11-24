@@ -367,7 +367,7 @@ class Controller {
         }
         let toDelete = [];
         this.blocks.forEach((block) => {
-            if (block instanceof InterfaceBlock_1.InputsInterfaceBlock || block instanceof InterfaceBlock_1.OutputsInterfaceBlock || block instanceof InterfaceBlockGroup_1.InputsInterfaceBlockGroup || block instanceof InterfaceBlockGroup_1.OutputsInterfaceBlockGroup) {
+            if (block instanceof InterfaceBlock_1.InputsInterfaceBlock || block instanceof InterfaceBlock_1.OutputsInterfaceBlock) {
                 toDelete.push(block);
             }
         });
@@ -384,8 +384,6 @@ class Controller {
             }
             let inputsBlock = null;
             let outputsBlock = null;
-            let inputsBlockGroup = null;
-            let outputsBlockGroup = null;
             toDelete.forEach((block) => {
                 if (block instanceof InterfaceBlock_1.InputsInterfaceBlock) {
                     let b = block;
@@ -399,6 +397,58 @@ class Controller {
                         outputsBlock = b;
                     }
                 }
+            });
+            if (!inputsBlock) {
+                inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(targetId + "_inputs", targetInterface);
+                inputsBlock.x = 140;
+                inputsBlock.y = posY;
+                this.addBlock(inputsBlock);
+            }
+            else {
+                toDelete.splice(toDelete.indexOf(inputsBlock), 1);
+                inputsBlock.setInterface(targetInterface);
+            }
+            if (!outputsBlock) {
+                outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(targetId + "_outputs", targetInterface);
+                outputsBlock.x = 210;
+                outputsBlock.y = posY;
+                this.addBlock(outputsBlock);
+            }
+            else {
+                toDelete.splice(toDelete.indexOf(outputsBlock), 1);
+                outputsBlock.setInterface(targetInterface);
+            }
+            posY += 200;
+        });
+        toDelete.forEach((block) => {
+            block.remove();
+        });
+    }
+    setGroups(interfaces) {
+        if (!Array.isArray(interfaces)) {
+            console.log("interfaces is not array");
+            return;
+        }
+        let toDelete = [];
+        this.blocks.forEach((block) => {
+            if (block instanceof InterfaceBlockGroup_1.InputsInterfaceBlockGroup || block instanceof InterfaceBlockGroup_1.OutputsInterfaceBlockGroup) {
+                toDelete.push(block);
+            }
+        });
+        let posY = 50;
+        interfaces.forEach((targetInterface) => {
+            if (typeof targetInterface != "object") {
+                console.log("wrong targetInterface in interfaces");
+                return;
+            }
+            let targetId = targetInterface.targetId;
+            if (!targetId) {
+                console.log("wrong targetId in interfaces");
+                return;
+            }
+            let inputsBlockGroup = null;
+            let outputsBlockGroup = null;
+            toDelete.forEach((block) => {
                 if (block instanceof InterfaceBlockGroup_1.InputsInterfaceBlockGroup) {
                     let b = block;
                     if (b.targetId == targetId) {
@@ -412,26 +462,6 @@ class Controller {
                     }
                 }
             });
-            if (!inputsBlock) {
-                inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(targetId + "_inputs", targetInterface);
-                inputsBlock.x = 50;
-                inputsBlock.y = posY;
-                this.addBlock(inputsBlock);
-            }
-            else {
-                toDelete.splice(toDelete.indexOf(inputsBlock), 1);
-                inputsBlock.setInterface(targetInterface);
-            }
-            if (!outputsBlock) {
-                outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(targetId + "_outputs", targetInterface);
-                outputsBlock.x = 120;
-                outputsBlock.y = posY;
-                this.addBlock(outputsBlock);
-            }
-            else {
-                toDelete.splice(toDelete.indexOf(outputsBlock), 1);
-                outputsBlock.setInterface(targetInterface);
-            }
             if (!inputsBlockGroup) {
                 inputsBlockGroup = new InterfaceBlockGroup_1.InputsInterfaceBlockGroup(targetId + "_inputs", targetInterface);
                 inputsBlockGroup.x = 50;
