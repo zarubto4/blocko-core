@@ -344,15 +344,14 @@ export class FetchExecutor {
 
         //paramsCopy['auth_token'] = '';//TODO auth token from controller
 
-        let headers: string[][] = [];
-        headers.push(['Accept', 'application/json']);
-        headers.push(['Content-Type', 'application/json']);
-        headers.push(['Cache', 'no-cache']);
-
         //  prepare fetch configuration
-        let fetchParams: RequestInit = {
+        let fetchParams = {
             method: 'POST',
-            headers: headers,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Cache': 'no-cache'
+            },
             body: JSON.stringify(paramsCopy)
         };
 
