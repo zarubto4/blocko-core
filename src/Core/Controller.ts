@@ -521,7 +521,7 @@ export class Controller {
             }
         });
 
-        let posY = 50;
+        let posY = 20;
         
         interfaces.forEach((targetInterface:any) => {
             if (typeof targetInterface != "object") {
@@ -556,7 +556,7 @@ export class Controller {
 
             if (!inputsBlock) {
                 inputsBlock = new InputsInterfaceBlock(targetId + "_inputs", targetInterface);
-                inputsBlock.x = 140;
+                inputsBlock.x = 50;
                 inputsBlock.y = posY;
                 this.addBlock(inputsBlock);
             } else {
@@ -566,7 +566,7 @@ export class Controller {
 
             if (!outputsBlock) {
                 outputsBlock = new OutputsInterfaceBlock(targetId + "_outputs", targetInterface);
-                outputsBlock.x = 210;
+                outputsBlock.x = 120;
                 outputsBlock.y = posY;
                 this.addBlock(outputsBlock);
             } else {
@@ -598,7 +598,7 @@ export class Controller {
             }
         });
 
-        let posY = 50;
+        let posY = 20;
 
         interfaces.forEach((targetInterface:any) => {
             if (typeof targetInterface != "object") {
@@ -633,7 +633,7 @@ export class Controller {
 
             if (!inputsBlockGroup) {
                 inputsBlockGroup = new InputsInterfaceBlockGroup(targetId + "_inputs", targetInterface);
-                inputsBlockGroup.x = 50;
+                inputsBlockGroup.x = 140;
                 inputsBlockGroup.y = posY;
                 this.addBlock(inputsBlockGroup);
             } else {
@@ -643,7 +643,7 @@ export class Controller {
 
             if (!outputsBlockGroup) {
                 outputsBlockGroup = new OutputsInterfaceBlockGroup(targetId + "_outputs", targetInterface);
-                outputsBlockGroup.x = 120;
+                outputsBlockGroup.x = 210;
                 outputsBlockGroup.y = posY;
                 this.addBlock(outputsBlockGroup);
             } else {

@@ -371,7 +371,7 @@ class Controller {
                 toDelete.push(block);
             }
         });
-        let posY = 50;
+        let posY = 20;
         interfaces.forEach((targetInterface) => {
             if (typeof targetInterface != "object") {
                 console.log("wrong targetInterface in interfaces");
@@ -400,7 +400,7 @@ class Controller {
             });
             if (!inputsBlock) {
                 inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(targetId + "_inputs", targetInterface);
-                inputsBlock.x = 140;
+                inputsBlock.x = 50;
                 inputsBlock.y = posY;
                 this.addBlock(inputsBlock);
             }
@@ -410,7 +410,7 @@ class Controller {
             }
             if (!outputsBlock) {
                 outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(targetId + "_outputs", targetInterface);
-                outputsBlock.x = 210;
+                outputsBlock.x = 120;
                 outputsBlock.y = posY;
                 this.addBlock(outputsBlock);
             }
@@ -435,7 +435,7 @@ class Controller {
                 toDelete.push(block);
             }
         });
-        let posY = 50;
+        let posY = 20;
         interfaces.forEach((targetInterface) => {
             if (typeof targetInterface != "object") {
                 console.log("wrong targetInterface in interfaces");
@@ -464,7 +464,7 @@ class Controller {
             });
             if (!inputsBlockGroup) {
                 inputsBlockGroup = new InterfaceBlockGroup_1.InputsInterfaceBlockGroup(targetId + "_inputs", targetInterface);
-                inputsBlockGroup.x = 50;
+                inputsBlockGroup.x = 140;
                 inputsBlockGroup.y = posY;
                 this.addBlock(inputsBlockGroup);
             }
@@ -474,7 +474,7 @@ class Controller {
             }
             if (!outputsBlockGroup) {
                 outputsBlockGroup = new InterfaceBlockGroup_1.OutputsInterfaceBlockGroup(targetId + "_outputs", targetInterface);
-                outputsBlockGroup.x = 120;
+                outputsBlockGroup.x = 210;
                 outputsBlockGroup.y = posY;
                 this.addBlock(outputsBlockGroup);
             }
