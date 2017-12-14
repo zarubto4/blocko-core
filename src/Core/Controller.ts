@@ -300,7 +300,7 @@ export class Controller {
             let found = false;
             let group = false;
             block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; })) && connector.name == name ) {
+                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name ) {
                     found = true;
                     if (group && connector instanceof ExternalMessageConnector) {
                         connector.setValue(new Message(['string', 'number'], [targetId, value])); // Wrap the value in message
@@ -320,7 +320,7 @@ export class Controller {
             let found = false;
             let group = false;
             block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; })) && connector.name == name ) {
+                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name ) {
                     found = true;
                     if (group && connector instanceof ExternalMessageConnector) {
                         connector.setValue(new Message(['string', 'number'], [targetId, value])); // Wrap the value in message
@@ -340,7 +340,7 @@ export class Controller {
             let found = false;
             let group = false;
             block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; })) && connector.name == name && connector instanceof ExternalMessageConnector) {
+                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name && connector instanceof ExternalMessageConnector) {
                     found = true;
                     if (group ) {
                         let argTypes: string[] = MessageHelpers.stringArgTypesFromArgTypes(message.argTypes);
