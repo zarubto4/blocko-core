@@ -65,7 +65,7 @@ class Message {
     setArgTypes(value) {
         if (!Array.isArray(value))
             return false;
-        for (var type of value) {
+        for (let type of value) {
             if (typeof common_lib_1.Types.TypeToStringTable[type] == "undefined")
                 return false;
         }

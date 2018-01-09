@@ -7,9 +7,11 @@ const InterfaceBlock_1 = require("../Blocks/InterfaceBlock");
 const TSBlock_1 = require("../Blocks/TSBlock/TSBlock");
 const Message_1 = require("./Message");
 const InterfaceBlockGroup_1 = require("../Blocks/InterfaceBlockGroup");
+const Blocks_1 = require("../Blocks");
 class Controller {
     constructor() {
         this.safeRun = false;
+        this.gui = false;
         this.configuration = {
             inputEnabled: true,
             outputEnabled: true,
@@ -482,11 +484,63 @@ class Controller {
                 toDelete.splice(toDelete.indexOf(outputsBlockGroup), 1);
                 outputsBlockGroup.setInterface(targetInterface);
             }
-            posY += 200;
+            posY += 20;
         });
         toDelete.forEach((block) => {
             block.remove();
         });
+    }
+    addInterface(iface) {
+        if (typeof iface != "object") {
+            console.error("Controller::addInterface - invalid interface");
+            return;
+        }
+        let targetId = iface.targetId;
+        if (!targetId) {
+            console.error("Controller::addInterface - targetId is missing in interface");
+            return;
+        }
+        let existing = this.blocks.findIndex((block) => {
+            return block instanceof Blocks_1.BaseInterfaceBlock && block.targetId === targetId;
+        });
+        if (existing > -1) {
+            return;
+        }
+        let inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(targetId + "_inputs", iface);
+        inputsBlock.x = iface.pos_x;
+        inputsBlock.y = iface.pos_y;
+        this.addBlock(inputsBlock);
+        let outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(targetId + "_outputs", iface);
+        outputsBlock.x = iface.pos_x + 70;
+        outputsBlock.y = iface.pos_y;
+        this.addBlock(outputsBlock);
+    }
+    addInterfaceGroup(iface) {
+        if (typeof iface != "object") {
+            console.error("Controller::addInterfaceGroup - invalid interface");
+            return;
+        }
+        let targetId = iface.targetId;
+        if (!targetId) {
+            console.error("Controller::addInterfaceGroup - targetId is missing in interface");
+            return;
+        }
+        let existing = this.blocks.findIndex((block) => {
+            return block instanceof Blocks_1.BaseInterfaceBlockGroup && block.targetId === targetId;
+        });
+        if (existing > -1) {
+            return;
+        }
+        let inputsBlock = new InterfaceBlockGroup_1.InputsInterfaceBlockGroup(targetId + "_inputs", iface);
+        inputsBlock.x = iface.pos_x;
+        inputsBlock.y = iface.pos_y;
+        this.addBlock(inputsBlock);
+        let outputsBlock = new InterfaceBlockGroup_1.OutputsInterfaceBlockGroup(targetId + "_outputs", iface);
+        outputsBlock.x = iface.pos_x + 70;
+        outputsBlock.y = iface.pos_y;
+        this.addBlock(outputsBlock);
+    }
+    bindInterface() {
     }
     getDataJson() {
         let json = {};

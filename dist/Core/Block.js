@@ -4,6 +4,7 @@ const Connector_1 = require("./Connector");
 const ExternalConnector_1 = require("./ExternalConnector");
 const ConfigProperty_1 = require("./ConfigProperty");
 const Size_1 = require("./Size");
+const Message_1 = require("./Message");
 const common_lib_1 = require("common-lib");
 class Block {
     constructor(id, type, visualType) {
@@ -208,7 +209,7 @@ class Block {
         this.outputEventCallbacks.push(callback);
     }
     _outputEvent(connector, eventType, value) {
-        this.outputEventCallbacks.forEach(callback => callback(connector, eventType, value));
+        this.outputEventCallbacks.forEach(callback => callback(connector, eventType, value instanceof Message_1.Message ? value.toJson() : value));
         if (this.controller.configuration.outputEnabled) {
             this.outputChanged(connector, eventType, value);
         }
@@ -225,7 +226,7 @@ class Block {
         this.inputEventCallbacks.push(callback);
     }
     _inputEvent(connector, eventType, value) {
-        this.inputEventCallbacks.forEach(callback => callback(connector, eventType, value));
+        this.inputEventCallbacks.forEach(callback => callback(connector, eventType, value instanceof Message_1.Message ? value.toJson() : value));
         if (this.controller.configuration.inputEnabled) {
             this.inputChanged(connector, eventType, value);
         }

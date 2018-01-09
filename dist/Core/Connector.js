@@ -134,7 +134,7 @@ class Connector {
             boolVal = !!numVal;
         }
         if (Array.isArray(value)) {
-            msgVal = new Message_1.Message(this.argTypes, value);
+            msgVal = new Message_1.Message(this.argTypes.slice(0), value);
         }
         if (value instanceof Message_1.Message) {
             msgVal = value;

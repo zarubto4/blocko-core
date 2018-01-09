@@ -8,7 +8,7 @@ import {ConfigProperty} from "./ConfigProperty";
 import {Controller} from "./Controller";
 import {Connection} from "./Connection";
 import {Size} from "./Size";
-import {Message} from "./Message";
+import { Message, MessageJson } from './Message';
 import {Types} from "common-lib";
 
 // Interface for block renderer
@@ -265,13 +265,13 @@ export class Block {
 
     // inputs/outputs
 
-    private outputEventCallbacks:Array<(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void> = [];
-    public registerOutputEventCallback(callback:(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void):void {
+    private outputEventCallbacks:Array<(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void> = [];
+    public registerOutputEventCallback(callback:(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void):void {
         this.outputEventCallbacks.push(callback);
     }
 
     public _outputEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) {
-        this.outputEventCallbacks.forEach(callback => callback(connector, eventType, value));
+        this.outputEventCallbacks.forEach(callback => callback(connector, eventType, value instanceof Message ? value.toJson() : value));
 
         if (this.controller.configuration.outputEnabled) {
             this.outputChanged(connector, eventType, value);
@@ -287,13 +287,13 @@ export class Block {
         });
     }
 
-    private inputEventCallbacks:Array<(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void> = [];
-    public registerInputEventCallback(callback:(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void):void {
+    private inputEventCallbacks:Array<(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void> = [];
+    public registerInputEventCallback(callback:(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void):void {
         this.inputEventCallbacks.push(callback);
     }
 
     public _inputEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) {
-        this.inputEventCallbacks.forEach(callback => callback(connector, eventType, value));
+        this.inputEventCallbacks.forEach(callback => callback(connector, eventType, value instanceof Message ? value.toJson() : value));
 
         if (this.controller.configuration.inputEnabled) {
             this.inputChanged(connector, eventType, value);

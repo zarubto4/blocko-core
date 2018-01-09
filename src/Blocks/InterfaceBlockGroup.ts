@@ -8,6 +8,7 @@ import { Message, MessageHelpers } from '../Core/Message';
 import { Types } from 'common-lib';
 import { InterfaceBlockType } from './InterfaceBlock';
 import { BlockoTargetInterface } from './index';
+import { Block } from '../Core';
 
 export abstract class BaseInterfaceBlockGroup extends Core.Block {
 
@@ -44,6 +45,7 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
         this._interface = iface;
 
         this._color = iface['color'];
+        this._targetId = iface["targetId"];
         this._displayName = iface['displayName'] || 'TODO';
 
         let inOutInterfaces = iface['interface'];
@@ -88,7 +90,7 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
                 this._deviceInputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Inputs) {
 
-                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(['string', 'number']);
+                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(['string', 'float']);
 
                     let n = 'a_' + name;
                     wantedInputsOrder.push(n);
@@ -118,7 +120,9 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
                 this._deviceInputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Inputs) {
 
-                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(messageInputs[name].messageTypes.unshift('string'));
+                    let messageTypes = messageInputs[name].messageTypes.slice(0);
+                    messageTypes.unshift('string');
+                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(messageTypes);
 
                     let n = 'm_' + name;
                     wantedInputsOrder.push(n);
@@ -184,7 +188,7 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
                 this._deviceOutputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Outputs) {
 
-                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(['string', 'number']);
+                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(['string', 'float']);
 
                     let n = 'a_' + name;
                     wantedOutputsOrder.push(n);
@@ -214,7 +218,9 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
                 this._deviceOutputsCount++;
                 if (this._interfaceType == InterfaceBlockType.Outputs) {
 
-                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(messageOutputs[name].messageTypes.unshift('string'));
+                    let messageTypes = messageOutputs[name].messageTypes.slice(0);
+                    messageTypes.unshift('string');
+                    let argTypes = MessageHelpers.argTypesFromStringArgTypes(messageTypes);
 
                     let n = 'm_' + name;
                     wantedOutputsOrder.push(n);
@@ -311,6 +317,22 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
         });
     }
 
+    /**
+     * Also removes the second half of the interface block group.
+     */
+    public remove():void {
+        super.remove(); // Must be called before removing the opposite one, otherwise it would be cycle
+        let opposite: Block = this._controller.blocks.find((b) => {
+            if (b instanceof BaseInterfaceBlockGroup) {
+                return this.targetId === b.targetId; // Both halves have the same targetId
+            }
+        });
+
+        if (opposite) {
+            opposite.remove();
+        }
+    }
+
 // RENDER
 
     public rendererGetBlockSize(): Size {
@@ -324,7 +346,7 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
     }
 
     public rendererCanDelete(): boolean {
-        return false;
+        return true;
     }
 
     public rendererGetDisplayName(): string {

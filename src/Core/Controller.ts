@@ -10,8 +10,9 @@ import { ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnector,
     ExternalMessageConnector } from "./ExternalConnector";
 import { InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface } from "../Blocks/InterfaceBlock";
 import {TSBlock} from "../Blocks/TSBlock/TSBlock";
-import { Message, MessageHelpers } from './Message';
+import { Message, MessageHelpers, MessageJson } from './Message';
 import { InputsInterfaceBlockGroup, OutputsInterfaceBlockGroup } from '../Blocks/InterfaceBlockGroup';
+import { BaseInterfaceBlock, BaseInterfaceBlockGroup } from '../Blocks';
 
 
 export interface IRendererFactory {
@@ -27,15 +28,17 @@ export interface BlockoInstanceConfig {
 
 export class Controller {
 
-    blocksRegister:Array<BlockRegistration>;
+    blocksRegister: Array<BlockRegistration>;
 
     // Blocks storage
-    blocks:Array<Block>;
-    connections:Array<Connection>;
+    blocks: Array<Block>;
+    connections: Array<Connection>;
 
-    public rendererFactory:IRendererFactory;
+    public rendererFactory: IRendererFactory;
 
-    public safeRun:boolean = false;
+    public safeRun: boolean = false;
+
+    public gui: boolean = false;
 
     public configuration: BlockoInstanceConfig = {
         inputEnabled: true,
@@ -90,8 +93,8 @@ export class Controller {
 
     public addBlock(block:Block) {
 
-        block.registerInputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => this.inputConnectorEvent(connector, eventType, value));
-        block.registerOutputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => this.outputConnectorEvent(connector, eventType, value));
+        block.registerInputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.inputConnectorEvent(connector, eventType, value));
+        block.registerOutputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.outputConnectorEvent(connector, eventType, value));
 
         block.registerExternalInputEventCallback((connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => this.externalInputConnectorEvent(connector, eventType, value));
         block.registerExternalOutputEventCallback((connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => this.externalOutputConnectorEvent(connector, eventType, value));
@@ -211,15 +214,15 @@ export class Controller {
 
     // Internal connectors
 
-    private inputConnectorEventCallbacks:Array<(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void> = [];
+    private inputConnectorEventCallbacks:Array<(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void> = [];
 
-    public registerInputConnectorEventCallback(callback:(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void):void {
+    public registerInputConnectorEventCallback(callback:(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void):void {
         this.inputConnectorEventCallbacks.push(callback);
     }
 
-    private outputConnectorEventCallbacks:Array<(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void> = [];
+    private outputConnectorEventCallbacks:Array<(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void> = [];
 
-    public registerOutputConnectorEventCallback(callback:(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message) => void):void {
+    public registerOutputConnectorEventCallback(callback:(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void):void {
         this.outputConnectorEventCallbacks.push(callback);
     }
 
@@ -251,11 +254,11 @@ export class Controller {
 
     // internal callbacks
 
-    private inputConnectorEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message):void {
+    private inputConnectorEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson):void {
         this.inputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
 
-    private outputConnectorEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message):void {
+    private outputConnectorEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson):void {
         this.outputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
 
@@ -360,7 +363,7 @@ export class Controller {
     }
 
 //  For remote view controlling
-    public setInputConnectorValue(blockId:string, connectorName:string, value:number):void {
+    public setInputConnectorValue(blockId: string, connectorName: string, value: boolean|number|Message): void {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
                 //TODO what about interface connectors rename? ... m_, d_, a_ ??
@@ -372,7 +375,7 @@ export class Controller {
         });
     }
 
-    public setOutputConnectorValue(blockId:string, connectorName:string, value:number):void {
+    public setOutputConnectorValue(blockId: string, connectorName: string, value: boolean|number|Message): void {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
                 //TODO what about interface connectors rename? ... m_, d_, a_ ??
@@ -651,13 +654,85 @@ export class Controller {
                 outputsBlockGroup.setInterface(targetInterface);
             }
 
-            posY += 200;
+            posY += 20;
 
         });
 
         toDelete.forEach((block:Block) => {
             block.remove();
         });
+    }
+
+    public addInterface(iface: BlockoTargetInterface): void {
+        if (typeof iface != "object") {
+            console.error("Controller::addInterface - invalid interface");
+            return;
+        }
+
+        let targetId = iface.targetId;
+
+        if (!targetId) {
+            console.error("Controller::addInterface - targetId is missing in interface");
+            return;
+        }
+
+        let existing: number = this.blocks.findIndex((block: Block) => {
+            return block instanceof BaseInterfaceBlock && block.targetId === targetId;
+        });
+
+        if (existing > -1) {
+            // TODO throw some error or message signaling that interface is already added or update interface
+            return;
+        }
+
+        let inputsBlock: InputsInterfaceBlock = new InputsInterfaceBlock(targetId + "_inputs", iface);
+        inputsBlock.x = iface.pos_x;
+        inputsBlock.y = iface.pos_y;
+        this.addBlock(inputsBlock);
+
+
+        let outputsBlock: OutputsInterfaceBlock = new OutputsInterfaceBlock(targetId + "_outputs", iface);
+        outputsBlock.x = iface.pos_x + 70;
+        outputsBlock.y = iface.pos_y;
+        this.addBlock(outputsBlock);
+    }
+
+    public addInterfaceGroup(iface: BlockoTargetInterface): void {
+        if (typeof iface != "object") {
+            console.error("Controller::addInterfaceGroup - invalid interface");
+            return;
+        }
+
+        let targetId = iface.targetId;
+
+        if (!targetId) {
+            console.error("Controller::addInterfaceGroup - targetId is missing in interface");
+            return;
+        }
+
+        let existing: number = this.blocks.findIndex((block: Block) => {
+            return block instanceof BaseInterfaceBlockGroup && block.targetId === targetId;
+        });
+
+        if (existing > -1) {
+            // TODO throw some error or message signaling that group is already added or update interface
+            return;
+        }
+
+        let inputsBlock:InputsInterfaceBlockGroup = new InputsInterfaceBlockGroup(targetId + "_inputs", iface);
+        inputsBlock.x = iface.pos_x;
+        inputsBlock.y = iface.pos_y;
+        this.addBlock(inputsBlock);
+
+
+        let outputsBlock:OutputsInterfaceBlockGroup = new OutputsInterfaceBlockGroup(targetId + "_outputs", iface);
+        outputsBlock.x = iface.pos_x + 70;
+        outputsBlock.y = iface.pos_y;
+        this.addBlock(outputsBlock);
+    }
+
+    public bindInterface(): void {
+        // TODO bind targetId to interface
     }
 
     // Saving and loading

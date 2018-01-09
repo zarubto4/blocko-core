@@ -28,6 +28,7 @@ class BaseInterfaceBlockGroup extends Core.Block {
         this._deviceOutputsCount = 0;
         this._interface = iface;
         this._color = iface['color'];
+        this._targetId = iface["targetId"];
         this._displayName = iface['displayName'] || 'TODO';
         let inOutInterfaces = iface['interface'];
         let digitalInputs = inOutInterfaces['digitalInputs'];
@@ -65,7 +66,7 @@ class BaseInterfaceBlockGroup extends Core.Block {
                 }
                 this._deviceInputsCount++;
                 if (this._interfaceType == InterfaceBlock_1.InterfaceBlockType.Inputs) {
-                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(['string', 'number']);
+                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(['string', 'float']);
                     let n = 'a_' + name;
                     wantedInputsOrder.push(n);
                     let c = null;
@@ -92,7 +93,9 @@ class BaseInterfaceBlockGroup extends Core.Block {
                 }
                 this._deviceInputsCount++;
                 if (this._interfaceType == InterfaceBlock_1.InterfaceBlockType.Inputs) {
-                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(messageInputs[name].messageTypes.unshift('string'));
+                    let messageTypes = messageInputs[name].messageTypes.slice(0);
+                    messageTypes.unshift('string');
+                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(messageTypes);
                     let n = 'm_' + name;
                     wantedInputsOrder.push(n);
                     let c = null;
@@ -150,7 +153,7 @@ class BaseInterfaceBlockGroup extends Core.Block {
                 }
                 this._deviceOutputsCount++;
                 if (this._interfaceType == InterfaceBlock_1.InterfaceBlockType.Outputs) {
-                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(['string', 'number']);
+                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(['string', 'float']);
                     let n = 'a_' + name;
                     wantedOutputsOrder.push(n);
                     let c = null;
@@ -177,7 +180,9 @@ class BaseInterfaceBlockGroup extends Core.Block {
                 }
                 this._deviceOutputsCount++;
                 if (this._interfaceType == InterfaceBlock_1.InterfaceBlockType.Outputs) {
-                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(messageOutputs[name].messageTypes.unshift('string'));
+                    let messageTypes = messageOutputs[name].messageTypes.slice(0);
+                    messageTypes.unshift('string');
+                    let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(messageTypes);
                     let n = 'm_' + name;
                     wantedOutputsOrder.push(n);
                     let c = null;
@@ -259,6 +264,17 @@ class BaseInterfaceBlockGroup extends Core.Block {
             }
         });
     }
+    remove() {
+        super.remove();
+        let opposite = this._controller.blocks.find((b) => {
+            if (b instanceof BaseInterfaceBlockGroup) {
+                return this.targetId === b.targetId;
+            }
+        });
+        if (opposite) {
+            opposite.remove();
+        }
+    }
     rendererGetBlockSize() {
         let maxCon = Math.max(this._deviceInputsCount, this._deviceOutputsCount);
         let height = Math.max(139, 139 + ((maxCon - 6) * 20));
@@ -268,7 +284,7 @@ class BaseInterfaceBlockGroup extends Core.Block {
         return false;
     }
     rendererCanDelete() {
-        return false;
+        return true;
     }
     rendererGetDisplayName() {
         return this._displayName;

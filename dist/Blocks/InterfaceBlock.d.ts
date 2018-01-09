@@ -11,6 +11,8 @@ export interface BlockoTargetInterface {
     targetId: string;
     displayName: string;
     color: string;
+    pos_x?: number;
+    pos_y?: number;
     interface: {
         digitalInputs?: {
             [name: string]: any;

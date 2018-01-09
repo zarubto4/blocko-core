@@ -73,7 +73,7 @@ export class Message {
     public setArgTypes(value:Types.Type[]):boolean {
         // ArgTypes validation
         if (!Array.isArray(value)) return false;
-        for (var type of value) {
+        for (let type of value) {
             if (typeof Types.TypeToStringTable[type] == "undefined") return false;
         }
 

@@ -177,7 +177,7 @@ export class Connector {
             boolVal = !!numVal;
         }
         if (Array.isArray(value)) {
-            msgVal = new Message(this.argTypes, value);
+            msgVal = new Message(this.argTypes.slice(0), value);
         }
         if (value instanceof Message) {
             msgVal = <Message>value;

@@ -6,7 +6,7 @@ import { ServicesHandler } from "../Blocks/Libraries/ServiceLib";
 import { Service } from "../Blocks/Services/Service";
 import { ExternalConnector } from "./ExternalConnector";
 import { BlockoTargetInterface } from "../Blocks/InterfaceBlock";
-import { Message } from './Message';
+import { Message, MessageJson } from './Message';
 export interface IRendererFactory {
     factoryBlockRenderer(block: Block): IBlockRenderer;
     factoryConnectionRenderer(connection: Connection): IConnectionRenderer;
@@ -22,6 +22,7 @@ export declare class Controller {
     connections: Array<Connection>;
     rendererFactory: IRendererFactory;
     safeRun: boolean;
+    gui: boolean;
     configuration: BlockoInstanceConfig;
     protected _servicesHandler: ServicesHandler;
     constructor();
@@ -51,9 +52,9 @@ export declare class Controller {
     private factoryConnectionRendererCallback;
     registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IConnectionRenderer): void;
     private inputConnectorEventCallbacks;
-    registerInputConnectorEventCallback(callback: (block: Block, connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
+    registerInputConnectorEventCallback(callback: (block: Block, connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private outputConnectorEventCallbacks;
-    registerOutputConnectorEventCallback(callback: (block: Block, connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
+    registerOutputConnectorEventCallback(callback: (block: Block, connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private externalInputConnectorEventCallbacks;
     registerExternalInputConnectorEventCallback(callback: (block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
     private externalOutputConnectorEventCallbacks;
@@ -71,8 +72,8 @@ export declare class Controller {
     setDigitalValue(targetId: string, groupIds: string[], name: string, value: boolean): void;
     setAnalogValue(targetId: string, groupIds: string[], name: string, value: number): void;
     setMessageValue(targetId: string, groupIds: string[], name: string, message: Message): void;
-    setInputConnectorValue(blockId: string, connectorName: string, value: number): void;
-    setOutputConnectorValue(blockId: string, connectorName: string, value: number): void;
+    setInputConnectorValue(blockId: string, connectorName: string, value: boolean | number | Message): void;
+    setOutputConnectorValue(blockId: string, connectorName: string, value: boolean | number | Message): void;
     getDigitalInputNames(): Array<any>;
     getAnalogInputNames(): Array<any>;
     getMessageInputNames(): Array<any>;
@@ -82,6 +83,9 @@ export declare class Controller {
     setError(blockId: string, enabled: boolean): void;
     setInterfaces(interfaces: BlockoTargetInterface[]): void;
     setGroups(interfaces: BlockoTargetInterface[]): void;
+    addInterface(iface: BlockoTargetInterface): void;
+    addInterfaceGroup(iface: BlockoTargetInterface): void;
+    bindInterface(): void;
     getDataJson(): string;
     setDataJson(jsonString: string): string;
 }

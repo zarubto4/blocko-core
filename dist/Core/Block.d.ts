@@ -3,7 +3,7 @@ import { ExternalConnector } from './ExternalConnector';
 import { ConfigProperty } from "./ConfigProperty";
 import { Controller } from "./Controller";
 import { Size } from "./Size";
-import { Message } from "./Message";
+import { Message, MessageJson } from './Message';
 import { Types } from "common-lib";
 export interface IBlockRenderer {
     refresh(): void;
@@ -61,11 +61,11 @@ export declare class Block {
     registerInitializationCallback(callback: () => void): void;
     initialize(): void;
     private outputEventCallbacks;
-    registerOutputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
+    registerOutputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     _outputEvent(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
     protected outputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
     private inputEventCallbacks;
-    registerInputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
+    registerInputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     _inputEvent(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
     protected inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
     private externalOutputEventCallbacks;
