@@ -9,6 +9,7 @@ import {
 } from "../Core/ExternalConnector";
 import {Message, MessageHelpers} from "../Core/Message";
 import {Types} from "common-lib";
+import { Block } from '../Core';
 
 export enum InterfaceBlockType {Inputs, Outputs}
 
@@ -332,6 +333,17 @@ export abstract class BaseInterfaceBlock extends Core.Block {
                 }
             }
         });
+    }
+
+    /**
+     * Also removes the second half of the interface block group.
+     */
+    public remove():void {
+        super.remove(); // Must be called before removing the opposite one, otherwise it would be cycle
+        let other: BaseInterfaceBlock = this.getOther();
+        if (other) {
+            other.remove();
+        }
     }
 
 // RENDER

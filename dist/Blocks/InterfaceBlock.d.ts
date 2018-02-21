@@ -52,6 +52,7 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     isInput(): boolean;
     externalInputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
     inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    remove(): void;
     rendererGetBlockSize(): Size;
     rendererShowBlockName(): boolean;
     rendererCanDelete(): boolean;

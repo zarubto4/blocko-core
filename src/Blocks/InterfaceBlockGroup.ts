@@ -6,9 +6,8 @@ import { ExternalConnector, ExternalAnalogConnector, ExternalDigitalConnector,
 } from '../Core/ExternalConnector';
 import { Message, MessageHelpers } from '../Core/Message';
 import { Types } from 'common-lib';
-import { InputsInterfaceBlock, InterfaceBlockType } from './InterfaceBlock';
+import { InterfaceBlockType } from './InterfaceBlock';
 import { BlockoTargetInterface } from './index';
-import { Block } from '../Core';
 
 export abstract class BaseInterfaceBlockGroup extends Core.Block {
 
@@ -349,14 +348,9 @@ export abstract class BaseInterfaceBlockGroup extends Core.Block {
      */
     public remove():void {
         super.remove(); // Must be called before removing the opposite one, otherwise it would be cycle
-        let opposite: Block = this._controller.blocks.find((b) => {
-            if (b instanceof BaseInterfaceBlockGroup) {
-                return this.targetId === b.targetId; // Both halves have the same targetId
-            }
-        });
-
-        if (opposite) {
-            opposite.remove();
+        let other: BaseInterfaceBlockGroup = this.getOther();
+        if (other) {
+            other.remove();
         }
     }
 

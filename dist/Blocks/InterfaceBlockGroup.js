@@ -283,13 +283,9 @@ class BaseInterfaceBlockGroup extends Core.Block {
     }
     remove() {
         super.remove();
-        let opposite = this._controller.blocks.find((b) => {
-            if (b instanceof BaseInterfaceBlockGroup) {
-                return this.targetId === b.targetId;
-            }
-        });
-        if (opposite) {
-            opposite.remove();
+        let other = this.getOther();
+        if (other) {
+            other.remove();
         }
     }
     rendererGetBlockSize() {

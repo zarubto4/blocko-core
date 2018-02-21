@@ -594,7 +594,7 @@ export class Controller {
         this.addBlock(outputsBlock);
     }
 
-    private interfaceBoundCallbacks: Array<(iface: BoundInterface) => void>;
+    private interfaceBoundCallbacks: Array<(iface: BoundInterface) => void> = [];
 
     public registerInterfaceBoundCallback(callback: (iface: BoundInterface) => void) {
         this.interfaceBoundCallbacks.push(callback);

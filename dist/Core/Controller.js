@@ -31,6 +31,7 @@ class Controller {
         this.externalOutputConnectorEventCallbacks = [];
         this.errorCallbacks = [];
         this.logCallbacks = [];
+        this.interfaceBoundCallbacks = [];
         this.blocks = [];
         this.connections = [];
         this.blocksRegister = [];
