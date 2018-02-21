@@ -3,13 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const DigitalInput_1 = require("./DigitalInput");
 class PushButton extends DigitalInput_1.DigitalInput {
     constructor(id) {
-        super(id, "pushButton");
+        super(id, 'pushButton');
     }
     rendererGetDisplayName() {
-        return (this.connectorOutput) ? "fa-dot-circle-o" : "fa-circle-o";
+        return (this.connectorOutput) ? 'fa-dot-circle-o' : 'fa-circle-o';
     }
     rendererGetDisplayNameCursor() {
-        return "hand";
+        return 'hand';
     }
     onMouseDown() {
         if (this.controller) {

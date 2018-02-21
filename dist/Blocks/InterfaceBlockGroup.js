@@ -9,9 +9,7 @@ const InterfaceBlock_1 = require("./InterfaceBlock");
 class BaseInterfaceBlockGroup extends Core.Block {
     constructor(id, type, visualType, interfaceType) {
         super(id, type, visualType);
-        this._color = null;
         this._displayName = '';
-        this._targetId = '';
         this._interface = null;
         this._deviceInputsCount = 0;
         this._deviceOutputsCount = 0;
@@ -28,8 +26,8 @@ class BaseInterfaceBlockGroup extends Core.Block {
         this._deviceOutputsCount = 0;
         this._interface = iface;
         this._color = iface['color'];
-        this._targetId = iface["targetId"];
-        this._displayName = iface['displayName'] || 'TODO';
+        this._interfaceId = iface["interfaceId"];
+        this._displayName = iface['displayName'] || this._interfaceId;
         let inOutInterfaces = iface['interface'];
         let digitalInputs = inOutInterfaces['digitalInputs'];
         if (digitalInputs) {
@@ -221,11 +219,30 @@ class BaseInterfaceBlockGroup extends Core.Block {
             this.renderer.refresh();
         }
     }
+    setTargetId(targetId) {
+        this._targetId = targetId;
+    }
     get interface() {
         return this._interface;
     }
     get targetId() {
         return this._targetId;
+    }
+    get interfaceId() {
+        return this._interfaceId;
+    }
+    getOther() {
+        let other;
+        if (this instanceof InputsInterfaceBlockGroup) {
+            other = this.controller.getBlockById(this.id.replace('IN', 'OUT'));
+        }
+        else if (this instanceof OutputsInterfaceBlockGroup) {
+            other = this.controller.getBlockById(this.id.replace('OUT', 'IN'));
+        }
+        return other;
+    }
+    isInput() {
+        return this instanceof InputsInterfaceBlockGroup;
     }
     externalInputEvent(connector, eventType, value) {
         if (!connector) {
@@ -307,6 +324,9 @@ class BaseInterfaceBlockGroup extends Core.Block {
         if (this._interfaceType == InterfaceBlock_1.InterfaceBlockType.Inputs) {
             return 'm' + size.width + ' 0 c-' + waveWide + ' ' + (size.height / 2) + ' ' + waveWide + ' ' + (size.height / 2) + ' 0 ' + size.height + ' l-' + (size.width - roundRadius) + ' 0 c-' + (roundRadius / 2) + ' 0 -' + roundRadius + ' -' + (roundRadius / 2) + ' -' + roundRadius + ' -' + roundRadius + ' l0 -' + (size.height - (2 * roundRadius)) + ' c0 -' + (roundRadius / 2) + ' ' + (roundRadius / 2) + ' -' + roundRadius + ' ' + roundRadius + ' -' + roundRadius + ' z';
         }
+    }
+    rendererIsHwAttached() {
+        return !!this._targetId;
     }
 }
 exports.BaseInterfaceBlockGroup = BaseInterfaceBlockGroup;

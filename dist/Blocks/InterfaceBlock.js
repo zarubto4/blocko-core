@@ -13,9 +13,7 @@ var InterfaceBlockType;
 class BaseInterfaceBlock extends Core.Block {
     constructor(id, type, visualType, interfaceType) {
         super(id, type, visualType);
-        this._color = null;
         this._displayName = "";
-        this._targetId = "";
         this._deviceInputsCount = 0;
         this._deviceOutputsCount = 0;
         this._interfaceType = interfaceType;
@@ -31,8 +29,8 @@ class BaseInterfaceBlock extends Core.Block {
         this._deviceOutputsCount = 0;
         this._interface = iface;
         this._color = iface["color"];
-        this._targetId = iface["targetId"];
-        this._displayName = iface["displayName"] || this._targetId;
+        this._interfaceId = iface["interfaceId"];
+        this._displayName = iface["displayName"] || this._interfaceId;
         let inOutInterfaces = iface["interface"];
         let digitalInputs = inOutInterfaces["digitalInputs"];
         if (digitalInputs) {
@@ -210,11 +208,30 @@ class BaseInterfaceBlock extends Core.Block {
             this.renderer.refresh();
         }
     }
+    setTargetId(targetId) {
+        this._targetId = targetId;
+    }
     get interface() {
         return this._interface;
     }
     get targetId() {
         return this._targetId;
+    }
+    get interfaceId() {
+        return this._interfaceId;
+    }
+    getOther() {
+        let other;
+        if (this.isInput()) {
+            other = this.controller.getBlockById(this.id.replace('IN', 'OUT'));
+        }
+        else {
+            other = this.controller.getBlockById(this.id.replace('OUT', 'IN'));
+        }
+        return other;
+    }
+    isInput() {
+        return this instanceof InputsInterfaceBlock;
     }
     externalInputEvent(connector, eventType, value) {
         if (!connector)
@@ -262,7 +279,7 @@ class BaseInterfaceBlock extends Core.Block {
         return false;
     }
     rendererCanDelete() {
-        return false;
+        return true;
     }
     rendererGetDisplayName() {
         return this._displayName;
@@ -285,6 +302,9 @@ class BaseInterfaceBlock extends Core.Block {
         if (this._interfaceType == InterfaceBlockType.Inputs) {
             return "m" + size.width + " 0 c-" + waveWide + " " + (size.height / 2) + " " + waveWide + " " + (size.height / 2) + " 0 " + size.height + " l-" + (size.width - roundRadius) + " 0 c-" + (roundRadius / 2) + " 0 -" + roundRadius + " -" + (roundRadius / 2) + " -" + roundRadius + " -" + roundRadius + " l0 -" + (size.height - (2 * roundRadius)) + " c0 -" + (roundRadius / 2) + " " + (roundRadius / 2) + " -" + roundRadius + " " + roundRadius + " -" + roundRadius + " z";
         }
+    }
+    rendererIsHwAttached() {
+        return !!this._targetId;
     }
 }
 exports.BaseInterfaceBlock = BaseInterfaceBlock;

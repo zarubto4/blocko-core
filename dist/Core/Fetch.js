@@ -1,25 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var fetchFunction;
-if (typeof fetch === 'undefined' && typeof require === "function") {
+let fetchFunction;
+if (typeof fetch === 'undefined' && typeof require === 'function') {
     const nodeFetchPackageName = 'node-fetch';
-    fetchFunction = eval("require(nodeFetchPackageName)");
+    fetchFunction = eval('require(nodeFetchPackageName)');
 }
 else {
     fetchFunction = window.fetch;
 }
-var btoaFunction;
-if (typeof btoa === 'undefined' && typeof require === "function") {
+let btoaFunction;
+if (typeof btoa === 'undefined' && typeof require === 'function') {
     const nodeBtoaPackage = 'btoa';
-    btoaFunction = eval("require(nodeBtoaPackage)");
+    btoaFunction = eval('require(nodeBtoaPackage)');
 }
 else {
     btoaFunction = window.btoa;
 }
-var atobFunction;
-if (typeof atob === 'undefined' && typeof require === "function") {
+let atobFunction;
+if (typeof atob === 'undefined' && typeof require === 'function') {
     const nodeAtobPackage = 'atob';
-    atobFunction = eval("require(nodeAtobPackage)");
+    atobFunction = eval('require(nodeAtobPackage)');
 }
 else {
     atobFunction = window.atob;
@@ -156,7 +156,7 @@ exports.RequestDefKeys = ['url', 'method', 'headers', 'body', 'timeout', 'max_re
 class ProxyCommunicationError extends Error {
     constructor(type, message) {
         super(message);
-        this.name = "ProxyCommunicationError";
+        this.name = 'ProxyCommunicationError';
         this.message = message;
         this.type = type;
         this.__proto__ = ProxyCommunicationError.prototype;
@@ -166,7 +166,7 @@ exports.ProxyCommunicationError = ProxyCommunicationError;
 class FetchError extends Error {
     constructor(code, message) {
         super(message);
-        this.name = "FetchError";
+        this.name = 'FetchError';
         this.message = message;
         this.code = code;
         this.__proto__ = ProxyCommunicationError.prototype;

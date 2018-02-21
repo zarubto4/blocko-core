@@ -8,7 +8,7 @@ export declare enum InterfaceBlockType {
     Outputs = 1,
 }
 export interface BlockoTargetInterface {
-    targetId: string;
+    interfaceId: string;
     displayName: string;
     color: string;
     pos_x?: number;
@@ -35,17 +35,21 @@ export interface BlockoTargetInterface {
     };
 }
 export declare abstract class BaseInterfaceBlock extends Core.Block {
-    private _color;
     private _displayName;
     private _targetId;
+    private _interfaceId;
     private _interfaceType;
     private _deviceInputsCount;
     private _deviceOutputsCount;
     private _interface;
     constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType);
     setInterface(iface: BlockoTargetInterface): void;
+    setTargetId(targetId: string): void;
     readonly interface: any;
     readonly targetId: string;
+    readonly interfaceId: string;
+    getOther(): BaseInterfaceBlock;
+    isInput(): boolean;
     externalInputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
     inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
     rendererGetBlockSize(): Size;
@@ -55,6 +59,7 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     rendererRotateDisplayName(): number;
     rendererGetBlockBackgroundColor(): string;
     rendererCustomSvgPath(size: Size): string;
+    rendererIsHwAttached(): boolean;
 }
 export declare class InputsInterfaceBlock extends BaseInterfaceBlock {
     constructor(id: string, iface?: any);

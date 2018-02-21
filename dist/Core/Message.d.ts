@@ -1,4 +1,4 @@
-import { Types } from "common-lib";
+import { Types } from 'common-lib';
 export declare class MessageHelpers {
     static isArgTypesEqual(argTypes1: Types.Type[], argTypes2: Types.Type[]): boolean;
     static argTypesFromStringArgTypes(value: string[]): Types.Type[];

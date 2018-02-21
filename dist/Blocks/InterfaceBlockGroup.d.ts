@@ -6,17 +6,21 @@ import { Message } from '../Core/Message';
 import { InterfaceBlockType } from './InterfaceBlock';
 import { BlockoTargetInterface } from './index';
 export declare abstract class BaseInterfaceBlockGroup extends Core.Block {
-    private _color;
     private _displayName;
     private _targetId;
+    private _interfaceId;
     private _interface;
     private _interfaceType;
     private _deviceInputsCount;
     private _deviceOutputsCount;
     constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType);
     setInterface(iface: BlockoTargetInterface): void;
+    setTargetId(targetId: string): void;
     readonly interface: any;
     readonly targetId: string;
+    readonly interfaceId: string;
+    getOther(): BaseInterfaceBlockGroup;
+    isInput(): boolean;
     externalInputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
     inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
     remove(): void;
@@ -27,6 +31,7 @@ export declare abstract class BaseInterfaceBlockGroup extends Core.Block {
     rendererRotateDisplayName(): number;
     rendererGetBlockBackgroundColor(): string;
     rendererCustomSvgPath(size: Size): string;
+    rendererIsHwAttached(): boolean;
 }
 export declare class InputsInterfaceBlockGroup extends BaseInterfaceBlockGroup {
     constructor(id: string, iface?: any);

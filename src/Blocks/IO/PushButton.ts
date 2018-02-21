@@ -1,20 +1,17 @@
-
-
-import * as Core from '../../Core/index';
-import {DigitalInput} from "./DigitalInput";
+import { DigitalInput } from './DigitalInput';
 
 export class PushButton extends DigitalInput {
 
     public constructor(id:string) {
-        super(id, "pushButton");
+        super(id, 'pushButton');
     }
 
     public rendererGetDisplayName():string {
-        return (this.connectorOutput) ? "fa-dot-circle-o" : "fa-circle-o";
+        return (this.connectorOutput) ? 'fa-dot-circle-o' : 'fa-circle-o';
     }
 
     public rendererGetDisplayNameCursor():string {
-        return "hand";
+        return 'hand';
     }
 
     public onMouseDown(): void {

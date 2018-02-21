@@ -5,7 +5,8 @@
   "main": "dist/index.js",
   "typings": "dist/index",
   "scripts": {
-    "build": "rimraf dist && tsc"
+    "build": "rimraf dist && tsc",
+    "lint": "tslint --force \"src/**/*.ts\""
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,8 @@
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
-    "rimraf": "^2.6.1"
+    "rimraf": "^2.6.1",
+    "tslint": "^5.9.1",
+    "tslint-eslint-rules": "^4.1.1"
   }
 }

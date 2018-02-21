@@ -17,7 +17,9 @@ export interface IBlockRenderer {
     destroy():void;
     getConnectorPosition(name:string):{x:number, y:number};
     getPosition():{x:number, y:number};
+    isHover(): boolean;
     refreshDisplayName();
+    highlight();
 }
 
 export class Block {
@@ -30,6 +32,7 @@ export class Block {
 
     protected _typeOfBlock: string = null;
     protected _blockVersion: string = null;
+    protected _color: string = null;
 
     public id:string;
 
@@ -482,6 +485,10 @@ export class Block {
 
     public rendererGetCodeName():string {
         return "";
+    }
+
+    public rendererIsHwAttached(): boolean {
+        return false;
     }
 
     public get typeOfBlock(): string {

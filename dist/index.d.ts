@@ -1,8 +1,8 @@
-import * as Core from "./Core/index";
+import * as Core from './Core/index';
 export { Core as Core };
-import * as Blocks from "./Blocks/index";
+import * as Blocks from './Blocks/index';
 export { Blocks as Blocks };
-import { BlockoTargetInterface } from "./Blocks/index";
+import { BlockoTargetInterface } from './Blocks/index';
 export { BlockoTargetInterface as BlockoTargetInterface };
 export { Core as BlockoCore };
 export { Blocks as BlockoBasicBlocks };

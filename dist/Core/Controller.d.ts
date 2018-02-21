@@ -16,6 +16,10 @@ export interface BlockoInstanceConfig {
     outputEnabled: boolean;
     asyncEventsEnabled: boolean;
 }
+export interface BoundInterface {
+    targetId: string;
+    interfaceId: string;
+}
 export declare class Controller {
     blocksRegister: Array<BlockRegistration>;
     blocks: Array<Block>;
@@ -47,6 +51,8 @@ export declare class Controller {
     getBlockById(id: string): Block;
     private blockIndex;
     getFreeBlockId(): string;
+    private interfaceIndex;
+    getInterfaceBlockId(): string;
     private factoryBlockRendererCallback;
     registerFactoryBlockRendererCallback(callback: (block: Block) => IBlockRenderer): void;
     private factoryConnectionRendererCallback;
@@ -81,11 +87,12 @@ export declare class Controller {
     getAnalogOutputNames(): Array<string>;
     getMessageOutputNames(): Array<string>;
     setError(blockId: string, enabled: boolean): void;
-    setInterfaces(interfaces: BlockoTargetInterface[]): void;
-    setGroups(interfaces: BlockoTargetInterface[]): void;
     addInterface(iface: BlockoTargetInterface): void;
     addInterfaceGroup(iface: BlockoTargetInterface): void;
-    bindInterface(): void;
+    private interfaceBoundCallbacks;
+    registerInterfaceBoundCallback(callback: (iface: BoundInterface) => void): void;
+    bindInterface(targetId: string, group: boolean): void;
     getDataJson(): string;
     setDataJson(jsonString: string): string;
+    isDeployable(): boolean;
 }

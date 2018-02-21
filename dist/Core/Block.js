@@ -10,6 +10,7 @@ class Block {
     constructor(id, type, visualType) {
         this._typeOfBlock = null;
         this._blockVersion = null;
+        this._color = null;
         this.configPropertiesDescription = null;
         this._controller = null;
         this._x = 0;
@@ -368,6 +369,9 @@ class Block {
     }
     rendererGetCodeName() {
         return "";
+    }
+    rendererIsHwAttached() {
+        return false;
     }
     get typeOfBlock() {
         return this._typeOfBlock;

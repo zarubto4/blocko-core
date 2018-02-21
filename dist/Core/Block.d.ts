@@ -16,7 +16,9 @@ export interface IBlockRenderer {
         x: number;
         y: number;
     };
+    isHover(): boolean;
     refreshDisplayName(): any;
+    highlight(): any;
 }
 export declare class Block {
     protected inputConnectors: Array<Connector>;
@@ -26,6 +28,7 @@ export declare class Block {
     protected configProperties: Array<ConfigProperty>;
     protected _typeOfBlock: string;
     protected _blockVersion: string;
+    protected _color: string;
     id: string;
     type: string;
     visualType: string;
@@ -105,6 +108,7 @@ export declare class Block {
     rendererCustomSvgPath(size: Size): string;
     rendererGetBlockDescription(): string;
     rendererGetCodeName(): string;
+    rendererIsHwAttached(): boolean;
     readonly typeOfBlock: string;
     blockVersion: string;
 }

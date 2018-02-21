@@ -12,7 +12,7 @@ class Size {
         return new Size(this.width - p.width, this.height - p.height);
     }
     isEqual(p) {
-        return ((this.width == p.width) && (this.height == p.height));
+        return ((this.width === p.width) && (this.height === p.height));
     }
 }
 exports.Size = Size;

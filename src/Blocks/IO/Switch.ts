@@ -1,7 +1,4 @@
-
-
-import * as Core from '../../Core/index';
-import {DigitalInput} from "./DigitalInput";
+import { DigitalInput } from "./DigitalInput";
 
 export class Switch extends DigitalInput {
 

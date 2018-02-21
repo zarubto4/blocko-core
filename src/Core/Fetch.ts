@@ -1,37 +1,36 @@
-
 import { Machine } from 'script-engine';
 
 declare const require;
 
-var fetchFunction;
-if (typeof fetch === 'undefined' && typeof require === "function") {
+let fetchFunction;
+if (typeof fetch === 'undefined' && typeof require === 'function') {
     const nodeFetchPackageName = 'node-fetch';
-    fetchFunction = eval("require(nodeFetchPackageName)");
+    fetchFunction = eval('require(nodeFetchPackageName)');
 } else {
     fetchFunction = window.fetch;
 }
 
 
-var btoaFunction;
-if (typeof btoa === 'undefined' && typeof require === "function") {
+let btoaFunction;
+if (typeof btoa === 'undefined' && typeof require === 'function') {
     const nodeBtoaPackage = 'btoa';
-    btoaFunction = eval("require(nodeBtoaPackage)");
+    btoaFunction = eval('require(nodeBtoaPackage)');
 } else {
     btoaFunction = window.btoa;
 }
 
-var atobFunction;
-if (typeof atob === 'undefined' && typeof require === "function") {
+let atobFunction;
+if (typeof atob === 'undefined' && typeof require === 'function') {
     const nodeAtobPackage = 'atob';
-    atobFunction = eval("require(nodeAtobPackage)");
+    atobFunction = eval('require(nodeAtobPackage)');
 } else {
     atobFunction = window.atob;
 }
 
 /**
- * 
+ *
  * Promise wraper for handling promise rejections to our safe machine!
- * 
+ *
  */
 export class PromiseChainScope {
     public chain: ('then'|'catch')[];
@@ -225,7 +224,7 @@ export class ProxyCommunicationError extends Error {
 
     constructor(type: string, message:string) {
         super(message);
-        this.name = "ProxyCommunicationError";
+        this.name = 'ProxyCommunicationError';
         this.message = message;
         this.type = type;
 
@@ -244,7 +243,7 @@ export class FetchError extends Error {
 
     constructor(code: string, message:string) {
         super(message);
-        this.name = "FetchError";
+        this.name = 'FetchError';
         this.message = message;
         this.code = code;
 

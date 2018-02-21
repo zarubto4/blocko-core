@@ -13,7 +13,7 @@ import {Types} from "common-lib";
 export enum InterfaceBlockType {Inputs, Outputs}
 
 export interface BlockoTargetInterface {
-    targetId: string;
+    interfaceId: string;
     displayName: string;
     color: string;
     pos_x?: number;
@@ -30,9 +30,9 @@ export interface BlockoTargetInterface {
 
 export abstract class BaseInterfaceBlock extends Core.Block {
 
-    private _color:string = null;
-    private _displayName:string = "";
-    private _targetId:string = "";
+    private _displayName: string = "";
+    private _targetId: string;
+    private _interfaceId: string;
 
     private _interfaceType:InterfaceBlockType;
 
@@ -63,8 +63,8 @@ export abstract class BaseInterfaceBlock extends Core.Block {
         this._interface = iface;
 
         this._color = iface["color"];
-        this._targetId = iface["targetId"];
-        this._displayName = iface["displayName"] || this._targetId;
+        this._interfaceId = iface["interfaceId"];
+        this._displayName = iface["displayName"] || this._interfaceId;
 
         let inOutInterfaces = iface["interface"];
 
@@ -258,12 +258,39 @@ export abstract class BaseInterfaceBlock extends Core.Block {
         }
     }
 
+    public setTargetId(targetId: string): void {
+        this._targetId = targetId;
+    }
+
     get interface():any {
         return this._interface;
     }
 
     get targetId():string {
         return this._targetId;
+    }
+
+    get interfaceId():string {
+        return this._interfaceId;
+    }
+
+    /**
+     * Gets the opposite side of this interface. (e.g. if this is input interface return output interface)
+     * @returns {BaseInterfaceBlock}
+     */
+    public getOther(): BaseInterfaceBlock {
+        let other;
+        if (this.isInput()) {
+            other = this.controller.getBlockById(this.id.replace('IN', 'OUT'));
+        } else {
+            other = this.controller.getBlockById(this.id.replace('OUT', 'IN'));
+        }
+
+        return other;
+    }
+
+    public isInput(): boolean {
+        return this instanceof InputsInterfaceBlock;
     }
 
     public externalInputEvent(connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message):void {
@@ -320,7 +347,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
     }
 
     public rendererCanDelete():boolean {
-        return false;
+        return true;
     }
 
     public rendererGetDisplayName():string {
@@ -347,6 +374,10 @@ export abstract class BaseInterfaceBlock extends Core.Block {
         if (this._interfaceType == InterfaceBlockType.Inputs) {
             return "m"+size.width+" 0 c-" + waveWide + " " + (size.height / 2) + " " + waveWide + " " + (size.height / 2) + " 0 " + size.height + " l-" + (size.width - roundRadius) + " 0 c-" + (roundRadius / 2) + " 0 -" + roundRadius + " -" + (roundRadius / 2) + " -" + roundRadius + " -" + roundRadius + " l0 -" + (size.height - (2*roundRadius)) + " c0 -"+(roundRadius/2)+" "+(roundRadius/2)+" -"+roundRadius+" "+roundRadius+" -"+roundRadius+" z";
         }
+    }
+
+    public rendererIsHwAttached(): boolean {
+        return !!this._targetId;
     }
 }
 
