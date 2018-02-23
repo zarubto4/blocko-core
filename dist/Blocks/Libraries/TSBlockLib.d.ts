@@ -1,9 +1,9 @@
 import { Library, Machine } from "script-engine";
 import { Events } from "common-lib";
 import { TSBlock } from "../TSBlock/TSBlock";
-import { Message } from "../../Core/Message";
-import { Connector, ConnectorEventType } from "../../Core/Connector";
+import { Connector } from "../../Core/Connector";
 import { ConfigProperty } from "../../Core/ConfigProperty";
+import { ConnectorEvent } from '../../Core';
 export interface MessageValue {
     types: string[];
     values: any[];
@@ -20,13 +20,18 @@ export declare class MessageReceivedEvent extends Events.Event {
     readonly message: MessageValue;
     constructor(message: MessageValue);
 }
+export declare class GroupInputEvent extends Events.Event {
+    readonly value: any;
+    readonly interfaceId: string;
+    constructor(value: any, interfaceId: string);
+}
 export declare class ReadyEvent extends Events.Event {
     constructor();
 }
 export declare class DestroyEvent extends Events.Event {
     constructor();
 }
-export declare abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent | MessageReceivedEvent> {
+export declare abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent | MessageReceivedEvent | GroupInputEvent> {
     protected connector: Connector;
     protected tsBlockLib: TSBlockLib;
     constructor(connector: Connector, tsBlockLib: TSBlockLib);
@@ -43,6 +48,7 @@ export declare class InputConnector extends BaseConnector<boolean | number | Mes
 export declare class OutputConnector extends BaseConnector<boolean | number | MessageValue> {
     value: boolean | number;
     send(message: any[]): void;
+    groupOutput(value: boolean | number | any[], interfaceId: string): void;
 }
 export declare class ConfigPropertyWrapper extends Events.Emitter<ConfigValueChangedEvent> {
     protected configProperty: ConfigProperty;
@@ -80,8 +86,8 @@ export declare class TSBlockLib implements Library {
     private argTypesValidator(argTypes, method);
     private getInputOutputType(type, direction, method);
     private getConfigPropertyType(type, method);
-    sendValueToOutputConnector(connector: Connector, value: boolean | number | any[]): void;
-    inputEvent(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    sendValueToOutputConnector(connector: Connector, value: boolean | number | any[], interfaceId?: string): void;
+    inputEvent(event: ConnectorEvent): void;
     configChanged(): void;
     callReady(): void;
     callDestroy(): void;

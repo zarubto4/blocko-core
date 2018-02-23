@@ -7,6 +7,7 @@ var ConnectorEventType;
 (function (ConnectorEventType) {
     ConnectorEventType[ConnectorEventType["ValueChange"] = 0] = "ValueChange";
     ConnectorEventType[ConnectorEventType["NewMessage"] = 1] = "NewMessage";
+    ConnectorEventType[ConnectorEventType["GroupInput"] = 2] = "GroupInput";
 })(ConnectorEventType = exports.ConnectorEventType || (exports.ConnectorEventType = {}));
 class Connector {
     constructor(block, name, displayName, type, argTypes) {
@@ -39,7 +40,7 @@ class Connector {
                 this._boolValue = value;
             }
             else if (typeof value == 'number') {
-                this._boolValue = value ? true : false;
+                this._boolValue = !!value;
             }
         }
         if (this.isAnalog()) {
@@ -121,10 +122,11 @@ class Connector {
         }
         return out;
     }
-    _outputSetValue(value) {
+    _outputSetValue(value, interfaceId) {
         let boolVal = null;
         let numVal = null;
         let msgVal = null;
+        let type = ConnectorEventType.ValueChange;
         if (typeof value == 'boolean') {
             boolVal = value;
             numVal = boolVal ? 1 : 0;
@@ -135,17 +137,29 @@ class Connector {
         }
         if (Array.isArray(value)) {
             msgVal = new Message_1.Message(this.argTypes.slice(0), value);
+            type = ConnectorEventType.NewMessage;
         }
         if (value instanceof Message_1.Message) {
             msgVal = value;
+            type = ConnectorEventType.NewMessage;
         }
+        if (interfaceId) {
+            type = ConnectorEventType.GroupInput;
+        }
+        let event = {
+            connector: this,
+            eventType: type,
+            value: null,
+            interfaceId: interfaceId
+        };
         if (this.type == common_lib_1.Types.ConnectorType.DigitalOutput) {
             if (boolVal == null)
                 return;
             if (this._boolValue == boolVal)
                 return;
             this._boolValue = boolVal;
-            this.block._outputEvent(this, ConnectorEventType.ValueChange, boolVal);
+            event.value = boolVal;
+            this.block._outputEvent(event);
             return;
         }
         else if (this.type == common_lib_1.Types.ConnectorType.AnalogOutput) {
@@ -154,7 +168,8 @@ class Connector {
             if (this._numValue == numVal)
                 return;
             this._numValue = numVal;
-            this.block._outputEvent(this, ConnectorEventType.ValueChange, numVal);
+            event.value = numVal;
+            this.block._outputEvent(event);
             return;
         }
         else if (this.type == common_lib_1.Types.ConnectorType.MessageOutput) {
@@ -171,15 +186,17 @@ class Connector {
                 }
             });
             this._msgValue = msgVal;
-            this.block._outputEvent(this, ConnectorEventType.NewMessage, msgVal);
+            event.value = msgVal;
+            this.block._outputEvent(event);
             return;
         }
         console.log('Cannot call setValue on not-output connectors!');
     }
-    _inputSetValue(value) {
+    _inputSetValue(value, interfaceId) {
         let boolVal = null;
         let numVal = null;
         let msgVal = null;
+        let type = ConnectorEventType.ValueChange;
         if (typeof value == 'boolean') {
             boolVal = value;
             numVal = boolVal ? 1 : 0;
@@ -188,15 +205,27 @@ class Connector {
             numVal = value;
             boolVal = !!numVal;
         }
-        if (value instanceof Message_1.Message)
+        if (value instanceof Message_1.Message) {
             msgVal = value;
+            type = ConnectorEventType.NewMessage;
+        }
+        if (interfaceId) {
+            type = ConnectorEventType.GroupInput;
+        }
+        let event = {
+            connector: this,
+            eventType: type,
+            value: null,
+            interfaceId: interfaceId
+        };
         if (this.type == common_lib_1.Types.ConnectorType.DigitalInput) {
             if (boolVal == null)
                 return;
             if (this._boolValue == boolVal)
                 return;
             this._boolValue = boolVal;
-            this.block._inputEvent(this, ConnectorEventType.ValueChange, boolVal);
+            event.value = boolVal;
+            this.block._inputEvent(event);
             return;
         }
         else if (this.type == common_lib_1.Types.ConnectorType.AnalogInput) {
@@ -205,7 +234,8 @@ class Connector {
             if (this._numValue == numVal)
                 return;
             this._numValue = numVal;
-            this.block._inputEvent(this, ConnectorEventType.ValueChange, numVal);
+            event.value = numVal;
+            this.block._inputEvent(event);
             return;
         }
         else if (this.type == common_lib_1.Types.ConnectorType.MessageInput) {
@@ -216,7 +246,8 @@ class Connector {
                     this.renderer.messageHighlight();
                 }
                 this._msgValue = msgVal;
-                this.block._inputEvent(this, ConnectorEventType.NewMessage, msgVal);
+                event.value = msgVal;
+                this.block._inputEvent(event);
             }
             return;
         }

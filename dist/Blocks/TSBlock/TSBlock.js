@@ -8,8 +8,8 @@ const FetchLib_1 = require("../Libraries/FetchLib");
 const common_lib_1 = require("common-lib");
 class TSBlock extends Core.Block {
     constructor(id, tsCode, designJson) {
-        super(id, "tsBlock", "tsBlock");
-        this._tsCode = "";
+        super(id, 'tsBlock', 'tsBlock');
+        this._tsCode = '';
         this._tsCodeError = false;
         this._machine = null;
         this._utilsLib = null;
@@ -17,8 +17,8 @@ class TSBlock extends Core.Block {
         this._consoleLib = null;
         this._serviceLib = null;
         this._fetchLib = null;
-        this._displayName = "";
-        this._backgroundColor = "";
+        this._displayName = '';
+        this._backgroundColor = '';
         this._description = null;
         this.canAddsIO = false;
         this.onLog = (type, message) => {
@@ -38,11 +38,11 @@ class TSBlock extends Core.Block {
         this.storedOutputs = [];
         this._codeBlock = true;
         if (!tsCode) {
-            tsCode = "";
+            tsCode = '';
             this._tsCodeError = true;
         }
         if (!designJson) {
-            designJson = "{}";
+            designJson = '{}';
         }
         this._tsCode = tsCode;
         this.setDesignJson(designJson);
@@ -75,7 +75,6 @@ class TSBlock extends Core.Block {
             displayName: this._displayName,
             backgroundColor: this._backgroundColor,
             description: this._description,
-            type_of_block: this._typeOfBlock,
             block_version: this._blockVersion
         });
     }
@@ -86,35 +85,31 @@ class TSBlock extends Core.Block {
         }
         catch (e) {
         }
-        if (dj && dj["backgroundColor"]) {
-            this._backgroundColor = dj["backgroundColor"];
-        }
-        else {
-            this._backgroundColor = "#36c6d3";
-        }
-        if (dj && dj["displayName"]) {
-            this._displayName = dj["displayName"];
-        }
-        else {
-            this._displayName = "fa-question-circle-o";
-        }
-        if (dj && dj["description"]) {
-            this._description = dj["description"];
-        }
-        else {
-            this._description = null;
-        }
-        if (dj && dj["type_of_block"]) {
-            this._typeOfBlock = dj["type_of_block"];
-        }
-        else {
-            this._typeOfBlock = null;
-        }
-        if (dj && dj["block_version"]) {
-            this._blockVersion = dj["block_version"];
-        }
-        else {
-            this._blockVersion = null;
+        if (dj) {
+            if (dj['backgroundColor']) {
+                this._backgroundColor = dj['backgroundColor'];
+            }
+            else {
+                this._backgroundColor = '#36c6d3';
+            }
+            if (dj['displayName']) {
+                this._displayName = dj['displayName'];
+            }
+            else {
+                this._displayName = 'fa-question-circle-o';
+            }
+            if (dj['description']) {
+                this._description = dj['description'];
+            }
+            else {
+                this._description = null;
+            }
+            if (dj['block_version']) {
+                this._blockVersion = dj['block_version'];
+            }
+            else {
+                this._blockVersion = null;
+            }
         }
         if (this.renderer)
             this.renderer.refresh();
@@ -155,7 +150,7 @@ class TSBlock extends Core.Block {
                     name: c.name,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(",")
+                    argTypes: c.stringArgTypes.join(',')
                 };
                 this.storedInputs.push(out);
             });
@@ -168,7 +163,7 @@ class TSBlock extends Core.Block {
                     name: c.name,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(",")
+                    argTypes: c.stringArgTypes.join(',')
                 };
                 this.storedOutputs.push(out);
             });
@@ -178,7 +173,7 @@ class TSBlock extends Core.Block {
         this.storedInputs.forEach((si) => {
             let c = this.getInputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(",")) {
+                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -186,7 +181,7 @@ class TSBlock extends Core.Block {
         this.storedOutputs.forEach((si) => {
             let c = this.getOutputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(",")) {
+                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -207,9 +202,9 @@ class TSBlock extends Core.Block {
         if (this.renderer)
             this.renderer.refresh();
         let transpileModule = null;
-        if (typeof ts === "undefined" && typeof require === "function") {
-            const typescriptModuleName = "typescript";
-            transpileModule = eval("require(typescriptModuleName).transpileModule");
+        if (typeof ts === 'undefined' && typeof require === 'function') {
+            const typescriptModuleName = 'typescript';
+            transpileModule = eval('require(typescriptModuleName).transpileModule');
         }
         else {
             transpileModule = ts.transpileModule;
@@ -241,11 +236,11 @@ class TSBlock extends Core.Block {
             this._tsBlockLib.configChanged();
         }
     }
-    inputChanged(connector, eventType, value) {
-        super.inputChanged(connector, eventType, value);
+    inputChanged(event) {
+        super.inputChanged(event);
         if (this._tsBlockLib) {
-            if (connector) {
-                this._tsBlockLib.inputEvent(connector, eventType, value);
+            if (event.connector) {
+                this._tsBlockLib.inputEvent(event);
             }
         }
     }
@@ -256,24 +251,24 @@ class TSBlock extends Core.Block {
     }
     rendererGetDisplayName() {
         if (this._tsCodeError) {
-            return "fa-exclamation-triangle";
+            return 'fa-exclamation-triangle';
         }
         return this._displayName;
     }
     rendererGetBlockBackgroundColor() {
         if (this._tsCodeError) {
-            return "#c00";
+            return '#c00';
         }
         return this._backgroundColor;
     }
     rendererGetBlockDescription() {
         if (this._tsCodeError) {
-            return "TypeScript Error";
+            return 'TypeScript Error';
         }
         return this._description;
     }
     rendererGetCodeName() {
-        return "TS";
+        return 'TS';
     }
     setError(enabled) {
         this._tsCodeError = enabled;

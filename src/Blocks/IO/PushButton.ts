@@ -1,4 +1,6 @@
 import { DigitalInput } from './DigitalInput';
+import { ConnectorEvent } from '../../Core';
+import { ConnectorEventType } from '../../Core/Connector';
 
 export class PushButton extends DigitalInput {
 
@@ -16,7 +18,12 @@ export class PushButton extends DigitalInput {
 
     public onMouseDown(): void {
         if (this.controller) {
-            this.sendValueToOutputConnector(this.connectorOutput, true);
+            let event: ConnectorEvent = {
+                connector: this.connectorOutput,
+                eventType:  ConnectorEventType.ValueChange,
+                value: true
+            };
+            this.sendValueToOutputConnector(event);
             if (this.renderer) {
                 this.renderer.refreshDisplayName();
             }
@@ -25,7 +32,12 @@ export class PushButton extends DigitalInput {
 
     public onMouseUp(): void {
         if (this.controller) {
-            this.sendValueToOutputConnector(this.connectorOutput, false);
+            let event: ConnectorEvent = {
+                connector: this.connectorOutput,
+                eventType:  ConnectorEventType.ValueChange,
+                value: false
+            };
+            this.sendValueToOutputConnector(event);
             if (this.renderer) {
                 this.renderer.refreshDisplayName();
             }

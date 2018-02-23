@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Core = require("../../Core/index");
 const common_lib_1 = require("common-lib");
+const Connector_1 = require("../../Core/Connector");
 class Not extends Core.Block {
     constructor(id) {
         super(id, "not", "not");
@@ -18,9 +19,14 @@ class Not extends Core.Block {
         return "NOT";
     }
     inputsChanged() {
-        this.sendValueToOutputConnector(this.connectorOutput, (this.connectorInput.value == 0) ? 1 : 0);
+        let event = {
+            connector: this.connectorOutput,
+            eventType: Connector_1.ConnectorEventType.ValueChange,
+            value: this.connectorInput.value == 0 ? 1 : 0
+        };
+        this.sendValueToOutputConnector(event);
     }
-    inputChanged(connector, eventType, value) {
+    inputChanged(event) {
         this.inputsChanged();
     }
 }

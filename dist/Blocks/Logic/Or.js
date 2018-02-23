@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Core = require("../../Core/index");
 const common_lib_1 = require("common-lib");
+const Connector_1 = require("../../Core/Connector");
 class Or extends Core.Block {
     constructor(id) {
         super(id, "or", "or");
@@ -53,9 +54,14 @@ class Or extends Core.Block {
         if (this.confNegate.value) {
             out = !out;
         }
-        this.sendValueToOutputConnector(this.connectorOutput, (out) ? 1 : 0);
+        let event = {
+            connector: this.connectorOutput,
+            eventType: Connector_1.ConnectorEventType.ValueChange,
+            value: out ? 1 : 0
+        };
+        this.sendValueToOutputConnector(event);
     }
-    inputChanged(connector, eventType, value) {
+    inputChanged(event) {
         this.inputsChanged();
     }
 }

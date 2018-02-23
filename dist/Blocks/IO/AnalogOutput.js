@@ -13,7 +13,7 @@ class AnalogOutput extends Core.Block {
     rendererGetDisplayName() {
         return this.connectorInput.value.toFixed(1);
     }
-    inputChanged(connector, eventType, value) {
+    inputChanged(event) {
         if (this.renderer) {
             this.renderer.refreshDisplayName();
         }

@@ -60,14 +60,14 @@ class Block {
             return;
         this._y = value;
     }
-    sendValueToOutputConnector(connector, value) {
+    sendValueToOutputConnector(event) {
         if (!this.controller || (this.controller && !this.controller.configuration.outputEnabled))
             return;
-        if (this.outputConnectors.indexOf(connector) != -1) {
-            connector._outputSetValue(value);
+        if (this.outputConnectors.indexOf(event.connector) != -1) {
+            event.connector._outputSetValue(event.value, event.interfaceId);
         }
         else {
-            console.log("Connector named " + connector.name + " is not output connector on block " + this.id);
+            console.log("Connector named " + event.connector.name + " is not output connector on block " + this.id);
         }
     }
     addOutputConnector(name, type, displayName = null, argTypes = null) {
@@ -122,11 +122,6 @@ class Block {
             this.externalInputConnectors.push(connector);
             return connector;
         }
-        if (type == common_lib_1.Types.ConnectorType.GroupInput) {
-            let connector = new ExternalConnector_1.ExternalGroupConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input, argTypes, kind);
-            this.externalInputConnectors.push(connector);
-            return connector;
-        }
         console.log("Cannot add connector with type " + type + " as external input connector.");
         return null;
     }
@@ -143,11 +138,6 @@ class Block {
         }
         if (type == common_lib_1.Types.ConnectorType.MessageOutput) {
             let connector = new ExternalConnector_1.ExternalMessageConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output, argTypes);
-            this.externalOutputsConnectors.push(connector);
-            return connector;
-        }
-        if (type == common_lib_1.Types.ConnectorType.GroupOutput) {
-            let connector = new ExternalConnector_1.ExternalGroupConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output, argTypes, kind);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
@@ -209,54 +199,54 @@ class Block {
     registerOutputEventCallback(callback) {
         this.outputEventCallbacks.push(callback);
     }
-    _outputEvent(connector, eventType, value) {
-        this.outputEventCallbacks.forEach(callback => callback(connector, eventType, value instanceof Message_1.Message ? value.toJson() : value));
+    _outputEvent(event) {
+        this.outputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value instanceof Message_1.Message ? event.value.toJson() : event.value));
         if (this.controller.configuration.outputEnabled) {
-            this.outputChanged(connector, eventType, value);
+            this.outputChanged(event);
         }
         if (this.renderer)
             this.renderer.refresh();
     }
-    outputChanged(connector, eventType, value) {
-        connector.connections.forEach(connection => {
-            let cOther = connection.getOtherConnector(connector);
-            cOther._inputSetValue(value);
+    outputChanged(event) {
+        event.connector.connections.forEach(connection => {
+            let cOther = connection.getOtherConnector(event.connector);
+            cOther._inputSetValue(event.value, event.interfaceId);
         });
     }
     registerInputEventCallback(callback) {
         this.inputEventCallbacks.push(callback);
     }
-    _inputEvent(connector, eventType, value) {
-        this.inputEventCallbacks.forEach(callback => callback(connector, eventType, value instanceof Message_1.Message ? value.toJson() : value));
+    _inputEvent(event) {
+        this.inputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value instanceof Message_1.Message ? event.value.toJson() : event.value));
         if (this.controller.configuration.inputEnabled) {
-            this.inputChanged(connector, eventType, value);
+            this.inputChanged(event);
         }
         if (this.renderer)
             this.renderer.refresh();
     }
-    inputChanged(connector, eventType, value) {
+    inputChanged(event) {
     }
     registerExternalOutputEventCallback(callback) {
         this.externalOutputEventCallbacks.push(callback);
     }
-    _externalOutputEvent(connector, eventType, value) {
-        this.externalOutputEventCallbacks.forEach(callback => callback(connector, eventType, value));
-        this.externalOutputEvent(connector, eventType, value);
+    _externalOutputEvent(event) {
+        this.externalOutputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
+        this.externalOutputEvent(event);
         if (this.renderer)
             this.renderer.refresh();
     }
-    externalOutputEvent(connector, eventType, value) {
+    externalOutputEvent(event) {
     }
     registerExternalInputEventCallback(callback) {
         this.externalInputEventCallbacks.push(callback);
     }
-    _externalInputEvent(connector, eventType, value) {
-        this.externalInputEventCallbacks.forEach(callback => callback(connector, eventType, value));
-        this.externalInputEvent(connector, eventType, value);
+    _externalInputEvent(event) {
+        this.externalInputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
+        this.externalInputEvent(event);
         if (this.renderer)
             this.renderer.refresh();
     }
-    externalInputEvent(connector, eventType, value) {
+    externalInputEvent(event) {
     }
     registerConfigChangedCallback(callback) {
         this.configChangedCallbacks.push(callback);
@@ -372,9 +362,6 @@ class Block {
     }
     rendererIsHwAttached() {
         return false;
-    }
-    get typeOfBlock() {
-        return this._typeOfBlock;
     }
     get blockVersion() {
         return this._blockVersion;

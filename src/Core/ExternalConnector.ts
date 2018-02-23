@@ -1,9 +1,16 @@
 import {Block} from "./Block";
-import {ConnectorEventType} from "./Connector";
+import { ConnectorEventType } from './Connector';
 import {Message, MessageHelpers} from "./Message";
 import {Types} from "common-lib";
 
 export enum ExternalConnectorType {Input, Output}
+
+export interface ExternalConnectorEvent {
+    connector: ExternalConnector<boolean|number|Message>;
+    eventType: ConnectorEventType;
+    value: boolean|number|Message;
+    interfaceId?: string;
+}
 
 export class ExternalConnector<T extends boolean|number|Message> {
     public block:Block;
@@ -24,16 +31,24 @@ export class ExternalConnector<T extends boolean|number|Message> {
         return this.value;
     }
 
-    public setValue(value:T):void {
+    public setValue(value: T, interfaceId?: string): void {
         this.value = value;
         let type = ConnectorEventType.ValueChange;
-        if (this instanceof ExternalMessageConnector) {
+        if (interfaceId) { // If interfaceId is defined, this connector is from hw group
+            type = ConnectorEventType.GroupInput;
+        } else if (this instanceof ExternalMessageConnector) {
             type = ConnectorEventType.NewMessage;
         }
+        let event: ExternalConnectorEvent = {
+            connector: this,
+            eventType: type,
+            value: value,
+            interfaceId: interfaceId
+        };
         if (this.type == ExternalConnectorType.Input) {
-            this.block._externalInputEvent(this, type, value)
+            this.block._externalInputEvent(event)
         } else {
-            this.block._externalOutputEvent(this, type, value)
+            this.block._externalOutputEvent(event)
         }
     }
 
@@ -82,25 +97,10 @@ export class ExternalMessageConnector extends ExternalConnector<Message> {
         return MessageHelpers.isArgTypesEqual(this._argTypes, argTypes);
     }
 
-
-    public setValue(value:Message):void {
+    public setValue(value:Message, interfaceId?: string):void {
         // validate argTypes
         if (this.isArgTypesEqual(value.argTypes)) {
-            super.setValue(value);
+            super.setValue(value, interfaceId);
         }
-    }
-}
-
-export class ExternalGroupConnector extends ExternalMessageConnector {
-
-    private _kind: string;
-
-    get kind(): string {
-        return this._kind;
-    }
-
-    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType, argTypes:Types.Type[], kind: string) {
-        super(block, targetId, name, type, argTypes);
-        this._kind = kind;
     }
 }

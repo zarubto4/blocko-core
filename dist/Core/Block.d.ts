@@ -1,5 +1,5 @@
-import { Connector, ConnectorEventType } from "./Connector";
-import { ExternalConnector } from './ExternalConnector';
+import { ConnectorEvent, Connector, ConnectorEventType } from './Connector';
+import { ExternalConnector, ExternalConnectorEvent } from './ExternalConnector';
 import { ConfigProperty } from "./ConfigProperty";
 import { Controller } from "./Controller";
 import { Size } from "./Size";
@@ -44,7 +44,7 @@ export declare class Block {
     readonly codeBlock: boolean;
     x: number;
     y: number;
-    sendValueToOutputConnector(connector: Connector, value: boolean | number | Message | any[]): void;
+    sendValueToOutputConnector(event: ConnectorEvent): void;
     addOutputConnector(name: string, type: Types.ConnectorType, displayName?: string, argTypes?: Types.Type[]): Connector;
     addInputConnector(name: string, type: Types.ConnectorType, displayName?: string, argTypes?: Types.Type[]): Connector;
     removeOutputConnector(connector: Connector): void;
@@ -65,20 +65,20 @@ export declare class Block {
     initialize(): void;
     private outputEventCallbacks;
     registerOutputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
-    _outputEvent(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
-    protected outputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    _outputEvent(event: ConnectorEvent): void;
+    protected outputChanged(event: ConnectorEvent): void;
     private inputEventCallbacks;
     registerInputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
-    _inputEvent(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
-    protected inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    _inputEvent(event: ConnectorEvent): void;
+    protected inputChanged(event: ConnectorEvent): void;
     private externalOutputEventCallbacks;
     registerExternalOutputEventCallback(callback: (connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
-    _externalOutputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
-    externalOutputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    _externalOutputEvent(event: ExternalConnectorEvent): void;
+    externalOutputEvent(event: ExternalConnectorEvent): void;
     private externalInputEventCallbacks;
     registerExternalInputEventCallback(callback: (connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
-    _externalInputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
-    externalInputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    _externalInputEvent(event: ExternalConnectorEvent): void;
+    externalInputEvent(event: ExternalConnectorEvent): void;
     private configChangedCallbacks;
     registerConfigChangedCallback(callback: () => void): void;
     emitConfigChanged(): void;
@@ -109,6 +109,5 @@ export declare class Block {
     rendererGetBlockDescription(): string;
     rendererGetCodeName(): string;
     rendererIsHwAttached(): boolean;
-    readonly typeOfBlock: string;
     blockVersion: string;
 }

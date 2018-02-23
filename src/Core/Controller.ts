@@ -1,16 +1,15 @@
-import {IBlockRenderer, Block} from "./Block";
-import {Connection, IConnectionRenderer} from "./Connection";
-import {BlockClass, BlockRegistration} from "./BlockRegistration";
-import {Connector, ConnectorEventType} from "./Connector";
-import {ServicesHandler} from "../Blocks/Libraries/ServiceLib";
-import {Service} from "../Blocks/Services/Service";
+import {IBlockRenderer, Block} from './Block';
+import {Connection, IConnectionRenderer} from './Connection';
+import {BlockClass, BlockRegistration} from './BlockRegistration';
+import {Connector, ConnectorEventType} from './Connector';
+import {ServicesHandler} from '../Blocks/Libraries/ServiceLib';
+import {Service} from '../Blocks/Services/Service';
 import { ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnector, 
-    ExternalMessageConnector } from "./ExternalConnector";
-import { InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface } from "../Blocks/InterfaceBlock";
-import {TSBlock} from "../Blocks/TSBlock/TSBlock";
-import { Message, MessageHelpers, MessageJson } from './Message';
-import { InputsInterfaceBlockGroup, OutputsInterfaceBlockGroup } from '../Blocks/InterfaceBlockGroup';
-import { BaseInterfaceBlock, BaseInterfaceBlockGroup } from '../Blocks';
+    ExternalMessageConnector } from './ExternalConnector';
+import { InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface } from '../Blocks/InterfaceBlock';
+import {TSBlock} from '../Blocks/TSBlock/TSBlock';
+import { Message, MessageJson } from './Message';
+import { BaseInterfaceBlock } from '../Blocks';
 
 export interface IRendererFactory {
     factoryBlockRenderer(block:Block): IBlockRenderer;
@@ -54,7 +53,7 @@ export class Controller {
         this.blocks = [];
         this.connections = [];
         this.blocksRegister = [];
-        this._servicesHandler = new ServicesHandler("BlockoServiceHandler");
+        this._servicesHandler = new ServicesHandler('BlockoServiceHandler');
     }
 
     public registerService(service: Service) {
@@ -72,7 +71,7 @@ export class Controller {
     }
 
     public registerBlock(blockClass: BlockClass): void {
-        let b:Block = new blockClass("register");
+        let b:Block = new blockClass('register');
         let blockRegistration:BlockRegistration = new BlockRegistration(blockClass, b.type, b.visualType, b.rendererGetDisplayName());
         this.blocksRegister.push(blockRegistration);
     }
@@ -194,10 +193,10 @@ export class Controller {
     private blockIndex = 0;
 
     public getFreeBlockId(): string {
-        let id:string = "";
+        let id:string = '';
         do {
             this.blockIndex++;
-            id = "B-" + this.blockIndex;
+            id = 'B-' + this.blockIndex;
         } while (this.getBlockById(id) != null);
         return id;
     }
@@ -205,10 +204,10 @@ export class Controller {
     private interfaceIndex = 0;
 
     public getInterfaceBlockId(): string {
-        let id:string = "";
+        let id:string = '';
         do {
             this.interfaceIndex++;
-            id = "I-" + this.interfaceIndex;
+            id = 'I-' + this.interfaceIndex;
         } while (this.getBlockById(id) != null);
         return id;
     }
@@ -316,13 +315,9 @@ export class Controller {
             let found = false;
             let group = false;
             block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name ) {
+                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name  && connector instanceof ExternalDigitalConnector) {
                     found = true;
-                    if (group && connector instanceof ExternalMessageConnector) {
-                        connector.setValue(new Message(['string', 'number'], [targetId, value])); // Wrap the value in message
-                    } else if (connector instanceof ExternalDigitalConnector) {
-                        connector.setValue(value);
-                    }
+                    connector.setValue(value, group ? targetId : undefined);
                     return true;
                 }
                 return false;
@@ -336,13 +331,9 @@ export class Controller {
             let found = false;
             let group = false;
             block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name ) {
+                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name  && connector instanceof ExternalAnalogConnector) {
                     found = true;
-                    if (group && connector instanceof ExternalMessageConnector) {
-                        connector.setValue(new Message(['string', 'number'], [targetId, value])); // Wrap the value in message
-                    } else if (connector instanceof ExternalAnalogConnector) {
-                        connector.setValue(value);
-                    }
+                    connector.setValue(value, group ? targetId : undefined);
                     return true;
                 }
                 return false;
@@ -358,15 +349,7 @@ export class Controller {
             block.getExternalInputConnectors().find(connector => {
                 if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) { group = true; return true; } return false; }))) && connector.name == name && connector instanceof ExternalMessageConnector) {
                     found = true;
-                    if (group ) {
-                        let argTypes: string[] = MessageHelpers.stringArgTypesFromArgTypes(message.argTypes);
-                        argTypes.unshift('string'); // Prepend type
-                        let values = message.values;
-                        values.unshift(targetId); // Prepend targetId
-                        connector.setValue(new Message(argTypes, values)); // Wrap the value in message
-                    } else {
-                        connector.setValue(message);
-                    }
+                    connector.setValue(message, group ? targetId : undefined);
                     return true;
                 }
                 return false;
@@ -400,27 +383,6 @@ export class Controller {
         });
     }
 
-/*Deprecated????
-    public setInputExternalConnectorValue(targetType:string, targetId:string, name:string, value:boolean):void {
-        this.blocks.forEach((block) => {
-            block.getExternalInputConnectors().forEach((connector) => {
-                if (connector.targetType == targetType && connector.targetId == targetId && connector.name == name) {
-                    connector.setValue(value);
-                }
-            });
-        });
-    }
-
-    public setOutputExternalConnectorValue(targetType:string, targetId:string, name:string, value:number):void {
-        this.blocks.forEach((block) => {
-            block.getExternalOutputConnectors().forEach((connector) => {
-                if (connector.targetType == targetType && connector.targetId == targetId && connector.name == name) {
-                    connector.setValue(value);
-                }
-            });
-        });
-    }
-*/
     public getDigitalInputNames(): Array<any> {
         let ret:Array<any> = [];
         this.blocks.forEach(block => {
@@ -523,74 +485,34 @@ export class Controller {
     // interfaces
 
     public addInterface(iface: BlockoTargetInterface): void {
-        if (typeof iface != "object") {
-            console.error("Controller::addInterface - invalid interface");
+        if (typeof iface != 'object') {
+            console.error('Controller::addInterface - invalid interface');
             return;
         }
 
         let interfaceId = iface.interfaceId;
 
         if (!interfaceId) {
-            console.error("Controller::addInterface - interfaceId is missing in interface");
-            return;
-        }
-
-        let existing: number = this.blocks.findIndex((block: Block) => {
-            return block instanceof BaseInterfaceBlock && block.interfaceId === interfaceId;
-        });
-
-        if (existing > -1) {
-            // TODO throw some error or message signaling that interface is already added or update interface
+            console.error('Controller::addInterface - interfaceId is missing in interface');
             return;
         }
 
         let id = this.getInterfaceBlockId();
 
-        let inputsBlock: InputsInterfaceBlock = new InputsInterfaceBlock(id + "-IN", iface);
+        let inputsBlock: InputsInterfaceBlock = new InputsInterfaceBlock(id + '-IN', iface);
         inputsBlock.x = iface.pos_x;
         inputsBlock.y = iface.pos_y;
+        if (iface.grid) {
+            inputsBlock.setTargetId(iface.interfaceId);
+        }
         this.addBlock(inputsBlock);
 
-
-        let outputsBlock: OutputsInterfaceBlock = new OutputsInterfaceBlock(id + "-OUT", iface);
+        let outputsBlock: OutputsInterfaceBlock = new OutputsInterfaceBlock(id + '-OUT', iface);
         outputsBlock.x = iface.pos_x + 70;
         outputsBlock.y = iface.pos_y;
-        this.addBlock(outputsBlock);
-    }
-
-    public addInterfaceGroup(iface: BlockoTargetInterface): void {
-        if (typeof iface != "object") {
-            console.error("Controller::addInterfaceGroup - invalid interface");
-            return;
+        if (iface.grid) {
+            outputsBlock.setTargetId(iface.interfaceId);
         }
-
-        let interfaceId = iface.interfaceId;
-
-        if (!interfaceId) {
-            console.error("Controller::addInterfaceGroup - interfaceId is missing in interface");
-            return;
-        }
-
-        let existing: number = this.blocks.findIndex((block: Block) => {
-            return block instanceof BaseInterfaceBlockGroup && block.interfaceId === interfaceId;
-        });
-
-        if (existing > -1) {
-            // TODO throw some error or message signaling that group is already added or update interface
-            return;
-        }
-
-        let id = this.getInterfaceBlockId();
-
-        let inputsBlock:InputsInterfaceBlockGroup = new InputsInterfaceBlockGroup(id + "-IN", iface);
-        inputsBlock.x = iface.pos_x;
-        inputsBlock.y = iface.pos_y;
-        this.addBlock(inputsBlock);
-
-
-        let outputsBlock:OutputsInterfaceBlockGroup = new OutputsInterfaceBlockGroup(id + "-OUT", iface);
-        outputsBlock.x = iface.pos_x + 70;
-        outputsBlock.y = iface.pos_y;
         this.addBlock(outputsBlock);
     }
 
@@ -600,12 +522,17 @@ export class Controller {
         this.interfaceBoundCallbacks.push(callback);
     }
 
-    public bindInterface(targetId: string, group: boolean): void {
+    /**
+     * Binds specific HW or HW group to an hovered interface.
+     * This method works only in gui with drag'n'drop.
+     * @param {string} targetId of WH
+     */
+    public bindInterface(targetId: string): void {
         let block = this.blocks.find((b) => {
             return b.renderer && b.renderer.isHover();
         });
 
-        if (block && ((block instanceof BaseInterfaceBlock && !group) || (block instanceof BaseInterfaceBlockGroup && group))) {
+        if (block && block instanceof BaseInterfaceBlock && block.interfaceId !== block.targetId) {
 
             block.setTargetId(targetId);
             block.renderer.refresh();
@@ -627,7 +554,6 @@ export class Controller {
     }
 
     // Saving and loading
-
     public getDataJson(): string {
         let json:any = {
             blocks: {}
@@ -638,13 +564,13 @@ export class Controller {
                 editor: {},
                 outputs: {}
             };
-            blockJson["type"] = block.type;
-            blockJson["visualType"] = block.visualType;
+            blockJson['type'] = block.type;
+            blockJson['visualType'] = block.visualType;
 
-            blockJson["config"] = block.getConfigData();
+            blockJson['config'] = block.getConfigData();
 
-            blockJson["editor"]["x"] = block.x;
-            blockJson["editor"]["y"] = block.y;
+            blockJson['editor']['x'] = block.x;
+            blockJson['editor']['y'] = block.y;
 
             let outputs:Array<Connector> = block.getOutputConnectors();
             outputs.forEach((connector:Connector) => {
@@ -653,31 +579,31 @@ export class Controller {
                 connector.connections.forEach((connection:Connection) => {
                     let otherConnector:Connector = connection.getOtherConnector(connector);
                     connectionsJson.push({
-                        "block": otherConnector.block.id,
-                        "connector": otherConnector.name
+                        'block': otherConnector.block.id,
+                        'connector': otherConnector.name
                     })
                 });
 
-                blockJson["outputs"][connector.name] = connectionsJson;
+                blockJson['outputs'][connector.name] = connectionsJson;
             });
 
-            if (block instanceof InputsInterfaceBlock || block instanceof OutputsInterfaceBlock || block instanceof InputsInterfaceBlockGroup || block instanceof OutputsInterfaceBlockGroup) {
-                blockJson["interface"] = block.interface;
-                blockJson["targetId"] = block.targetId;
+            if (block instanceof InputsInterfaceBlock || block instanceof OutputsInterfaceBlock) {
+                blockJson['interface'] = block.interface;
+                blockJson['targetId'] = block.targetId;
             }
 
             if (block instanceof TSBlock) {
-                blockJson["code"] = block.code;
-                blockJson["designJson"] = block.designJson;
+                blockJson['code'] = block.code;
+                blockJson['designJson'] = block.designJson;
             }
 
-            json["blocks"][block.id] = blockJson;
+            json['blocks'][block.id] = blockJson;
         });
 
         return JSON.stringify(json);
     }
 
-    public setDataJson(jsonString:string): string {
+    public setDataJson(jsonString: string): string {
 
         try {
             // Begin of load
@@ -685,41 +611,41 @@ export class Controller {
 
             //TODO: make it better!
 
-            if (json && json["blocks"]) {
+            if (json && json['blocks']) {
                 this.removeAllBlocks();
 
-                let blocks:any = json["blocks"];
+                let blocks:any = json['blocks'];
 
                 // first pass - init blocks
                 for (let id in blocks) {
                     if (blocks.hasOwnProperty(id)) {
                         let block:any = blocks[id];
 
-                        let bc:BlockClass = this.getBlockClassByVisualType(block["visualType"]);
+                        let bc:BlockClass = this.getBlockClassByVisualType(block['visualType']);
 
                         let blockObj:Block = null;
                         if (bc == TSBlock) {
-                            blockObj = new TSBlock(id, "", block["designJson"]);
+                            blockObj = new TSBlock(id, '', block['designJson']);
                         } else {
                             blockObj = new bc(id);
                         }
 
-                        if (block["interface"] && (blockObj instanceof InputsInterfaceBlock || blockObj instanceof  OutputsInterfaceBlock || blockObj instanceof InputsInterfaceBlockGroup || blockObj instanceof  OutputsInterfaceBlockGroup)) {
-                            blockObj.setInterface(block["interface"]);
-                            if (block["targetId"]) {
-                                blockObj.setTargetId(block["targetId"]);
+                        if (block['interface'] && (blockObj instanceof InputsInterfaceBlock || blockObj instanceof  OutputsInterfaceBlock)) {
+                            blockObj.setInterface(block['interface']);
+                            if (block['targetId']) {
+                                blockObj.setTargetId(block['targetId']);
                             }
                         }
 
-                        blockObj.x = block["editor"]["x"];
-                        blockObj.y = block["editor"]["y"];
+                        blockObj.x = block['editor']['x'];
+                        blockObj.y = block['editor']['y'];
 
                         this.addBlock(blockObj);
 
                         if (blockObj instanceof TSBlock) {
-                            blockObj.setCode(block["code"]);
+                            blockObj.setCode(block['code']);
                         }
-                        blockObj.setConfigData(block["config"]);
+                        blockObj.setConfigData(block['config']);
                     }
                 }
 
@@ -730,15 +656,15 @@ export class Controller {
 
                         let b1:Block = this.getBlockById(id);
 
-                        let outputs = block["outputs"];
+                        let outputs = block['outputs'];
                         for (let outputName in outputs) {
                             if (outputs.hasOwnProperty(outputName)) {
 
                                 let connections:Array<any> = outputs[outputName];
                                 connections.forEach((connParams:any) => {
 
-                                    let b2name = connParams["block"];
-                                    let inputName = connParams["connector"];
+                                    let b2name = connParams['block'];
+                                    let inputName = connParams['connector'];
 
                                     let c1:Connector = b1.getOutputConnectorByName(outputName);
                                     let b2:Block = this.getBlockById(b2name);
@@ -758,12 +684,12 @@ export class Controller {
             // console.error(error);
             return error;
         }
-        return "OK";
+        return 'OK';
     }
 
     public isDeployable(): boolean {
         let index: number = this.blocks.findIndex((b) => {
-            return (b instanceof BaseInterfaceBlock || b instanceof BaseInterfaceBlockGroup) && !b.targetId;
+            return b instanceof BaseInterfaceBlock && !b.targetId;
         });
 
         return index === -1;

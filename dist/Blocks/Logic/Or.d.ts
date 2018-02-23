@@ -1,4 +1,5 @@
 import * as Core from '../../Core/index';
+import { ConnectorEvent } from '../../Core';
 export declare class Or extends Core.Block {
     connectorOutput: Core.Connector;
     protected confInputsCount: Core.ConfigProperty;
@@ -9,5 +10,5 @@ export declare class Or extends Core.Block {
     rendererGetDisplayName(): string;
     configChanged(): void;
     inputsChanged(): void;
-    protected inputChanged(connector: Core.Connector, eventType: Core.ConnectorEventType, value: boolean | number | Core.Message): void;
+    protected inputChanged(event: ConnectorEvent): void;
 }

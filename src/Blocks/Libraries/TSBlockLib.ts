@@ -7,6 +7,7 @@ import {TSBlock} from "../TSBlock/TSBlock";
 import {Message} from "../../Core/Message";
 import {Connector, ConnectorEventType} from "../../Core/Connector";
 import {ConfigProperty} from "../../Core/ConfigProperty";
+import { ConnectorEvent } from '../../Core';
 
 export interface MessageValue {
     types: string[],
@@ -31,6 +32,12 @@ export class MessageReceivedEvent extends Events.Event {
     };
 }
 
+export class GroupInputEvent extends Events.Event {
+    constructor(public readonly value: any, public readonly interfaceId: string) {
+        super("groupInput");
+    };
+}
+
 export class ReadyEvent extends Events.Event {
     constructor() {
         super("ready");
@@ -43,7 +50,7 @@ export class DestroyEvent extends Events.Event {
     };
 }
 
-export abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent|MessageReceivedEvent> {
+export abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent|MessageReceivedEvent|GroupInputEvent> {
 
     constructor (protected connector:Connector, protected tsBlockLib:TSBlockLib) {
         super();
@@ -105,6 +112,9 @@ export class OutputConnector extends BaseConnector<boolean|number|MessageValue> 
         this.tsBlockLib.sendValueToOutputConnector(this.connector, message);
     }
 
+    public groupOutput(value: boolean|number|any[], interfaceId: string) {
+        this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
+    }
 }
 
 export class ConfigPropertyWrapper extends Events.Emitter<ConfigValueChangedEvent> {
@@ -284,75 +294,85 @@ declare const context: BlockContext;
         throw new TSBlockError(`In <b>${method}</b>: unknown config property type <b>${type}</b>`);
     }
 
-    public sendValueToOutputConnector(connector:Connector, value:boolean|number|any[]) {
-        this.tsBlock.sendValueToOutputConnector(connector, value);
+    public sendValueToOutputConnector(connector:Connector, value:boolean|number|any[], interfaceId?: string) {
+        this.tsBlock.sendValueToOutputConnector({
+            connector: connector,
+            eventType:  null,
+            value: Array.isArray(value) ? new Message(connector.argTypes.slice(0), value) : value,
+            interfaceId: interfaceId
+        });
 
         let strings = Types.getStringsFromConnectorType(connector.type);
 
-        let event;
-        if (strings.type == "message") {
-            event = new MessageReceivedEvent({
+        let tsEvent;
+        if (interfaceId) {
+            tsEvent = new GroupInputEvent(strings.type !== "message" ? value : {
+                types: connector.argTypes.map((at) => Types.TypeToStringTable[at]),
+                values: <any[]>value
+            }, interfaceId)
+        } else if (strings.type == "message") {
+            tsEvent = new MessageReceivedEvent({
                 types: connector.argTypes.map((at) => Types.TypeToStringTable[at]),
                 values: <any[]>value
             });
         } else {
-            event = new ValueChangedEvent(<boolean|number>value);
+            tsEvent = new ValueChangedEvent(<boolean|number>value);
         }
 
         if (strings.direction == "input") {
 
             let connectorWrapper = this.inputConnectors[connector.name];
 
-            if (connectorWrapper && event) {
-                this.inputConnectorsEmitter.emit(connectorWrapper, event);
-                connectorWrapper.emit(connectorWrapper, event);
+            if (connectorWrapper && tsEvent) {
+                this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                connectorWrapper.emit(connectorWrapper, tsEvent);
             }
 
         } else if (strings.direction == "output") {
 
             let connectorWrapper = this.outputConnectors[connector.name];
 
-            if (connectorWrapper && event) {
-                this.outputConnectorsEmitter.emit(connectorWrapper, event);
-                connectorWrapper.emit(connectorWrapper, event);
+            if (connectorWrapper && tsEvent) {
+                this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                connectorWrapper.emit(connectorWrapper, tsEvent);
             }
-
         }
-
     }
 
-    public inputEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message):void {
+    public inputEvent(event: ConnectorEvent):void {
         if (this.machine) this.machine.call(() => {
 
-            let strings = Types.getStringsFromConnectorType(connector.type);
+            let strings = Types.getStringsFromConnectorType(event.connector.type);
 
-            let event;
-            if (eventType == ConnectorEventType.ValueChange) {
-                event = new ValueChangedEvent(<boolean|number>value);
-            } else {
-                let message = (<Message>value);
-                event = new MessageReceivedEvent({
+            let tsEvent;
+            if (event.eventType == ConnectorEventType.ValueChange) {
+                tsEvent = new ValueChangedEvent(<boolean|number>event.value);
+            } else if (event.eventType == ConnectorEventType.NewMessage) {
+                let message = (<Message>event.value);
+                tsEvent = new MessageReceivedEvent({
                     types: message.argTypes.map((at) => Types.TypeToStringTable[at]),
                     values: message.values
                 });
+            } else if (event.eventType == ConnectorEventType.GroupInput) {
+                tsEvent = new GroupInputEvent(event.value, event.interfaceId)
             }
 
             if (strings.direction == "input") {
 
-                let connectorWrapper = this.inputConnectors[connector.name];
+                let connectorWrapper = this.inputConnectors[event.connector.name];
 
-                if (connectorWrapper && event) {
-                    this.inputConnectorsEmitter.emit(connectorWrapper, event);
-                    connectorWrapper.emit(connectorWrapper, event);
+                if (connectorWrapper && tsEvent) {
+                    this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                    connectorWrapper.emit(connectorWrapper, tsEvent);
                 }
 
             } else if (strings.direction == "output") {
 
-                let connectorWrapper = this.outputConnectors[connector.name];
+                let connectorWrapper = this.outputConnectors[event.connector.name];
 
-                if (connectorWrapper && event) {
-                    this.outputConnectorsEmitter.emit(connectorWrapper, event);
-                    connectorWrapper.emit(connectorWrapper, event);
+                if (connectorWrapper && tsEvent) {
+                    this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                    connectorWrapper.emit(connectorWrapper, tsEvent);
                 }
 
             }
@@ -433,10 +453,10 @@ declare const context: BlockContext;
                     }
                     return null;
                 },
-                listenEvent: (key: string | string[], callback: (event: ValueChangedEvent|MessageReceivedEvent) => void): Events.Listener<ValueChangedEvent|MessageReceivedEvent> => {
+                listenEvent: (key: string | string[], callback: (event: ValueChangedEvent|MessageReceivedEvent|GroupInputEvent) => void): Events.Listener<ValueChangedEvent|MessageReceivedEvent|GroupInputEvent> => {
                     return this.inputConnectorsEmitter.listenEvent(key, callback);
                 },
-                removeListener: (listener: Events.Listener<ValueChangedEvent|MessageReceivedEvent>): void => {
+                removeListener: (listener: Events.Listener<ValueChangedEvent|MessageReceivedEvent|GroupInputEvent>): void => {
                     this.inputConnectorsEmitter.removeListener(listener);
                 },
             },
@@ -468,10 +488,10 @@ declare const context: BlockContext;
                     }
                     return null;
                 },
-                listenEvent: (key: string | string[], callback: (event: ValueChangedEvent|MessageReceivedEvent) => void): Events.Listener<ValueChangedEvent|MessageReceivedEvent> => {
+                listenEvent: (key: string | string[], callback: (event: ValueChangedEvent|MessageReceivedEvent|GroupInputEvent) => void): Events.Listener<ValueChangedEvent|MessageReceivedEvent|GroupInputEvent> => {
                     return this.outputConnectorsEmitter.listenEvent(key, callback);
                 },
-                removeListener: (listener: Events.Listener<ValueChangedEvent|MessageReceivedEvent>): void => {
+                removeListener: (listener: Events.Listener<ValueChangedEvent|MessageReceivedEvent|GroupInputEvent>): void => {
                     this.outputConnectorsEmitter.removeListener(listener);
                 },
             },

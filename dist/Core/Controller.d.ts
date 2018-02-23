@@ -1,11 +1,11 @@
-import { IBlockRenderer, Block } from "./Block";
-import { Connection, IConnectionRenderer } from "./Connection";
-import { BlockClass, BlockRegistration } from "./BlockRegistration";
-import { Connector, ConnectorEventType } from "./Connector";
-import { ServicesHandler } from "../Blocks/Libraries/ServiceLib";
-import { Service } from "../Blocks/Services/Service";
-import { ExternalConnector } from "./ExternalConnector";
-import { BlockoTargetInterface } from "../Blocks/InterfaceBlock";
+import { IBlockRenderer, Block } from './Block';
+import { Connection, IConnectionRenderer } from './Connection';
+import { BlockClass, BlockRegistration } from './BlockRegistration';
+import { Connector, ConnectorEventType } from './Connector';
+import { ServicesHandler } from '../Blocks/Libraries/ServiceLib';
+import { Service } from '../Blocks/Services/Service';
+import { ExternalConnector } from './ExternalConnector';
+import { BlockoTargetInterface } from '../Blocks/InterfaceBlock';
 import { Message, MessageJson } from './Message';
 export interface IRendererFactory {
     factoryBlockRenderer(block: Block): IBlockRenderer;
@@ -88,10 +88,9 @@ export declare class Controller {
     getMessageOutputNames(): Array<string>;
     setError(blockId: string, enabled: boolean): void;
     addInterface(iface: BlockoTargetInterface): void;
-    addInterfaceGroup(iface: BlockoTargetInterface): void;
     private interfaceBoundCallbacks;
     registerInterfaceBoundCallback(callback: (iface: BoundInterface) => void): void;
-    bindInterface(targetId: string, group: boolean): void;
+    bindInterface(targetId: string): void;
     getDataJson(): string;
     setDataJson(jsonString: string): string;
     isDeployable(): boolean;

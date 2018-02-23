@@ -9,5 +9,5 @@ export declare class And extends Core.Block {
     rendererGetDisplayName(): string;
     configChanged(): void;
     inputsChanged(): void;
-    protected inputChanged(connector: Core.Connector, eventType: Core.ConnectorEventType, value: boolean | number | Core.Message): void;
+    protected inputChanged(event: any): void;
 }

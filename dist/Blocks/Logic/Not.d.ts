@@ -1,4 +1,5 @@
 import * as Core from '../../Core/index';
+import { ConnectorEvent } from '../../Core';
 export declare class Not extends Core.Block {
     connectorInput: Core.Connector;
     connectorOutput: Core.Connector;
@@ -7,5 +8,5 @@ export declare class Not extends Core.Block {
     rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
     inputsChanged(): void;
-    protected inputChanged(connector: Core.Connector, eventType: Core.ConnectorEventType, value: boolean | number | Core.Message): void;
+    protected inputChanged(event: ConnectorEvent): void;
 }

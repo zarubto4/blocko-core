@@ -1,27 +1,21 @@
-
-
 import * as Core from '../../Core/index';
-import {Connector, ConnectorEventType} from "../../Core/Connector";
-import {Message, MessageHelpers} from "../../Core/Message";
-import {Machine, TypeScriptCodeLayer, SafeCodeLayer, TypescriptBuildError} from "script-engine";
-import {TSBlockLib} from "../Libraries/TSBlockLib";
-import {ServiceLib} from "../Libraries/ServiceLib";
-import {FetchLib} from "../Libraries/FetchLib";
+import { Connector } from '../../Core/Connector';
+import { Machine, TypeScriptCodeLayer, SafeCodeLayer } from 'script-engine';
+import { TSBlockLib } from '../Libraries/TSBlockLib';
+import { ServiceLib } from '../Libraries/ServiceLib';
+import { FetchLib } from '../Libraries/FetchLib';
 
-import {RestApiService} from "../Services/RestApiService";
-import {XmlApiService} from "../Services/XmlApiService";
-import {FetchService} from "../Services/FetchService";
+import { Libs } from 'common-lib';
+import { ConnectorEvent } from '../../Core';
 
-import {Libs} from "common-lib";
-
-//import * as src from "typescript";
+//import * as src from 'typescript';
 
 declare let ts;
 declare const require;
 
 export class TSBlock extends Core.Block {
 
-    private _tsCode:string = "";
+    private _tsCode:string = '';
     private _tsCodeError = false;
 
     private _machine:Machine = null;
@@ -31,8 +25,8 @@ export class TSBlock extends Core.Block {
     private _serviceLib:ServiceLib = null;
     private _fetchLib:FetchLib = null;
 
-    protected _displayName:string = "";
-    protected _backgroundColor:string = "";
+    protected _displayName:string = '';
+    protected _backgroundColor:string = '';
     protected _description:string = null;
 
     public canAddsIO = false;
@@ -40,15 +34,15 @@ export class TSBlock extends Core.Block {
     protected _designJson: string;
 
     public constructor(id:string, tsCode?:string, designJson?:string) {
-        super(id, "tsBlock", "tsBlock");
+        super(id, 'tsBlock', 'tsBlock');
         this._codeBlock = true;
 
         if (!tsCode) {
-            tsCode = "";
+            tsCode = '';
             this._tsCodeError = true;
         }
         if (!designJson) {
-            designJson = "{}";
+            designJson = '{}';
         }
 
         this._tsCode = tsCode;
@@ -94,7 +88,6 @@ export class TSBlock extends Core.Block {
             displayName: this._displayName,
             backgroundColor: this._backgroundColor,
             description: this._description,
-            type_of_block: this._typeOfBlock,
             block_version: this._blockVersion
         });
     }
@@ -106,31 +99,28 @@ export class TSBlock extends Core.Block {
         } catch (e) {
             // TODO: maybe do something
         }
-
-        if (dj && dj["backgroundColor"]) {
-            this._backgroundColor = dj["backgroundColor"]
-        } else {
-            this._backgroundColor = "#36c6d3";
-        }
-        if (dj && dj["displayName"]) {
-            this._displayName = dj["displayName"];
-        } else {
-            this._displayName = "fa-question-circle-o";
-        }
-        if (dj && dj["description"]) {
-            this._description = dj["description"];
-        } else {
-            this._description = null;
-        }
-        if (dj && dj["type_of_block"]) {
-            this._typeOfBlock = dj["type_of_block"];
-        } else {
-            this._typeOfBlock = null;
-        }
-        if (dj && dj["block_version"]) {
-            this._blockVersion = dj["block_version"];
-        } else {
-            this._blockVersion = null;
+        
+        if (dj) {
+            if (dj['backgroundColor']) {
+                this._backgroundColor = dj['backgroundColor']
+            } else {
+                this._backgroundColor = '#36c6d3';
+            }
+            if (dj['displayName']) {
+                this._displayName = dj['displayName'];
+            } else {
+                this._displayName = 'fa-question-circle-o';
+            }
+            if (dj['description']) {
+                this._description = dj['description'];
+            } else {
+                this._description = null;
+            }
+            if (dj['block_version']) {
+                this._blockVersion = dj['block_version'];
+            } else {
+                this._blockVersion = null;
+            }
         }
         
         if (this.renderer) this.renderer.refresh();
@@ -187,7 +177,7 @@ export class TSBlock extends Core.Block {
                     name: c.name,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(",")
+                    argTypes: c.stringArgTypes.join(',')
                 };
                 this.storedInputs.push(out);
             });
@@ -201,7 +191,7 @@ export class TSBlock extends Core.Block {
                     name: c.name,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(",")
+                    argTypes: c.stringArgTypes.join(',')
                 };
                 this.storedOutputs.push(out);
             });
@@ -214,7 +204,7 @@ export class TSBlock extends Core.Block {
         this.storedInputs.forEach((si) => {
             let c = this.getInputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(",")) {
+                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -223,7 +213,7 @@ export class TSBlock extends Core.Block {
         this.storedOutputs.forEach((si) => {
             let c = this.getOutputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(",")) {
+                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -233,7 +223,7 @@ export class TSBlock extends Core.Block {
         this.storedOutputs = [];
     }
 
-    public run(safe:boolean = false) {
+    public run(safe: boolean = false) {
 
         this.storeConnections();
 
@@ -248,9 +238,9 @@ export class TSBlock extends Core.Block {
 
         let transpileModule = null;
 
-        if (typeof ts === "undefined" && typeof require === "function") {
-            const typescriptModuleName = "typescript";
-            transpileModule = eval("require(typescriptModuleName).transpileModule");
+        if (typeof ts === 'undefined' && typeof require === 'function') {
+            const typescriptModuleName = 'typescript';
+            transpileModule = eval('require(typescriptModuleName).transpileModule');
         } else {
             transpileModule = ts.transpileModule;
         }
@@ -289,11 +279,11 @@ export class TSBlock extends Core.Block {
         }
     }
 
-    protected inputChanged(connector:Connector, eventType:ConnectorEventType, value:boolean|number|Message):void {
-        super.inputChanged(connector, eventType, value);
+    protected inputChanged(event: ConnectorEvent):void {
+        super.inputChanged(event);
         if (this._tsBlockLib) {
-            if (connector) {
-                this._tsBlockLib.inputEvent(connector, eventType, value);
+            if (event.connector) {
+                this._tsBlockLib.inputEvent(event);
             }
         }
     }
@@ -309,14 +299,14 @@ export class TSBlock extends Core.Block {
 
     public rendererGetDisplayName():string {
         if (this._tsCodeError) {
-            return "fa-exclamation-triangle";
+            return 'fa-exclamation-triangle';
         }
         return this._displayName;
     }
 
     public rendererGetBlockBackgroundColor():string {
         if (this._tsCodeError) {
-            return "#c00";
+            return '#c00';
         }
         return this._backgroundColor;
     }
@@ -324,13 +314,13 @@ export class TSBlock extends Core.Block {
 
     public rendererGetBlockDescription(): string {
         if (this._tsCodeError) {
-            return "TypeScript Error";
+            return 'TypeScript Error';
         }
         return this._description;
     }
 
     public rendererGetCodeName(): string {
-        return "TS";
+        return 'TS';
     }
 
     public setError(enabled: boolean) {

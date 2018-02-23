@@ -1,18 +1,17 @@
 import * as Core from '../Core/index';
-import { Connector, ConnectorEventType } from "../Core/Connector";
-import { Size } from "../Core/Size";
-import { ExternalConnector } from "../Core/ExternalConnector";
-import { Message } from "../Core/Message";
+import { Size } from '../Core/Size';
+import { ConnectorEvent, ExternalConnectorEvent } from '../Core';
 export declare enum InterfaceBlockType {
     Inputs = 0,
     Outputs = 1,
 }
 export interface BlockoTargetInterface {
     interfaceId: string;
+    grid?: boolean;
     displayName: string;
     color: string;
-    pos_x?: number;
-    pos_y?: number;
+    pos_x: number;
+    pos_y: number;
     interface: {
         digitalInputs?: {
             [name: string]: any;
@@ -50,8 +49,8 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     readonly interfaceId: string;
     getOther(): BaseInterfaceBlock;
     isInput(): boolean;
-    externalInputEvent(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message): void;
-    inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    externalInputEvent(event: ExternalConnectorEvent): void;
+    inputChanged(event: ConnectorEvent): void;
     remove(): void;
     rendererGetBlockSize(): Size;
     rendererShowBlockName(): boolean;

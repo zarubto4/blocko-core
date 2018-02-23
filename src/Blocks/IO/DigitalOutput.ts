@@ -2,6 +2,7 @@
 
 import * as Core from '../../Core/index';
 import {Types} from "common-lib";
+import { ConnectorEvent } from '../../Core';
 
 export class DigitalOutput extends Core.Block {
 
@@ -24,7 +25,7 @@ export class DigitalOutput extends Core.Block {
         }
     }
 
-    protected inputChanged(connector:Core.Connector, eventType:Core.ConnectorEventType, value:boolean|number|Core.Message):void {
+    protected inputChanged(event: ConnectorEvent):void {
         if (this.renderer) {
             this.renderer.refreshDisplayName();
         }

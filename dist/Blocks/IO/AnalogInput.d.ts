@@ -6,7 +6,7 @@ export declare class AnalogInput extends Core.Block {
     rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
     rendererGetDisplayNameCursor(): string;
-    onMouseDrag(event: {
+    onMouseDrag(e: {
         dx: number;
         dy: number;
     }): boolean;

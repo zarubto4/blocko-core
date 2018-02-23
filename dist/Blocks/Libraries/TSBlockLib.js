@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_lib_1 = require("common-lib");
 const TSBlockError_1 = require("../TSBlock/TSBlockError");
+const Message_1 = require("../../Core/Message");
 const Connector_1 = require("../../Core/Connector");
 class ValueChangedEvent extends common_lib_1.Events.Event {
     constructor(value) {
@@ -27,6 +28,15 @@ class MessageReceivedEvent extends common_lib_1.Events.Event {
     ;
 }
 exports.MessageReceivedEvent = MessageReceivedEvent;
+class GroupInputEvent extends common_lib_1.Events.Event {
+    constructor(value, interfaceId) {
+        super("groupInput");
+        this.value = value;
+        this.interfaceId = interfaceId;
+    }
+    ;
+}
+exports.GroupInputEvent = GroupInputEvent;
 class ReadyEvent extends common_lib_1.Events.Event {
     constructor() {
         super("ready");
@@ -91,6 +101,9 @@ class OutputConnector extends BaseConnector {
     }
     send(message) {
         this.tsBlockLib.sendValueToOutputConnector(this.connector, message);
+    }
+    groupOutput(value, interfaceId) {
+        this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
     }
 }
 exports.OutputConnector = OutputConnector;
@@ -189,61 +202,75 @@ class TSBlockLib {
         }
         throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: unknown config property type <b>${type}</b>`);
     }
-    sendValueToOutputConnector(connector, value) {
-        this.tsBlock.sendValueToOutputConnector(connector, value);
+    sendValueToOutputConnector(connector, value, interfaceId) {
+        this.tsBlock.sendValueToOutputConnector({
+            connector: connector,
+            eventType: null,
+            value: Array.isArray(value) ? new Message_1.Message(connector.argTypes.slice(0), value) : value,
+            interfaceId: interfaceId
+        });
         let strings = common_lib_1.Types.getStringsFromConnectorType(connector.type);
-        let event;
-        if (strings.type == "message") {
-            event = new MessageReceivedEvent({
+        let tsEvent;
+        if (interfaceId) {
+            tsEvent = new GroupInputEvent(strings.type !== "message" ? value : {
+                types: connector.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
+                values: value
+            }, interfaceId);
+        }
+        else if (strings.type == "message") {
+            tsEvent = new MessageReceivedEvent({
                 types: connector.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                 values: value
             });
         }
         else {
-            event = new ValueChangedEvent(value);
+            tsEvent = new ValueChangedEvent(value);
         }
         if (strings.direction == "input") {
             let connectorWrapper = this.inputConnectors[connector.name];
-            if (connectorWrapper && event) {
-                this.inputConnectorsEmitter.emit(connectorWrapper, event);
-                connectorWrapper.emit(connectorWrapper, event);
+            if (connectorWrapper && tsEvent) {
+                this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                connectorWrapper.emit(connectorWrapper, tsEvent);
             }
         }
         else if (strings.direction == "output") {
             let connectorWrapper = this.outputConnectors[connector.name];
-            if (connectorWrapper && event) {
-                this.outputConnectorsEmitter.emit(connectorWrapper, event);
-                connectorWrapper.emit(connectorWrapper, event);
+            if (connectorWrapper && tsEvent) {
+                this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                connectorWrapper.emit(connectorWrapper, tsEvent);
             }
         }
     }
-    inputEvent(connector, eventType, value) {
+    inputEvent(event) {
         if (this.machine)
             this.machine.call(() => {
-                let strings = common_lib_1.Types.getStringsFromConnectorType(connector.type);
-                let event;
-                if (eventType == Connector_1.ConnectorEventType.ValueChange) {
-                    event = new ValueChangedEvent(value);
+                let strings = common_lib_1.Types.getStringsFromConnectorType(event.connector.type);
+                let tsEvent;
+                if (event.eventType == Connector_1.ConnectorEventType.ValueChange) {
+                    tsEvent = new ValueChangedEvent(event.value);
                 }
-                else {
-                    let message = value;
-                    event = new MessageReceivedEvent({
+                else if (event.eventType == Connector_1.ConnectorEventType.NewMessage) {
+                    let message = event.value;
+                    tsEvent = new MessageReceivedEvent({
                         types: message.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                         values: message.values
                     });
                 }
+                else if (event.eventType == Connector_1.ConnectorEventType.GroupInput) {
+                    tsEvent = new GroupInputEvent(event.value, event.interfaceId);
+                }
                 if (strings.direction == "input") {
-                    let connectorWrapper = this.inputConnectors[connector.name];
-                    if (connectorWrapper && event) {
-                        this.inputConnectorsEmitter.emit(connectorWrapper, event);
-                        connectorWrapper.emit(connectorWrapper, event);
+                    let connectorWrapper = this.inputConnectors[event.connector.name];
+                    if (connectorWrapper && tsEvent) {
+                        this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                        connectorWrapper.emit(connectorWrapper, tsEvent);
                     }
                 }
                 else if (strings.direction == "output") {
-                    let connectorWrapper = this.outputConnectors[connector.name];
-                    if (connectorWrapper && event) {
-                        this.outputConnectorsEmitter.emit(connectorWrapper, event);
-                        connectorWrapper.emit(connectorWrapper, event);
+                    let connectorWrapper = this.outputConnectors[event.connector.name];
+                    if (connectorWrapper && tsEvent) {
+                        this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                        connectorWrapper.emit(connectorWrapper, tsEvent);
                     }
                 }
             });

@@ -1,9 +1,9 @@
 
 
-import {Connection} from './Connection';
-import {Block} from './Block';
-import {Message, MessageHelpers} from './Message';
-import {Types} from 'common-lib';
+import { Connection } from './Connection';
+import { Block } from './Block';
+import { Message, MessageHelpers } from './Message';
+import { Types } from 'common-lib';
 
 export interface IConnectorRenderer {
     refresh():void;
@@ -12,7 +12,14 @@ export interface IConnectorRenderer {
 }
 
 // Conntector types
-export enum ConnectorEventType {ValueChange, NewMessage}
+export enum ConnectorEventType { ValueChange, NewMessage, GroupInput }
+
+export interface ConnectorEvent {
+    connector: Connector;
+    eventType: ConnectorEventType;
+    value: boolean|number|Message;
+    interfaceId?: string;
+}
 
 export class Connector {
     public block:Block;
@@ -58,7 +65,7 @@ export class Connector {
             if (typeof value == 'boolean') {
                 this._boolValue = <boolean>value;
             } else if (typeof value == 'number') {
-                this._boolValue = value?true:false;
+                this._boolValue = !!value;
             }
         }
         if (this.isAnalog()) {
@@ -163,11 +170,12 @@ export class Connector {
     }
 
 // This is 'inner' method, call it only if you know what you do!!
-    public _outputSetValue(value:boolean|number|Message|any[]) {
+    public _outputSetValue(value:boolean|number|Message|any[], interfaceId?: string) {
 
         let boolVal:boolean = null;
         let numVal:number = null;
         let msgVal:Message = null;
+        let type = ConnectorEventType.ValueChange;
         if (typeof value == 'boolean') {
             boolVal = <boolean>value;
             numVal = boolVal?1:0;
@@ -178,22 +186,36 @@ export class Connector {
         }
         if (Array.isArray(value)) {
             msgVal = new Message(this.argTypes.slice(0), value);
+            type = ConnectorEventType.NewMessage;
         }
         if (value instanceof Message) {
             msgVal = <Message>value;
+            type = ConnectorEventType.NewMessage;
         }
+        if (interfaceId) {
+            type = ConnectorEventType.GroupInput;
+        }
+
+        let event: ConnectorEvent = {
+            connector: this,
+            eventType: type,
+            value: null,
+            interfaceId: interfaceId
+        };
 
         if (this.type == Types.ConnectorType.DigitalOutput) {
             if (boolVal == null) return;
             if (this._boolValue == boolVal) return;
             this._boolValue = boolVal;
-            this.block._outputEvent(this, ConnectorEventType.ValueChange, boolVal);
+            event.value = boolVal;
+            this.block._outputEvent(event);
             return;
         } else if (this.type == Types.ConnectorType.AnalogOutput) {
             if (numVal == null) return;
             if (this._numValue == numVal) return;
             this._numValue = numVal;
-            this.block._outputEvent(this, ConnectorEventType.ValueChange, numVal);
+            event.value = numVal;
+            this.block._outputEvent(event);
             return;
         } else if (this.type == Types.ConnectorType.MessageOutput) {
             if (msgVal == null) return;
@@ -208,18 +230,20 @@ export class Connector {
                 }
             });
             this._msgValue = msgVal;
-            this.block._outputEvent(this, ConnectorEventType.NewMessage, msgVal);
+            event.value = msgVal;
+            this.block._outputEvent(event);
             return;
         }
         console.log('Cannot call setValue on not-output connectors!');
     }
 
     // This is 'inner' method, call it only if you know what you do!!
-    public _inputSetValue(value:boolean|number|Message) {
+    public _inputSetValue(value:boolean|number|Message, interfaceId?: string) {
 
         let boolVal:boolean = null;
         let numVal:number = null;
         let msgVal:Message = null;
+        let type = ConnectorEventType.ValueChange;
         if (typeof value == 'boolean') {
             boolVal = <boolean>value;
             numVal = boolVal?1:0;
@@ -228,19 +252,35 @@ export class Connector {
             numVal = <number>value;
             boolVal = !!numVal;
         }
-        if (value instanceof Message) msgVal = <Message>value;
+        if (value instanceof Message) {
+            msgVal = <Message>value;
+            type = ConnectorEventType.NewMessage;
+        }
+
+        if (interfaceId) {
+            type = ConnectorEventType.GroupInput;
+        }
+
+        let event: ConnectorEvent = {
+            connector: this,
+            eventType: type,
+            value: null,
+            interfaceId: interfaceId
+        };
 
         if (this.type == Types.ConnectorType.DigitalInput) {
             if (boolVal == null) return;
             if (this._boolValue == boolVal) return;
             this._boolValue = boolVal;
-            this.block._inputEvent(this, ConnectorEventType.ValueChange, boolVal);
+            event.value = boolVal;
+            this.block._inputEvent(event);
             return;
         } else if (this.type == Types.ConnectorType.AnalogInput) {
             if (numVal == null) return;
             if (this._numValue == numVal) return;
             this._numValue = numVal;
-            this.block._inputEvent(this, ConnectorEventType.ValueChange, numVal);
+            event.value = numVal;
+            this.block._inputEvent(event);
             return;
         } else if (this.type == Types.ConnectorType.MessageInput) {
             if (!msgVal) return;
@@ -250,7 +290,8 @@ export class Connector {
                     this.renderer.messageHighlight();
                 }
                 this._msgValue = msgVal;
-                this.block._inputEvent(this, ConnectorEventType.NewMessage, msgVal);
+                event.value = msgVal;
+                this.block._inputEvent(event);
             }
             return;
         }

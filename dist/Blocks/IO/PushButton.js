@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const DigitalInput_1 = require("./DigitalInput");
+const Connector_1 = require("../../Core/Connector");
 class PushButton extends DigitalInput_1.DigitalInput {
     constructor(id) {
         super(id, 'pushButton');
@@ -13,7 +14,12 @@ class PushButton extends DigitalInput_1.DigitalInput {
     }
     onMouseDown() {
         if (this.controller) {
-            this.sendValueToOutputConnector(this.connectorOutput, true);
+            let event = {
+                connector: this.connectorOutput,
+                eventType: Connector_1.ConnectorEventType.ValueChange,
+                value: true
+            };
+            this.sendValueToOutputConnector(event);
             if (this.renderer) {
                 this.renderer.refreshDisplayName();
             }
@@ -21,7 +27,12 @@ class PushButton extends DigitalInput_1.DigitalInput {
     }
     onMouseUp() {
         if (this.controller) {
-            this.sendValueToOutputConnector(this.connectorOutput, false);
+            let event = {
+                connector: this.connectorOutput,
+                eventType: Connector_1.ConnectorEventType.ValueChange,
+                value: false
+            };
+            this.sendValueToOutputConnector(event);
             if (this.renderer) {
                 this.renderer.refreshDisplayName();
             }

@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const Core = require("../../Core/index");
 const common_lib_1 = require("common-lib");
+const Connector_1 = require("../../Core/Connector");
 class AnalogInput extends Core.Block {
     constructor(id) {
         super(id, "analogInput", "analogInput");
@@ -17,10 +18,15 @@ class AnalogInput extends Core.Block {
     rendererGetDisplayNameCursor() {
         return "ns-resize";
     }
-    onMouseDrag(event) {
+    onMouseDrag(e) {
         if (this.controller) {
-            this.currentValue -= event.dy * 0.1;
-            this.sendValueToOutputConnector(this.connectorOutput, this.currentValue);
+            this.currentValue -= e.dy * 0.1;
+            let event = {
+                connector: this.connectorOutput,
+                eventType: Connector_1.ConnectorEventType.ValueChange,
+                value: this.currentValue
+            };
+            this.sendValueToOutputConnector(event);
             if (this.renderer) {
                 this.renderer.refreshDisplayName();
             }

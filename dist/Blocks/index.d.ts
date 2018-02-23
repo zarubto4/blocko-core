@@ -21,4 +21,3 @@ export * from "./Logic/Not";
 export * from "./Logic/Or";
 export * from "./Logic/Xor";
 export * from "./InterfaceBlock";
-export * from "./InterfaceBlockGroup";

@@ -17,9 +17,7 @@ export class Manager {
             Blocks.AnalogInput,
             Blocks.AnalogOutput,
             Blocks.InputsInterfaceBlock,
-            Blocks.OutputsInterfaceBlock,
-            Blocks.InputsInterfaceBlockGroup,
-            Blocks.OutputsInterfaceBlockGroup,
+            Blocks.OutputsInterfaceBlock
         ];
     }
 }

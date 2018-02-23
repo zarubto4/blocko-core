@@ -1,6 +1,5 @@
 import * as Core from '../../Core/index';
-import { Connector, ConnectorEventType } from "../../Core/Connector";
-import { Message } from "../../Core/Message";
+import { ConnectorEvent } from '../../Core';
 export declare class TSBlock extends Core.Block {
     private _tsCode;
     private _tsCodeError;
@@ -32,7 +31,7 @@ export declare class TSBlock extends Core.Block {
     private restoreConnections();
     run(safe?: boolean): void;
     configChanged(): void;
-    protected inputChanged(connector: Connector, eventType: ConnectorEventType, value: boolean | number | Message): void;
+    protected inputChanged(event: ConnectorEvent): void;
     callReady(): void;
     rendererGetDisplayName(): string;
     rendererGetBlockBackgroundColor(): string;

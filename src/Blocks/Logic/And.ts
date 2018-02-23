@@ -2,6 +2,8 @@
 
 import * as Core from '../../Core/index';
 import {Types} from "common-lib";
+import { ConnectorEvent } from '../../Core';
+import { ConnectorEventType } from '../../Core/Connector';
 
 export class And extends Core.Block {
 
@@ -69,10 +71,16 @@ export class And extends Core.Block {
             out = !out;
         }
 
-        this.sendValueToOutputConnector(this.connectorOutput, (out)?1:0);
+        let event: ConnectorEvent = {
+            connector: this.connectorOutput,
+            eventType:  ConnectorEventType.ValueChange,
+            value: out ? 1 : 0
+        };
+
+        this.sendValueToOutputConnector(event);
     }
 
-    protected inputChanged(connector:Core.Connector, eventType:Core.ConnectorEventType, value:boolean|number|Core.Message):void {
+    protected inputChanged(event):void {
         this.inputsChanged();
     }
 

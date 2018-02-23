@@ -1,4 +1,6 @@
 import { DigitalInput } from "./DigitalInput";
+import { ConnectorEvent } from '../../Core';
+import { ConnectorEventType } from '../../Core/Connector';
 
 export class Switch extends DigitalInput {
 
@@ -16,7 +18,12 @@ export class Switch extends DigitalInput {
 
     public onMouseClick(): void {
         if (this.controller) {
-            this.sendValueToOutputConnector(this.connectorOutput, !this.connectorOutput.value);
+            let event: ConnectorEvent = {
+                connector: this.connectorOutput,
+                eventType:  ConnectorEventType.ValueChange,
+                value: !this.connectorOutput.value
+            };
+            this.sendValueToOutputConnector(event);
             if (this.renderer) {
                 this.renderer.refreshDisplayName();
             }

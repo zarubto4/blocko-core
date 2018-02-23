@@ -18,7 +18,7 @@ class DigitalOutput extends Core.Block {
             return "#d1d1ff";
         }
     }
-    inputChanged(connector, eventType, value) {
+    inputChanged(event) {
         if (this.renderer) {
             this.renderer.refreshDisplayName();
         }

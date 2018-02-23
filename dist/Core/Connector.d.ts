@@ -10,6 +10,13 @@ export interface IConnectorRenderer {
 export declare enum ConnectorEventType {
     ValueChange = 0,
     NewMessage = 1,
+    GroupInput = 2,
+}
+export interface ConnectorEvent {
+    connector: Connector;
+    eventType: ConnectorEventType;
+    value: boolean | number | Message;
+    interfaceId?: string;
 }
 export declare class Connector {
     block: Block;
@@ -35,6 +42,6 @@ export declare class Connector {
     isMessage(): boolean;
     haveFreeSpace(): boolean;
     readonly stringArgTypes: string[];
-    _outputSetValue(value: boolean | number | Message | any[]): void;
-    _inputSetValue(value: boolean | number | Message): void;
+    _outputSetValue(value: boolean | number | Message | any[], interfaceId?: string): void;
+    _inputSetValue(value: boolean | number | Message, interfaceId?: string): void;
 }

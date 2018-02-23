@@ -2,6 +2,8 @@
 
 import * as Core from '../../Core/index';
 import {Types} from "common-lib";
+import { ConnectorEvent } from '../../Core';
+import { ConnectorEventType } from '../../Core/Connector';
 
 export class AnalogInput extends Core.Block {
 
@@ -25,10 +27,15 @@ export class AnalogInput extends Core.Block {
         return "ns-resize";
     }
 
-    public onMouseDrag(event: {dx: number, dy: number}): boolean {
+    public onMouseDrag(e: {dx: number, dy: number}): boolean {
         if (this.controller) {
-            this.currentValue -= event.dy * 0.1;
-            this.sendValueToOutputConnector(this.connectorOutput, this.currentValue);
+            this.currentValue -= e.dy * 0.1;
+            let event: ConnectorEvent = {
+                connector: this.connectorOutput,
+                eventType:  ConnectorEventType.ValueChange,
+                value: this.currentValue
+            };
+            this.sendValueToOutputConnector(event);
             if (this.renderer) {
                 this.renderer.refreshDisplayName();
             }

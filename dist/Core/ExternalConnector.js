@@ -17,17 +17,26 @@ class ExternalConnector {
     getValue() {
         return this.value;
     }
-    setValue(value) {
+    setValue(value, interfaceId) {
         this.value = value;
         let type = Connector_1.ConnectorEventType.ValueChange;
-        if (this instanceof ExternalMessageConnector) {
+        if (interfaceId) {
+            type = Connector_1.ConnectorEventType.GroupInput;
+        }
+        else if (this instanceof ExternalMessageConnector) {
             type = Connector_1.ConnectorEventType.NewMessage;
         }
+        let event = {
+            connector: this,
+            eventType: type,
+            value: value,
+            interfaceId: interfaceId
+        };
         if (this.type == ExternalConnectorType.Input) {
-            this.block._externalInputEvent(this, type, value);
+            this.block._externalInputEvent(event);
         }
         else {
-            this.block._externalOutputEvent(this, type, value);
+            this.block._externalOutputEvent(event);
         }
     }
     get name() {
@@ -67,20 +76,10 @@ class ExternalMessageConnector extends ExternalConnector {
     isArgTypesEqual(argTypes) {
         return Message_1.MessageHelpers.isArgTypesEqual(this._argTypes, argTypes);
     }
-    setValue(value) {
+    setValue(value, interfaceId) {
         if (this.isArgTypesEqual(value.argTypes)) {
-            super.setValue(value);
+            super.setValue(value, interfaceId);
         }
     }
 }
 exports.ExternalMessageConnector = ExternalMessageConnector;
-class ExternalGroupConnector extends ExternalMessageConnector {
-    get kind() {
-        return this._kind;
-    }
-    constructor(block, targetId, name, type, argTypes, kind) {
-        super(block, targetId, name, type, argTypes);
-        this._kind = kind;
-    }
-}
-exports.ExternalGroupConnector = ExternalGroupConnector;
