@@ -277,6 +277,9 @@ class BaseInterfaceBlock extends Core.Block {
             other.remove();
         }
     }
+    isInterface() {
+        return true;
+    }
     rendererGetBlockSize() {
         let maxCon = Math.max(this._deviceInputsCount, this._deviceOutputsCount);
         let height = Math.max(139, 139 + ((maxCon - 6) * 20));

@@ -325,6 +325,9 @@ class Block {
     onMouseClick() { }
     onMouseDown() { }
     onMouseUp() { }
+    isInterface() {
+        return false;
+    }
     rendererGetBlockBackgroundColor() {
         return "#ccc";
     }

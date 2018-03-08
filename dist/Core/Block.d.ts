@@ -97,6 +97,7 @@ export declare class Block {
     onMouseClick(): void;
     onMouseDown(): void;
     onMouseUp(): void;
+    isInterface(): boolean;
     rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
     rendererGetBlockName(): string;

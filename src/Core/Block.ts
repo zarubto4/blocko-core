@@ -430,6 +430,10 @@ export class Block {
 
     // renderer methods
 
+    public isInterface(): boolean {
+        return false;
+    }
+
     public rendererGetBlockBackgroundColor():string {
         // OVERRIDE ME!!!
         return "#ccc"; // default
