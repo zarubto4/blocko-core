@@ -208,7 +208,7 @@ export class Controller {
         do {
             this.interfaceIndex++;
             id = 'I-' + this.interfaceIndex;
-        } while (this.getBlockById(id) != null);
+        } while (this.getBlockById(id + '-IN') != null);
         return id;
     }
 
