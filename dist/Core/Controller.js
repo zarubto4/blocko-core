@@ -400,6 +400,18 @@ class Controller {
             console.log('Controller::bindInterface - not found block');
         }
     }
+    getBindings() {
+        let bindings = [];
+        this.blocks.filter((block) => {
+            return block instanceof Blocks_1.BaseInterfaceBlock && block.isInput() && block.targetId !== null;
+        }).forEach((block) => {
+            bindings.push({
+                interfaceId: block.interfaceId,
+                targetId: block.targetId
+            });
+        });
+        return bindings;
+    }
     getDataJson() {
         let json = {
             blocks: {}

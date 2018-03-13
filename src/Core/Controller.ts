@@ -553,6 +553,25 @@ export class Controller {
         }
     }
 
+    /**
+     * Gets all interfaces that were bound to hardware or grid
+     * @returns {Array<BoundInterface>}
+     */
+    public getBindings(): Array<BoundInterface> {
+        let bindings: Array<BoundInterface> = [];
+
+        this.blocks.filter((block) => {
+            return block instanceof BaseInterfaceBlock && block.isInput() && block.targetId !== null;
+        }).forEach((block: BaseInterfaceBlock) => {
+            bindings.push({
+                interfaceId: block.interfaceId,
+                targetId: block.targetId
+            });
+        });
+
+        return bindings;
+    }
+
     // Saving and loading
     public getDataJson(): string {
         let json:any = {

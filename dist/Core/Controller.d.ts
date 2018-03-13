@@ -91,6 +91,7 @@ export declare class Controller {
     private interfaceBoundCallbacks;
     registerInterfaceBoundCallback(callback: (iface: BoundInterface) => void): void;
     bindInterface(targetId: string): void;
+    getBindings(): Array<BoundInterface>;
     getDataJson(): string;
     setDataJson(jsonString: string): string;
     isDeployable(): boolean;
