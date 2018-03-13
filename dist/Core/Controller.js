@@ -403,7 +403,7 @@ class Controller {
     getBindings() {
         let bindings = [];
         this.blocks.filter((block) => {
-            return block instanceof Blocks_1.BaseInterfaceBlock && block.isInput() && block.targetId !== null;
+            return block instanceof Blocks_1.BaseInterfaceBlock && block.isInput() && block.targetId && !block.isGrid();
         }).forEach((block) => {
             bindings.push({
                 interfaceId: block.interfaceId,

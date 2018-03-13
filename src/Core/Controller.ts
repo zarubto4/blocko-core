@@ -561,7 +561,7 @@ export class Controller {
         let bindings: Array<BoundInterface> = [];
 
         this.blocks.filter((block) => {
-            return block instanceof BaseInterfaceBlock && block.isInput() && block.targetId !== null;
+            return block instanceof BaseInterfaceBlock && block.isInput() && block.targetId && !block.isGrid();
         }).forEach((block: BaseInterfaceBlock) => {
             bindings.push({
                 interfaceId: block.interfaceId,

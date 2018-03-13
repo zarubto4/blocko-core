@@ -49,6 +49,7 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     readonly interfaceId: string;
     getOther(): BaseInterfaceBlock;
     isInput(): boolean;
+    isGrid(): boolean;
     externalInputEvent(event: ExternalConnectorEvent): void;
     inputChanged(event: ConnectorEvent): void;
     remove(): void;

@@ -295,6 +295,10 @@ export abstract class BaseInterfaceBlock extends Core.Block {
         return this instanceof InputsInterfaceBlock;
     }
 
+    public isGrid(): boolean {
+        return this._interface.grid;
+    }
+
     public externalInputEvent(event: ExternalConnectorEvent):void {
         if (!event.connector) return;
 

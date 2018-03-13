@@ -233,6 +233,9 @@ class BaseInterfaceBlock extends Core.Block {
     isInput() {
         return this instanceof InputsInterfaceBlock;
     }
+    isGrid() {
+        return this._interface.grid;
+    }
     externalInputEvent(event) {
         if (!event.connector)
             return;
