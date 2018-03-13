@@ -1,6 +1,6 @@
 {
   "name": "blocko-core",
-  "version": "0.2.18",
+  "version": "0.2.19",
   "description": "BLOCKOcore",
   "main": "dist/index.js",
   "typings": "dist/index",
