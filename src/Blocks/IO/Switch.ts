@@ -1,15 +1,19 @@
 import { DigitalInput } from "./DigitalInput";
-import { ConnectorEvent } from '../../Core';
-import { ConnectorEventType } from '../../Core/Connector';
+import { ConfigProperty, ConnectorEvent, ConnectorEventType } from '../../Core';
+import { Types } from 'common-lib';
 
 export class Switch extends DigitalInput {
 
+    protected switchValue: ConfigProperty;
+
     public constructor(id:string) {
         super(id, "switch");
+
+        this.switchValue = this.addConfigProperty(Types.ConfigPropertyType.Boolean, 'switchValue', 'Switch value', false, { controlPanel: true });
     }
 
     public rendererGetDisplayName():string {
-        return (this.connectorOutput.value) ? "fa-toggle-on" : "fa-toggle-off";
+        return "Switch";
     }
 
     public rendererGetDisplayNameCursor():string {
@@ -32,5 +36,16 @@ export class Switch extends DigitalInput {
 
     public onMouseDrag(event: {dx: number, dy: number}): boolean {
         return true;
+    }
+
+    public configChanged(): void {
+        if (this.controller) {
+            let event: ConnectorEvent = {
+                connector: this.connectorOutput,
+                eventType:  ConnectorEventType.ValueChange,
+                value: this.switchValue.value
+            };
+            this.sendValueToOutputConnector(event);
+        }
     }
 }

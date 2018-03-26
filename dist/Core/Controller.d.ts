@@ -19,6 +19,7 @@ export interface BlockoInstanceConfig {
 export interface BoundInterface {
     targetId: string;
     interfaceId: string;
+    group?: boolean;
 }
 export declare class Controller {
     blocksRegister: Array<BlockRegistration>;
@@ -90,7 +91,7 @@ export declare class Controller {
     addInterface(iface: BlockoTargetInterface): void;
     private interfaceBoundCallbacks;
     registerInterfaceBoundCallback(callback: (iface: BoundInterface) => void): void;
-    bindInterface(targetId: string): void;
+    bindInterface(targetId: string, group?: boolean): BoundInterface;
     getBindings(): Array<BoundInterface>;
     getDataJson(): string;
     setDataJson(jsonString: string): string;

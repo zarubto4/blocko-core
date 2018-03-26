@@ -161,7 +161,7 @@ class Block {
         }
     }
     addConfigProperty(type, id, displayName, defaultValue, config) {
-        let configProperty = new ConfigProperty_1.ConfigProperty(type, id, displayName, defaultValue, config);
+        let configProperty = new ConfigProperty_1.ConfigProperty(type, id, displayName, defaultValue, this.emitConfigChanged.bind(this), config);
         this.configProperties.push(configProperty);
         return configProperty;
     }

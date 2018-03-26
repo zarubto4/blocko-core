@@ -35,6 +35,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
     private _displayName: string = '';
     private _targetId: string;
     private _interfaceId: string;
+    private _group: boolean = false;
 
     private _interfaceType: InterfaceBlockType;
 
@@ -48,7 +49,7 @@ export abstract class BaseInterfaceBlock extends Core.Block {
         this._interfaceType = interfaceType;
     }
 
-    public setInterface(iface:BlockoTargetInterface):void {
+    public setInterface(iface: BlockoTargetInterface):void {
 
         let wantedInputsOrder = [];
         let wantedOutputsOrder = [];
@@ -274,6 +275,14 @@ export abstract class BaseInterfaceBlock extends Core.Block {
 
     get interfaceId(): string {
         return this._interfaceId;
+    }
+
+    set group(value: boolean) {
+        this._group = value;
+    }
+
+    get group(): boolean {
+        return this._group;
     }
 
     /**

@@ -8,17 +8,9 @@ import { Types } from "common-lib";
 export interface IBlockRenderer {
     refresh(): void;
     destroy(): void;
-    getConnectorPosition(name: string): {
-        x: number;
-        y: number;
-    };
-    getPosition(): {
-        x: number;
-        y: number;
-    };
-    isHover(): boolean;
-    refreshDisplayName(): any;
-    highlight(): any;
+    isHovered(): boolean;
+    refreshDisplayName(): void;
+    highlight(): void;
 }
 export declare class Block {
     protected inputConnectors: Array<Connector>;

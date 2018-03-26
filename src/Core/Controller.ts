@@ -25,6 +25,7 @@ export interface BlockoInstanceConfig {
 export interface BoundInterface {
     targetId: string;
     interfaceId: string;
+    group?: boolean;
 }
 
 export class Controller {
@@ -526,10 +527,11 @@ export class Controller {
      * Binds specific HW or HW group to an hovered interface.
      * This method works only in gui with drag'n'drop.
      * @param {string} targetId of WH
+     * @param {boolean} group
      */
-    public bindInterface(targetId: string): void {
+    public bindInterface(targetId: string, group?: boolean): BoundInterface {
         let block = this.blocks.find((b) => {
-            return b.renderer && b.renderer.isHover();
+            return b.renderer && b.renderer.isHovered();
         });
 
         if (block && block instanceof BaseInterfaceBlock && block.interfaceId !== block.targetId) {
@@ -545,11 +547,22 @@ export class Controller {
 
             let interfaceId: string = block.interfaceId;
 
+            if (group) {
+                block.group = group;
+            }
+
             this.interfaceBoundCallbacks.forEach(callback => callback({ targetId: targetId, interfaceId: interfaceId }));
+
+            return {
+                targetId: targetId,
+                interfaceId: interfaceId,
+                group: block.group
+            }
 
         } else {
             console.log('Controller::bindInterface - not found block');
             // TODO throw some error or tell why is not added
+            return null;
         }
     }
 
@@ -565,7 +578,8 @@ export class Controller {
         }).forEach((block: BaseInterfaceBlock) => {
             bindings.push({
                 interfaceId: block.interfaceId,
-                targetId: block.targetId
+                targetId: block.targetId,
+                group: block.group
             });
         });
 
@@ -606,9 +620,10 @@ export class Controller {
                 blockJson['outputs'][connector.name] = connectionsJson;
             });
 
-            if (block instanceof InputsInterfaceBlock || block instanceof OutputsInterfaceBlock) {
+            if (block instanceof BaseInterfaceBlock) {
                 blockJson['interface'] = block.interface;
                 blockJson['targetId'] = block.targetId;
+                blockJson['group'] = block.group;
             }
 
             if (block instanceof TSBlock) {
@@ -649,10 +664,13 @@ export class Controller {
                             blockObj = new bc(id);
                         }
 
-                        if (block['interface'] && (blockObj instanceof InputsInterfaceBlock || blockObj instanceof  OutputsInterfaceBlock)) {
+                        if (block['interface'] && blockObj instanceof BaseInterfaceBlock) {
                             blockObj.setInterface(block['interface']);
                             if (block['targetId']) {
                                 blockObj.setTargetId(block['targetId']);
+                            }
+                            if (block['group']) {
+                                blockObj.group = block['group'];
                             }
                         }
 

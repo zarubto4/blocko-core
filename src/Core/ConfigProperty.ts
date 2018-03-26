@@ -1,6 +1,6 @@
 
 
-import {Types} from "common-lib";
+import { Types } from "common-lib";
 
 export class ConfigProperty {
 
@@ -10,13 +10,15 @@ export class ConfigProperty {
     private _type:Types.ConfigPropertyType;
 
     private _value:any;
+    private _changeCallback: () => void;
 
-    public constructor(type:Types.ConfigPropertyType, name:string, displayName:string, defaultValue:any, config?:any) {
+    public constructor(type:Types.ConfigPropertyType, name:string, displayName:string, defaultValue:any, changeCallback: () => void, config?:any) {
         this._type = type;
         this._name = name;
         this._displayName = displayName;
         this._config = config || {};
         this._value = defaultValue;
+        this._changeCallback = changeCallback;
 
         this.validateOptions();
     }
@@ -88,6 +90,7 @@ export class ConfigProperty {
 
     set value(value:any) {
         this._value = value;
+        this._changeCallback();
     }
 
 }

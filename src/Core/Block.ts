@@ -13,35 +13,33 @@ import {Types} from "common-lib";
 
 // Interface for block renderer
 export interface IBlockRenderer {
-    refresh():void;
-    destroy():void;
-    getConnectorPosition(name:string):{x:number, y:number};
-    getPosition():{x:number, y:number};
-    isHover(): boolean;
-    refreshDisplayName();
-    highlight();
+    refresh(): void;
+    destroy(): void;
+    isHovered(): boolean;
+    refreshDisplayName(): void;
+    highlight(): void;
 }
 
 export class Block {
 
-    protected inputConnectors:Array<Connector>;
-    protected outputConnectors:Array<Connector>;
-    protected externalInputConnectors:Array<ExternalConnector<any>>;
-    protected externalOutputsConnectors:Array<ExternalConnector<any>>;
-    protected configProperties:Array<ConfigProperty>;
+    protected inputConnectors: Array<Connector>;
+    protected outputConnectors: Array<Connector>;
+    protected externalInputConnectors: Array<ExternalConnector<any>>;
+    protected externalOutputsConnectors: Array<ExternalConnector<any>>;
+    protected configProperties: Array<ConfigProperty>;
 
     protected _typeOfBlock: string = null;
     protected _blockVersion: string = null;
     protected _color: string = null;
 
-    public id:string;
+    public id: string;
 
-    public type:string;
-    public visualType:string;
+    public type: string;
+    public visualType: string;
 
     public configPropertiesDescription: string = null;
 
-    public renderer:IBlockRenderer;
+    public renderer: IBlockRenderer;
 
     protected _controller:Controller = null;
 
@@ -209,7 +207,7 @@ export class Block {
     // config properties
 
     public addConfigProperty(type:Types.ConfigPropertyType, id:string, displayName:string, defaultValue:any, config?:any) {
-        let configProperty:ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, config);
+        let configProperty:ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, this.emitConfigChanged.bind(this), config);
         this.configProperties.push(configProperty);
         return configProperty;
     }

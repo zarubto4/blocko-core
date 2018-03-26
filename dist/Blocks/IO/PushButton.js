@@ -7,7 +7,7 @@ class PushButton extends DigitalInput_1.DigitalInput {
         super(id, 'pushButton');
     }
     rendererGetDisplayName() {
-        return (this.connectorOutput) ? 'fa-dot-circle-o' : 'fa-circle-o';
+        return 'Button';
     }
     rendererGetDisplayNameCursor() {
         return 'hand';

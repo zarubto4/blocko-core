@@ -37,6 +37,7 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     private _displayName;
     private _targetId;
     private _interfaceId;
+    private _group;
     private _interfaceType;
     private _deviceInputsCount;
     private _deviceOutputsCount;
@@ -47,6 +48,7 @@ export declare abstract class BaseInterfaceBlock extends Core.Block {
     readonly interface: any;
     readonly targetId: string;
     readonly interfaceId: string;
+    group: boolean;
     getOther(): BaseInterfaceBlock;
     isInput(): boolean;
     isGrid(): boolean;

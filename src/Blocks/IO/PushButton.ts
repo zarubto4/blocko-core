@@ -9,7 +9,7 @@ export class PushButton extends DigitalInput {
     }
 
     public rendererGetDisplayName():string {
-        return (this.connectorOutput) ? 'fa-dot-circle-o' : 'fa-circle-o';
+        return 'Button';
     }
 
     public rendererGetDisplayNameCursor():string {

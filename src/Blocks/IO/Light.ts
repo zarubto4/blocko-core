@@ -1,7 +1,5 @@
 
-
-import * as Core from '../../Core/index';
-import {DigitalOutput} from "./DigitalOutput";
+import { DigitalOutput } from "./DigitalOutput";
 
 export class Light extends DigitalOutput {
 
@@ -10,7 +8,7 @@ export class Light extends DigitalOutput {
     }
 
     public rendererGetDisplayName():string {
-        return (this.connectorInput.value) ? "fa-star" : "fa-star-o";
+        return 'Digital display';
     }
 
 }

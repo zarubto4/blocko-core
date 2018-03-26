@@ -381,9 +381,9 @@ class Controller {
     registerInterfaceBoundCallback(callback) {
         this.interfaceBoundCallbacks.push(callback);
     }
-    bindInterface(targetId) {
+    bindInterface(targetId, group) {
         let block = this.blocks.find((b) => {
-            return b.renderer && b.renderer.isHover();
+            return b.renderer && b.renderer.isHovered();
         });
         if (block && block instanceof Blocks_1.BaseInterfaceBlock && block.interfaceId !== block.targetId) {
             block.setTargetId(targetId);
@@ -394,10 +394,19 @@ class Controller {
                 other.renderer.refresh();
             }
             let interfaceId = block.interfaceId;
+            if (group) {
+                block.group = group;
+            }
             this.interfaceBoundCallbacks.forEach(callback => callback({ targetId: targetId, interfaceId: interfaceId }));
+            return {
+                targetId: targetId,
+                interfaceId: interfaceId,
+                group: block.group
+            };
         }
         else {
             console.log('Controller::bindInterface - not found block');
+            return null;
         }
     }
     getBindings() {
@@ -407,7 +416,8 @@ class Controller {
         }).forEach((block) => {
             bindings.push({
                 interfaceId: block.interfaceId,
-                targetId: block.targetId
+                targetId: block.targetId,
+                group: block.group
             });
         });
         return bindings;
@@ -438,9 +448,10 @@ class Controller {
                 });
                 blockJson['outputs'][connector.name] = connectionsJson;
             });
-            if (block instanceof InterfaceBlock_1.InputsInterfaceBlock || block instanceof InterfaceBlock_1.OutputsInterfaceBlock) {
+            if (block instanceof Blocks_1.BaseInterfaceBlock) {
                 blockJson['interface'] = block.interface;
                 blockJson['targetId'] = block.targetId;
+                blockJson['group'] = block.group;
             }
             if (block instanceof TSBlock_1.TSBlock) {
                 blockJson['code'] = block.code;
@@ -467,10 +478,13 @@ class Controller {
                         else {
                             blockObj = new bc(id);
                         }
-                        if (block['interface'] && (blockObj instanceof InterfaceBlock_1.InputsInterfaceBlock || blockObj instanceof InterfaceBlock_1.OutputsInterfaceBlock)) {
+                        if (block['interface'] && blockObj instanceof Blocks_1.BaseInterfaceBlock) {
                             blockObj.setInterface(block['interface']);
                             if (block['targetId']) {
                                 blockObj.setTargetId(block['targetId']);
+                            }
+                            if (block['group']) {
+                                blockObj.group = block['group'];
                             }
                         }
                         blockObj.x = block['editor']['x'];

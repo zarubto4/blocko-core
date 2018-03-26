@@ -14,6 +14,7 @@ class BaseInterfaceBlock extends Core.Block {
     constructor(id, type, visualType, interfaceType) {
         super(id, type, visualType);
         this._displayName = '';
+        this._group = false;
         this._deviceInputsCount = 0;
         this._deviceOutputsCount = 0;
         this._interfaceType = interfaceType;
@@ -219,6 +220,12 @@ class BaseInterfaceBlock extends Core.Block {
     }
     get interfaceId() {
         return this._interfaceId;
+    }
+    set group(value) {
+        this._group = value;
+    }
+    get group() {
+        return this._group;
     }
     getOther() {
         let other;
