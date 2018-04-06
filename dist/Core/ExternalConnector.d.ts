@@ -22,7 +22,7 @@ export declare class ExternalConnector<T extends boolean | number | Message> {
     getValue(): T;
     setValue(value: T, interfaceId?: string): void;
     name: string;
-    readonly targetId: string;
+    targetId: string;
 }
 export declare class ExternalDigitalConnector extends ExternalConnector<boolean> {
     constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType);

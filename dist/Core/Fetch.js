@@ -205,12 +205,7 @@ class FetchExecutor {
         let headersCopy = {};
         for (let i in headers) {
             if (headers.hasOwnProperty(i)) {
-                if (typeof headers[i] == 'string') {
-                    headersCopy[i.toLowerCase()] = headers[i].toLowerCase();
-                }
-                else {
-                    headersCopy[i.toLowerCase()] = headers[i];
-                }
+                headersCopy[i.toLowerCase()] = headers[i];
             }
         }
         return headersCopy;

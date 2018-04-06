@@ -211,6 +211,12 @@ class BaseInterfaceBlock extends Core.Block {
     }
     setTargetId(targetId) {
         this._targetId = targetId;
+        this.getExternalInputConnectors().forEach((con) => {
+            con.targetId = targetId;
+        });
+        this.getExternalOutputConnectors().forEach((con) => {
+            con.targetId = targetId;
+        });
     }
     get interface() {
         return this._interface;

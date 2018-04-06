@@ -60,6 +60,10 @@ export class ExternalConnector<T extends boolean|number|Message> {
         this._name = value;
     }
 
+    set targetId(value: string) {
+        this._targetId = value;
+    }
+
     get targetId():string {
         return this._targetId;
     }

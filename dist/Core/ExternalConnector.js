@@ -45,6 +45,9 @@ class ExternalConnector {
     set name(value) {
         this._name = value;
     }
+    set targetId(value) {
+        this._targetId = value;
+    }
     get targetId() {
         return this._targetId;
     }

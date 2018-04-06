@@ -263,6 +263,12 @@ export abstract class BaseInterfaceBlock extends Core.Block {
 
     public setTargetId(targetId: string): void {
         this._targetId = targetId;
+        this.getExternalInputConnectors().forEach((con) => {
+            con.targetId = targetId;
+        });
+        this.getExternalOutputConnectors().forEach((con) => {
+            con.targetId = targetId;
+        });
     }
 
     get interface(): any {
