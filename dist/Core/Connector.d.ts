@@ -2,11 +2,7 @@ import { Connection } from './Connection';
 import { Block } from './Block';
 import { Message } from './Message';
 import { Types } from 'common-lib';
-export interface IConnectorRenderer {
-    refresh(): void;
-    destroy(): void;
-    messageHighlight(): void;
-}
+import { IRenderer } from './Renderer';
 export declare enum ConnectorEventType {
     ValueChange = 0,
     NewMessage = 1,
@@ -28,7 +24,7 @@ export declare class Connector {
     private _msgValue;
     connections: Array<Connection>;
     argTypes: Types.Type[];
-    renderer: IConnectorRenderer;
+    renderer: IRenderer;
     constructor(block: Block, name: string, displayName: string, type: Types.ConnectorType, argTypes: Types.Type[]);
     value: number | boolean;
     readonly lastMessage: Message;

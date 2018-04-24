@@ -8,7 +8,7 @@ export class Light extends DigitalOutput {
     }
 
     public rendererGetDisplayName():string {
-        return 'Digital display';
+        return 'D-OUT';
     }
 
 }

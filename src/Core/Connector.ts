@@ -1,15 +1,8 @@
-
-
 import { Connection } from './Connection';
 import { Block } from './Block';
 import { Message, MessageHelpers } from './Message';
 import { Types } from 'common-lib';
-
-export interface IConnectorRenderer {
-    refresh():void;
-    destroy():void;
-    messageHighlight():void;
-}
+import { HighlightType, IRenderer } from './Renderer';
 
 // Conntector types
 export enum ConnectorEventType { ValueChange, NewMessage, GroupInput }
@@ -22,21 +15,21 @@ export interface ConnectorEvent {
 }
 
 export class Connector {
-    public block:Block;
-    public name:string;
-    public displayName:string;
-    public type:Types.ConnectorType;
-    private _numValue:number = 0;
-    private _boolValue:boolean = false;
-    private _msgValue:Message = null;
+    public block: Block;
+    public name: string;
+    public displayName: string;
+    public type: Types.ConnectorType;
+    private _numValue: number = 0;
+    private _boolValue: boolean = false;
+    private _msgValue: Message = null;
 
-    public connections:Array<Connection>;
+    public connections: Array<Connection>;
 
-    public argTypes:Types.Type[] = null;
+    public argTypes: Types.Type[] = null;
 
-    public renderer:IConnectorRenderer;
+    public renderer: IRenderer;
 
-    public constructor(block:Block, name:string, displayName:string, type:Types.ConnectorType, argTypes:Types.Type[]) {
+    public constructor(block: Block, name: string, displayName: string, type: Types.ConnectorType, argTypes: Types.Type[]) {
         this.connections = [];
         this.block = block;
         this.name = name;
@@ -222,11 +215,11 @@ export class Connector {
             if (!msgVal.isArgTypesEqual(this.argTypes)) return;
             // TODO: check if highlight needed here
             if (this.renderer) {
-                this.renderer.messageHighlight();
+                this.renderer.highlight(HighlightType.Message);
             }
             this.connections.forEach(connection => {
                 if (connection.renderer) {
-                    connection.renderer.messageHighlight();
+                    connection.renderer.highlight(HighlightType.Message);
                 }
             });
             this._msgValue = msgVal;
@@ -287,7 +280,7 @@ export class Connector {
             if (msgVal.isArgTypesEqual(this.argTypes)) {
                 // TODO: check if highlight needed here
                 if (this.renderer) {
-                    this.renderer.messageHighlight();
+                    this.renderer.highlight(HighlightType.Message);
                 }
                 this._msgValue = msgVal;
                 event.value = msgVal;

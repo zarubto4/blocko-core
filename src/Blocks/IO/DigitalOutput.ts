@@ -27,7 +27,7 @@ export class DigitalOutput extends Core.Block {
 
     protected inputChanged(event: ConnectorEvent):void {
         if (this.renderer) {
-            this.renderer.refreshDisplayName();
+            // this.renderer.refreshDisplayName();
         }
     }
 

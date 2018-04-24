@@ -5,8 +5,9 @@ export declare class ConfigProperty {
     private _config;
     private _type;
     private _value;
-    private _changeCallback;
+    private _changeCallbacks;
     constructor(type: Types.ConfigPropertyType, name: string, displayName: string, defaultValue: any, changeCallback: () => void, config?: any);
+    registerChangeCallback(callback: () => void): void;
     protected validateOptions(): boolean;
     readonly name: string;
     displayName: string;

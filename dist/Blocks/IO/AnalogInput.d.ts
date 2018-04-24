@@ -1,7 +1,8 @@
-import * as Core from '../../Core/index';
-export declare class AnalogInput extends Core.Block {
-    connectorOutput: Core.Connector;
+import { Block, ConfigProperty, Connector } from '../../Core';
+export declare class AnalogInput extends Block {
+    connectorOutput: Connector;
     protected currentValue: number;
+    protected analogValue: ConfigProperty;
     constructor(id: string);
     rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
@@ -10,4 +11,5 @@ export declare class AnalogInput extends Core.Block {
         dx: number;
         dy: number;
     }): boolean;
+    configChanged(): void;
 }

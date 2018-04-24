@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Connection_1 = require("./Connection");
 const Message_1 = require("./Message");
 const common_lib_1 = require("common-lib");
+const Renderer_1 = require("./Renderer");
 var ConnectorEventType;
 (function (ConnectorEventType) {
     ConnectorEventType[ConnectorEventType["ValueChange"] = 0] = "ValueChange";
@@ -178,11 +179,11 @@ class Connector {
             if (!msgVal.isArgTypesEqual(this.argTypes))
                 return;
             if (this.renderer) {
-                this.renderer.messageHighlight();
+                this.renderer.highlight(Renderer_1.HighlightType.Message);
             }
             this.connections.forEach(connection => {
                 if (connection.renderer) {
-                    connection.renderer.messageHighlight();
+                    connection.renderer.highlight(Renderer_1.HighlightType.Message);
                 }
             });
             this._msgValue = msgVal;
@@ -243,7 +244,7 @@ class Connector {
                 return;
             if (msgVal.isArgTypesEqual(this.argTypes)) {
                 if (this.renderer) {
-                    this.renderer.messageHighlight();
+                    this.renderer.highlight(Renderer_1.HighlightType.Message);
                 }
                 this._msgValue = msgVal;
                 event.value = msgVal;

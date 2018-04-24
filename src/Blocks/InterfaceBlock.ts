@@ -9,7 +9,7 @@ import {
 } from '../Core/ExternalConnector';
 import { Message, MessageHelpers } from '../Core/Message';
 import { Types } from 'common-lib';
-import { ConnectorEvent, ExternalConnectorEvent } from '../Core';
+import { Block, ConnectorEvent, ExternalConnectorEvent } from '../Core';
 
 export enum InterfaceBlockType { Inputs, Outputs }
 
@@ -30,7 +30,7 @@ export interface BlockoTargetInterface {
     }
 }
 
-export abstract class BaseInterfaceBlock extends Core.Block {
+export abstract class BaseInterfaceBlock extends Block {
 
     private _displayName: string = '';
     private _targetId: string;

@@ -1,5 +1,5 @@
 import { IBlockRenderer, Block } from './Block';
-import { Connection, IConnectionRenderer } from './Connection';
+import { Connection } from './Connection';
 import { BlockClass, BlockRegistration } from './BlockRegistration';
 import { Connector, ConnectorEventType } from './Connector';
 import { ServicesHandler } from '../Blocks/Libraries/ServiceLib';
@@ -7,14 +7,17 @@ import { Service } from '../Blocks/Services/Service';
 import { ExternalConnector } from './ExternalConnector';
 import { BlockoTargetInterface } from '../Blocks/InterfaceBlock';
 import { Message, MessageJson } from './Message';
+import { IRenderer } from './Renderer';
 export interface IRendererFactory {
     factoryBlockRenderer(block: Block): IBlockRenderer;
-    factoryConnectionRenderer(connection: Connection): IConnectionRenderer;
+    factoryConnectionRenderer(connection: Connection): IRenderer;
 }
 export interface BlockoInstanceConfig {
-    inputEnabled: boolean;
-    outputEnabled: boolean;
-    asyncEventsEnabled: boolean;
+    renderController?: IRendererFactory;
+    dbConnectionString?: string;
+    inputEnabled?: boolean;
+    outputEnabled?: boolean;
+    asyncEventsEnabled?: boolean;
 }
 export interface BoundInterface {
     targetId: string;
@@ -30,7 +33,7 @@ export declare class Controller {
     gui: boolean;
     configuration: BlockoInstanceConfig;
     protected _servicesHandler: ServicesHandler;
-    constructor();
+    constructor(configuration?: BlockoInstanceConfig);
     registerService(service: Service): void;
     readonly servicesHandler: ServicesHandler;
     registerBlocks(blocksClass: Array<BlockClass>): void;
@@ -57,7 +60,7 @@ export declare class Controller {
     private factoryBlockRendererCallback;
     registerFactoryBlockRendererCallback(callback: (block: Block) => IBlockRenderer): void;
     private factoryConnectionRendererCallback;
-    registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IConnectionRenderer): void;
+    registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IRenderer): void;
     private inputConnectorEventCallbacks;
     registerInputConnectorEventCallback(callback: (block: Block, connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private outputConnectorEventCallbacks;

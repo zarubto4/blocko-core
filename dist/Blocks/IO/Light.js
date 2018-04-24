@@ -6,7 +6,7 @@ class Light extends DigitalOutput_1.DigitalOutput {
         super(id, "light");
     }
     rendererGetDisplayName() {
-        return 'Digital display';
+        return 'D-OUT';
     }
 }
 exports.Light = Light;

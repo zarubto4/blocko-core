@@ -1,13 +1,9 @@
-import { Connector } from "./Connector";
-export interface IConnectionRenderer {
-    refresh(): void;
-    destroy(): void;
-    messageHighlight(): void;
-}
+import { Connector } from './Connector';
+import { IRenderer } from './Renderer';
 export declare class Connection {
     connectorA: Connector;
     connectorB: Connector;
-    renderer: IConnectionRenderer;
+    renderer: IRenderer;
     constructor(connectorA: Connector, connectorB: Connector);
     getOtherConnector(self: Connector): Connector;
     getInputConnector(): Connector;

@@ -1,16 +1,13 @@
 import { ConnectorEvent, Connector, ConnectorEventType } from './Connector';
 import { ExternalConnector, ExternalConnectorEvent } from './ExternalConnector';
 import { ConfigProperty } from "./ConfigProperty";
-import { Controller } from "./Controller";
+import { Controller } from './Controller';
 import { Size } from "./Size";
 import { Message, MessageJson } from './Message';
 import { Types } from "common-lib";
-export interface IBlockRenderer {
-    refresh(): void;
-    destroy(): void;
+import { IRenderer } from './Renderer';
+export interface IBlockRenderer extends IRenderer {
     isHovered(): boolean;
-    refreshDisplayName(): void;
-    highlight(): void;
 }
 export declare class Block {
     protected inputConnectors: Array<Connector>;

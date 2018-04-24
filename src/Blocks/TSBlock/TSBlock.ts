@@ -7,6 +7,7 @@ import { FetchLib } from '../Libraries/FetchLib';
 
 import { Libs } from 'common-lib';
 import { ConnectorEvent } from '../../Core';
+import { DatabaseLib } from '../Libraries/DatabaseLib';
 
 //import * as src from 'typescript';
 
@@ -24,6 +25,7 @@ export class TSBlock extends Core.Block {
     private _consoleLib:Libs.ConsoleLib = null;
     private _serviceLib:ServiceLib = null;
     private _fetchLib:FetchLib = null;
+    private _dbLib: DatabaseLib = null;
 
     protected _displayName:string = '';
     protected _backgroundColor:string = '';
@@ -55,6 +57,7 @@ export class TSBlock extends Core.Block {
         this._utilsLib = new Libs.UtilsLib(!this.controller.configuration.asyncEventsEnabled);
         this._consoleLib = new Libs.ConsoleLib();
         this._fetchLib = new FetchLib();
+        this._dbLib = new DatabaseLib();
         this._serviceLib = new ServiceLib(this.controller.servicesHandler);
 
         this._consoleLib.setOnLog(this.onLog);
@@ -62,6 +65,7 @@ export class TSBlock extends Core.Block {
         this._machine.include(this._tsBlockLib);
         this._machine.include(this._consoleLib);
         this._machine.include(this._fetchLib);
+        this._machine.include(this._dbLib);
         this._machine.include(this._serviceLib);
 
         if (this._tsCode) {
@@ -299,7 +303,7 @@ export class TSBlock extends Core.Block {
 
     public rendererGetDisplayName():string {
         if (this._tsCodeError) {
-            return 'fa-exclamation-triangle';
+            return 'ERROR!';
         }
         return this._displayName;
     }

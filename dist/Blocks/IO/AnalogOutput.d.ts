@@ -1,7 +1,7 @@
-import * as Core from '../../Core/index';
-import { ConnectorEvent } from '../../Core';
-export declare class AnalogOutput extends Core.Block {
-    connectorInput: Core.Connector;
+import { Block, ConfigProperty, Connector, ConnectorEvent } from '../../Core';
+export declare class AnalogOutput extends Block {
+    connectorInput: Connector;
+    protected analogValue: ConfigProperty;
     constructor(id: string);
     rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;

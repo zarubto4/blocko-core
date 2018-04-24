@@ -6,8 +6,9 @@ const ExternalConnector_1 = require("./ExternalConnector");
 const InterfaceBlock_1 = require("../Blocks/InterfaceBlock");
 const TSBlock_1 = require("../Blocks/TSBlock/TSBlock");
 const Blocks_1 = require("../Blocks");
+const Database_1 = require("./Database");
 class Controller {
-    constructor() {
+    constructor(configuration) {
         this.safeRun = false;
         this.gui = false;
         this.configuration = {
@@ -34,6 +35,14 @@ class Controller {
         this.connections = [];
         this.blocksRegister = [];
         this._servicesHandler = new ServiceLib_1.ServicesHandler('BlockoServiceHandler');
+        if (configuration) {
+            if (configuration.renderController) {
+                this.rendererFactory = configuration.renderController;
+            }
+            if (configuration.dbConnectionString) {
+                Database_1.Database.connectionString = configuration.dbConnectionString;
+            }
+        }
     }
     registerService(service) {
         this._servicesHandler.addService(service);

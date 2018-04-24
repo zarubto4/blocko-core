@@ -1,30 +1,30 @@
+import { Block, ConfigProperty, Connector, ConnectorEvent, ConnectorEventType } from '../../Core';
+import { Types } from 'common-lib';
 
+export class AnalogInput extends Block {
 
-import * as Core from '../../Core/index';
-import {Types} from "common-lib";
-import { ConnectorEvent } from '../../Core';
-import { ConnectorEventType } from '../../Core/Connector';
-
-export class AnalogInput extends Core.Block {
-
-    public connectorOutput:Core.Connector;
+    public connectorOutput: Connector;
     protected currentValue: number = 0;
+    
+    protected analogValue: ConfigProperty;
 
     public constructor(id:string) {
-        super(id, "analogInput", "analogInput");
-        this.connectorOutput = this.addOutputConnector("output", Types.ConnectorType.AnalogOutput, "Output");
+        super(id, 'analogInput', 'analogInput');
+        this.connectorOutput = this.addOutputConnector('output', Types.ConnectorType.AnalogOutput, 'Output');
+        
+        this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1, input: true })
     }
 
     public rendererGetBlockBackgroundColor():string {
-        return "#d1e7d1";
+        return '#d1e7d1';
     }
 
     public rendererGetDisplayName():string {
-        return this.currentValue.toFixed(1);
+        return 'A-IN';
     }
 
     public rendererGetDisplayNameCursor():string {
-        return "ns-resize";
+        return 'ns-resize';
     }
 
     public onMouseDrag(e: {dx: number, dy: number}): boolean {
@@ -37,10 +37,20 @@ export class AnalogInput extends Core.Block {
             };
             this.sendValueToOutputConnector(event);
             if (this.renderer) {
-                this.renderer.refreshDisplayName();
+                // this.renderer.refreshDisplayName();
             }
         }
         return true;
     }
 
+    public configChanged(): void {
+        if (this.controller) {
+            let event: ConnectorEvent = {
+                connector: this.connectorOutput,
+                eventType:  ConnectorEventType.ValueChange,
+                value: this.analogValue.value
+            };
+            this.sendValueToOutputConnector(event);
+        }
+    }
 }

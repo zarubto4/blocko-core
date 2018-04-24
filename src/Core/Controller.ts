@@ -1,25 +1,29 @@
-import {IBlockRenderer, Block} from './Block';
-import {Connection, IConnectionRenderer} from './Connection';
-import {BlockClass, BlockRegistration} from './BlockRegistration';
-import {Connector, ConnectorEventType} from './Connector';
-import {ServicesHandler} from '../Blocks/Libraries/ServiceLib';
-import {Service} from '../Blocks/Services/Service';
-import { ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnector, 
+import { IBlockRenderer, Block } from './Block';
+import { Connection } from './Connection';
+import { BlockClass, BlockRegistration } from './BlockRegistration';
+import { Connector, ConnectorEventType } from './Connector';
+import { ServicesHandler } from '../Blocks/Libraries/ServiceLib';
+import { Service } from '../Blocks/Services/Service';
+import { ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnector,
     ExternalMessageConnector } from './ExternalConnector';
 import { InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface } from '../Blocks/InterfaceBlock';
-import {TSBlock} from '../Blocks/TSBlock/TSBlock';
+import { TSBlock } from '../Blocks/TSBlock/TSBlock';
 import { Message, MessageJson } from './Message';
 import { BaseInterfaceBlock } from '../Blocks';
+import { IRenderer } from './Renderer';
+import { Database } from './Database';
 
 export interface IRendererFactory {
-    factoryBlockRenderer(block:Block): IBlockRenderer;
-    factoryConnectionRenderer(connection:Connection): IConnectionRenderer;
+    factoryBlockRenderer(block: Block): IBlockRenderer;
+    factoryConnectionRenderer(connection: Connection): IRenderer;
 }
 
 export interface BlockoInstanceConfig {
-    inputEnabled: boolean;
-    outputEnabled: boolean;
-    asyncEventsEnabled: boolean;
+    renderController?: IRendererFactory;
+    dbConnectionString?: string;
+    inputEnabled?: boolean;
+    outputEnabled?: boolean;
+    asyncEventsEnabled?: boolean;
 }
 
 export interface BoundInterface {
@@ -50,11 +54,21 @@ export class Controller {
 
     protected _servicesHandler: ServicesHandler;
 
-    public constructor() {
+    public constructor(configuration?: BlockoInstanceConfig) {
         this.blocks = [];
         this.connections = [];
         this.blocksRegister = [];
         this._servicesHandler = new ServicesHandler('BlockoServiceHandler');
+
+        if (configuration) {
+            if (configuration.renderController) {
+                this.rendererFactory = configuration.renderController
+            }
+
+            if (configuration.dbConnectionString) {
+                Database.connectionString = configuration.dbConnectionString;
+            }
+        }
     }
 
     public registerService(service: Service) {
@@ -219,9 +233,9 @@ export class Controller {
         this.factoryBlockRendererCallback = callback;
     }
 
-    private factoryConnectionRendererCallback:(connection:Connection) => IConnectionRenderer = null;
+    private factoryConnectionRendererCallback:(connection:Connection) => IRenderer = null;
 
-    public registerFactoryConnectionRendererCallback(callback:(connection:Connection) => IConnectionRenderer):void {
+    public registerFactoryConnectionRendererCallback(callback:(connection:Connection) => IRenderer):void {
         this.factoryConnectionRendererCallback = callback;
     }
 

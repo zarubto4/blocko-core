@@ -6,6 +6,7 @@ const TSBlockLib_1 = require("../Libraries/TSBlockLib");
 const ServiceLib_1 = require("../Libraries/ServiceLib");
 const FetchLib_1 = require("../Libraries/FetchLib");
 const common_lib_1 = require("common-lib");
+const DatabaseLib_1 = require("../Libraries/DatabaseLib");
 class TSBlock extends Core.Block {
     constructor(id, tsCode, designJson) {
         super(id, 'tsBlock', 'tsBlock');
@@ -17,6 +18,7 @@ class TSBlock extends Core.Block {
         this._consoleLib = null;
         this._serviceLib = null;
         this._fetchLib = null;
+        this._dbLib = null;
         this._displayName = '';
         this._backgroundColor = '';
         this._description = null;
@@ -53,12 +55,14 @@ class TSBlock extends Core.Block {
         this._utilsLib = new common_lib_1.Libs.UtilsLib(!this.controller.configuration.asyncEventsEnabled);
         this._consoleLib = new common_lib_1.Libs.ConsoleLib();
         this._fetchLib = new FetchLib_1.FetchLib();
+        this._dbLib = new DatabaseLib_1.DatabaseLib();
         this._serviceLib = new ServiceLib_1.ServiceLib(this.controller.servicesHandler);
         this._consoleLib.setOnLog(this.onLog);
         this._machine.include(this._utilsLib);
         this._machine.include(this._tsBlockLib);
         this._machine.include(this._consoleLib);
         this._machine.include(this._fetchLib);
+        this._machine.include(this._dbLib);
         this._machine.include(this._serviceLib);
         if (this._tsCode) {
             this.setCode(this._tsCode);
@@ -251,7 +255,7 @@ class TSBlock extends Core.Block {
     }
     rendererGetDisplayName() {
         if (this._tsCodeError) {
-            return 'fa-exclamation-triangle';
+            return 'ERROR!';
         }
         return this._displayName;
     }

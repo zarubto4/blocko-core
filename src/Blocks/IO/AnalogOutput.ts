@@ -1,27 +1,26 @@
-import * as Core from '../../Core/index';
+import { Block, ConfigProperty, Connector, ConnectorEvent } from '../../Core';
 import { Types } from 'common-lib';
-import { ConnectorEvent } from '../../Core';
 
-export class AnalogOutput extends Core.Block {
+export class AnalogOutput extends Block {
 
-    public connectorInput: Core.Connector;
+    public connectorInput: Connector;
+    protected analogValue: ConfigProperty;
 
     public constructor(id: string) {
-        super(id, "analogOutput", "analogOutput");
-        this.connectorInput = this.addInputConnector("input", Types.ConnectorType.AnalogInput, "Input");
+        super(id, 'analogOutput', 'analogOutput');
+        this.connectorInput = this.addInputConnector('input', Types.ConnectorType.AnalogInput, 'Input');
+        this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1 })
     }
 
     public rendererGetBlockBackgroundColor(): string {
-        return "#d1e7d1";
+        return '#d1e7d1';
     }
 
     public rendererGetDisplayName(): string {
-        return (<number>this.connectorInput.value).toFixed(1);
+        return 'A-OUT'
     }
 
     protected inputChanged(event: ConnectorEvent): void {
-        if (this.renderer) {
-            this.renderer.refreshDisplayName();
-        }
+        this.analogValue.value = this.connectorInput.value;
     }
 }

@@ -10,7 +10,7 @@ export class ConfigProperty {
     private _type:Types.ConfigPropertyType;
 
     private _value:any;
-    private _changeCallback: () => void;
+    private _changeCallbacks: Array<() => void> = [];
 
     public constructor(type:Types.ConfigPropertyType, name:string, displayName:string, defaultValue:any, changeCallback: () => void, config?:any) {
         this._type = type;
@@ -18,9 +18,13 @@ export class ConfigProperty {
         this._displayName = displayName;
         this._config = config || {};
         this._value = defaultValue;
-        this._changeCallback = changeCallback;
+        this._changeCallbacks.push(changeCallback);
 
         this.validateOptions();
+    }
+
+    public registerChangeCallback(callback: () => void): void {
+        this._changeCallbacks.push(callback);
     }
 
     protected validateOptions(): boolean {
@@ -90,7 +94,9 @@ export class ConfigProperty {
 
     set value(value:any) {
         this._value = value;
-        this._changeCallback();
+        this._changeCallbacks.forEach(callback => {
+            callback();
+        });
     }
 
 }

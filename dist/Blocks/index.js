@@ -14,6 +14,7 @@ __export(require("./Services/XmlApiService"));
 __export(require("./Services/FetchService"));
 __export(require("./Services/RestApiService"));
 __export(require("./Services/CronService"));
+__export(require("./Services/DatabaseService"));
 __export(require("./IO/AnalogInput"));
 __export(require("./IO/AnalogOutput"));
 __export(require("./IO/DigitalInput"));

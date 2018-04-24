@@ -1,26 +1,18 @@
-
-
-import {Connector} from "./Connector";
-
-// Interface for connection renderer
-export interface IConnectionRenderer {
-    refresh():void;
-    destroy():void;
-    messageHighlight():void;
-}
+import { Connector } from './Connector';
+import { IRenderer } from './Renderer';
 
 export class Connection {
-    public connectorA:Connector;
-    public connectorB:Connector;
+    public connectorA: Connector;
+    public connectorB: Connector;
 
-    public renderer:IConnectionRenderer;
+    public renderer: IRenderer;
 
-    public constructor(connectorA:Connector, connectorB:Connector) {
+    public constructor(connectorA: Connector, connectorB: Connector) {
         this.connectorA = connectorA;
         this.connectorB = connectorB;
     }
 
-    public getOtherConnector(self:Connector):Connector {
+    public getOtherConnector(self: Connector): Connector {
         if (this.connectorA == self) {
             return this.connectorB;
         } else {
@@ -28,12 +20,12 @@ export class Connection {
         }
     }
 
-    public getInputConnector():Connector {
+    public getInputConnector(): Connector {
         if (this.connectorA.isInput()) return this.connectorA;
         return this.connectorB;
     }
 
-    public getOutputConnector():Connector {
+    public getOutputConnector(): Connector {
         if (this.connectorA.isOutput()) return this.connectorA;
         return this.connectorB;
     }

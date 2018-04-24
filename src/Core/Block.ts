@@ -5,19 +5,16 @@ import {
     ExternalMessageConnector, ExternalConnectorEvent
 } from './ExternalConnector';
 import {ConfigProperty} from "./ConfigProperty";
-import {Controller} from "./Controller";
+import { Controller } from './Controller';
 import {Connection} from "./Connection";
 import {Size} from "./Size";
 import { Message, MessageJson } from './Message';
 import {Types} from "common-lib";
+import { IRenderer } from './Renderer';
 
 // Interface for block renderer
-export interface IBlockRenderer {
-    refresh(): void;
-    destroy(): void;
+export interface IBlockRenderer extends IRenderer {
     isHovered(): boolean;
-    refreshDisplayName(): void;
-    highlight(): void;
 }
 
 export class Block {
@@ -41,15 +38,15 @@ export class Block {
 
     public renderer: IBlockRenderer;
 
-    protected _controller:Controller = null;
+    protected _controller: Controller = null;
 
     // positions
-    private _x:number = 0;
-    private _y:number = 0;
+    private _x: number = 0;
+    private _y: number = 0;
 
-    protected _codeBlock:boolean = false;
+    protected _codeBlock: boolean = false;
 
-    public constructor(id:string, type:string, visualType:string) {
+    public constructor(id: string, type: string, visualType: string) {
         this.id = id;
         this.type = type;
         this.visualType = visualType;

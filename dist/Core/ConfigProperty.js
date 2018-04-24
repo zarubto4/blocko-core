@@ -3,13 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_lib_1 = require("common-lib");
 class ConfigProperty {
     constructor(type, name, displayName, defaultValue, changeCallback, config) {
+        this._changeCallbacks = [];
         this._type = type;
         this._name = name;
         this._displayName = displayName;
         this._config = config || {};
         this._value = defaultValue;
-        this._changeCallback = changeCallback;
+        this._changeCallbacks.push(changeCallback);
         this.validateOptions();
+    }
+    registerChangeCallback(callback) {
+        this._changeCallbacks.push(callback);
     }
     validateOptions() {
         if (this.config && this.config.options && Array.isArray(this.config.options)) {
@@ -62,7 +66,9 @@ class ConfigProperty {
     }
     set value(value) {
         this._value = value;
-        this._changeCallback();
+        this._changeCallbacks.forEach(callback => {
+            callback();
+        });
     }
 }
 exports.ConfigProperty = ConfigProperty;

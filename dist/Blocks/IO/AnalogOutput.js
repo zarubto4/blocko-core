@@ -1,22 +1,21 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Core = require("../../Core/index");
+const Core_1 = require("../../Core");
 const common_lib_1 = require("common-lib");
-class AnalogOutput extends Core.Block {
+class AnalogOutput extends Core_1.Block {
     constructor(id) {
-        super(id, "analogOutput", "analogOutput");
-        this.connectorInput = this.addInputConnector("input", common_lib_1.Types.ConnectorType.AnalogInput, "Input");
+        super(id, 'analogOutput', 'analogOutput');
+        this.connectorInput = this.addInputConnector('input', common_lib_1.Types.ConnectorType.AnalogInput, 'Input');
+        this.analogValue = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1 });
     }
     rendererGetBlockBackgroundColor() {
-        return "#d1e7d1";
+        return '#d1e7d1';
     }
     rendererGetDisplayName() {
-        return this.connectorInput.value.toFixed(1);
+        return 'A-OUT';
     }
     inputChanged(event) {
-        if (this.renderer) {
-            this.renderer.refreshDisplayName();
-        }
+        this.analogValue.value = this.connectorInput.value;
     }
 }
 exports.AnalogOutput = AnalogOutput;

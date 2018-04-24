@@ -20,7 +20,6 @@ class DigitalOutput extends Core.Block {
     }
     inputChanged(event) {
         if (this.renderer) {
-            this.renderer.refreshDisplayName();
         }
     }
 }

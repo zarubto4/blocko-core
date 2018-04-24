@@ -9,4 +9,5 @@ export * from './Point';
 export * from './Size';
 export * from './Message';
 export * from './RendererHelper';
+export * from './Renderer';
 export * from './Fetch';

@@ -21,7 +21,6 @@ class PushButton extends DigitalInput_1.DigitalInput {
             };
             this.sendValueToOutputConnector(event);
             if (this.renderer) {
-                this.renderer.refreshDisplayName();
             }
         }
     }
@@ -34,7 +33,6 @@ class PushButton extends DigitalInput_1.DigitalInput {
             };
             this.sendValueToOutputConnector(event);
             if (this.renderer) {
-                this.renderer.refreshDisplayName();
             }
         }
     }

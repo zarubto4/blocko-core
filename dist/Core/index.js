@@ -14,4 +14,5 @@ __export(require("./Point"));
 __export(require("./Size"));
 __export(require("./Message"));
 __export(require("./RendererHelper"));
+__export(require("./Renderer"));
 __export(require("./Fetch"));

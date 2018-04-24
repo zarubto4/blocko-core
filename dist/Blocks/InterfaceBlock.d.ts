@@ -1,6 +1,5 @@
-import * as Core from '../Core/index';
 import { Size } from '../Core/Size';
-import { ConnectorEvent, ExternalConnectorEvent } from '../Core';
+import { Block, ConnectorEvent, ExternalConnectorEvent } from '../Core';
 export declare enum InterfaceBlockType {
     Inputs = 0,
     Outputs = 1,
@@ -33,7 +32,7 @@ export interface BlockoTargetInterface {
         };
     };
 }
-export declare abstract class BaseInterfaceBlock extends Core.Block {
+export declare abstract class BaseInterfaceBlock extends Block {
     private _displayName;
     private _targetId;
     private _interfaceId;

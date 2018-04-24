@@ -9,6 +9,7 @@ export declare class TSBlock extends Core.Block {
     private _consoleLib;
     private _serviceLib;
     private _fetchLib;
+    private _dbLib;
     protected _displayName: string;
     protected _backgroundColor: string;
     protected _description: string;

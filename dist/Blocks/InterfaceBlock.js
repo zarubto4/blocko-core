@@ -1,16 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Core = require("../Core/index");
 const Size_1 = require("../Core/Size");
 const ExternalConnector_1 = require("../Core/ExternalConnector");
 const Message_1 = require("../Core/Message");
 const common_lib_1 = require("common-lib");
+const Core_1 = require("../Core");
 var InterfaceBlockType;
 (function (InterfaceBlockType) {
     InterfaceBlockType[InterfaceBlockType["Inputs"] = 0] = "Inputs";
     InterfaceBlockType[InterfaceBlockType["Outputs"] = 1] = "Outputs";
 })(InterfaceBlockType = exports.InterfaceBlockType || (exports.InterfaceBlockType = {}));
-class BaseInterfaceBlock extends Core.Block {
+class BaseInterfaceBlock extends Core_1.Block {
     constructor(id, type, visualType, interfaceType) {
         super(id, type, visualType);
         this._displayName = '';

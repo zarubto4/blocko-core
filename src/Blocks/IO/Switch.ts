@@ -29,7 +29,7 @@ export class Switch extends DigitalInput {
             };
             this.sendValueToOutputConnector(event);
             if (this.renderer) {
-                this.renderer.refreshDisplayName();
+                // this.renderer.refreshDisplayName();
             }
         }
     }
