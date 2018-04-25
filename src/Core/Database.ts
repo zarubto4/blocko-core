@@ -1,15 +1,35 @@
-import { Collection, Db, InsertOneWriteOpResult, InsertWriteOpResult, MongoClient, MongoError } from 'mongodb'
+// import { Collection, Db, InsertOneWriteOpResult, InsertWriteOpResult, MongoClient, MongoError } from '@types/mongodb';
+
+import * as isNode from 'detect-node';
+
+
+let MongoDb;
+
+if (isNode) {
+
+    import('mongodb')
+        .then((mongodb) => {
+            MongoDb = mongodb;
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+}
 
 export class DatabaseDao {
 
     protected _database: Database;
 
     constructor(secret: string) {
-        this._database = new Database(secret);
+        if (isNode) {
+            this._database = new Database(secret);
+        }
     }
 
     public insert(data: Object | Array<Object>) {
-        this._database.insert(data);
+        if (isNode) {
+            this._database.insert(data);
+        }
     }
 }
 
@@ -21,12 +41,16 @@ export class Database {
         Database._connectionString = value;
     }
 
-    protected _mongoClient: MongoClient;
-    protected _mongoDb: Db;
-    protected _mongoCollection: Collection;
+    protected _mongoClient;
+    protected _mongoDb;
+    protected _mongoCollection;
 
     constructor(secret: string) {
-        MongoClient.connect(Database._connectionString, (error: MongoError, client: MongoClient) => {
+        if (!isNode) {
+            throw new DatabaseError('Database cannot be accessed in the browser.')
+        }
+
+        MongoDb.MongoClient.connect(Database._connectionString, (error, client) => {
             if (error) {
                 // TODO something
             } else {
@@ -43,7 +67,7 @@ export class Database {
      */
     public insert(data: Object | Array<Object>): void {
         if (this.isConnected()) {
-            let callback: (error: MongoError, result: InsertWriteOpResult|InsertOneWriteOpResult) => void = (error: MongoError, result: InsertWriteOpResult|InsertOneWriteOpResult) => {
+            let callback: (error, result) => void = (error, result) => {
                 if (error) {
                     throw new DatabaseError('Insert failed.');
                 }

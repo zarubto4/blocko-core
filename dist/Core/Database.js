@@ -1,12 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongodb_1 = require("mongodb");
+const isNode = require("detect-node");
+let MongoDb;
+if (isNode) {
+    Promise.resolve().then(() => require('mongodb')).then((mongodb) => {
+        MongoDb = mongodb;
+    })
+        .catch((error) => {
+        console.error(error);
+    });
+}
 class DatabaseDao {
     constructor(secret) {
-        this._database = new Database(secret);
+        if (isNode) {
+            this._database = new Database(secret);
+        }
     }
     insert(data) {
-        this._database.insert(data);
+        if (isNode) {
+            this._database.insert(data);
+        }
     }
 }
 exports.DatabaseDao = DatabaseDao;
@@ -15,7 +28,10 @@ class Database {
         Database._connectionString = value;
     }
     constructor(secret) {
-        mongodb_1.MongoClient.connect(Database._connectionString, (error, client) => {
+        if (!isNode) {
+            throw new DatabaseError('Database cannot be accessed in the browser.');
+        }
+        MongoDb.MongoClient.connect(Database._connectionString, (error, client) => {
             if (error) {
             }
             else {
