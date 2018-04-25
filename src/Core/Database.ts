@@ -1,20 +1,6 @@
-// import { Collection, Db, InsertOneWriteOpResult, InsertWriteOpResult, MongoClient, MongoError } from '@types/mongodb';
-
 import * as isNode from 'detect-node';
 
-
 let MongoDb;
-
-if (isNode) {
-
-    import('mongodb')
-        .then((mongodb) => {
-            MongoDb = mongodb;
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-}
 
 export class DatabaseDao {
 
@@ -46,7 +32,16 @@ export class Database {
     protected _mongoCollection;
 
     constructor(secret: string) {
-        if (!isNode) {
+
+        if (isNode) {
+            import('mongodb')
+                .then((mongodb) => {
+                    MongoDb = mongodb;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        } else {
             throw new DatabaseError('Database cannot be accessed in the browser.')
         }
 

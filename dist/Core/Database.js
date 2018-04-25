@@ -2,14 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const isNode = require("detect-node");
 let MongoDb;
-if (isNode) {
-    Promise.resolve().then(() => require('mongodb')).then((mongodb) => {
-        MongoDb = mongodb;
-    })
-        .catch((error) => {
-        console.error(error);
-    });
-}
 class DatabaseDao {
     constructor(secret) {
         if (isNode) {
@@ -28,7 +20,15 @@ class Database {
         Database._connectionString = value;
     }
     constructor(secret) {
-        if (!isNode) {
+        if (isNode) {
+            Promise.resolve().then(() => require('mongodb')).then((mongodb) => {
+                MongoDb = mongodb;
+            })
+                .catch((error) => {
+                console.error(error);
+            });
+        }
+        else {
             throw new DatabaseError('Database cannot be accessed in the browser.');
         }
         MongoDb.MongoClient.connect(Database._connectionString, (error, client) => {
