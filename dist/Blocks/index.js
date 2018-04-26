@@ -10,6 +10,7 @@ __export(require("./TSBlock/TSBlockError"));
 __export(require("./Libraries/TSBlockLib"));
 __export(require("./Libraries/ServiceLib"));
 __export(require("./Libraries/FetchLib"));
+__export(require("./Libraries/DatabaseLib"));
 __export(require("./Services/XmlApiService"));
 __export(require("./Services/FetchService"));
 __export(require("./Services/RestApiService"));

@@ -31,6 +31,6 @@ export class DatabaseService extends Service {
     }
 
     public db(secret: string): DatabaseDao {
-        return new DatabaseDao(this.configuration.insertFunction);
+        return new DatabaseDao(secret);
     }
 }

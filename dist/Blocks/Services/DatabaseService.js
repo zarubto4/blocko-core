@@ -13,7 +13,7 @@ class DatabaseService extends Service_1.Service {
         return DatabaseService.serviceName;
     }
     db(secret) {
-        return new Database_1.DatabaseDao(this.configuration.insertFunction);
+        return new Database_1.DatabaseDao(secret);
     }
 }
 DatabaseService.serviceName = "dbService";

@@ -31,16 +31,16 @@ export class Database {
     protected _mongoDb;
     protected _mongoCollection;
 
+    protected _queue: Array<Object> = [];
+
     constructor(secret: string) {
 
         if (isNode) {
-            import('mongodb')
-                .then((mongodb) => {
-                    MongoDb = mongodb;
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+            try {
+                MongoDb = require('mongodb')
+            } catch (e) {
+                console.error('require(\'mongodb\') failed. Is mongodb module installed?')
+            }
         } else {
             throw new DatabaseError('Database cannot be accessed in the browser.')
         }
@@ -50,7 +50,7 @@ export class Database {
                 // TODO something
             } else {
                 this._mongoClient = client;
-                this._mongoDb = this._mongoClient.db('byzance-bigdata-00');
+                this._mongoDb = this._mongoClient.db('byzance-bigdata-00'); // TODO some config
                 this._mongoCollection = this._mongoDb.collection(secret);
             }
         });
@@ -61,23 +61,45 @@ export class Database {
      * @param {Object | Array<Object>} data
      */
     public insert(data: Object | Array<Object>): void {
-        if (this.isConnected()) {
-            let callback: (error, result) => void = (error, result) => {
-                if (error) {
-                    throw new DatabaseError('Insert failed.');
-                }
-            };
 
-            if (Array.isArray(data)) {
-                this._mongoCollection.insertMany(data, callback);
-            } else if (typeof data === 'object') {
-                this._mongoCollection.insertOne(data, callback);
+        // Throws error if data is invalid
+        this.validateData(data);
+
+        if (this.isConnected()) {
+
+            let toInsert: Array<Object>;
+
+            if (this._queue.length > 0) {
+                toInsert = this._queue.slice();
+                this._queue = [];
+            }
+
+            if (toInsert) {
+
+                if (Array.isArray(data)) {
+                    toInsert.concat(data);
+                } else {
+                    toInsert.push(data);
+                }
+
+                this.doInsert(toInsert);
             } else {
-                throw new DatabaseError('Attempting to write invalid data. Data must be object or array of objects.');
+                this.doInsert(data);
             }
 
         } else {
-            throw new DatabaseError('The database is currently unavailable.');
+
+            while (this._queue.length > 100) {
+                this._queue.shift();
+                // TODO somehow let know that data is not saved
+            }
+
+            if (Array.isArray(data)) {
+                this._queue.concat(data);
+            } else {
+                this._queue.push(data);
+            }
+            // throw new DatabaseError('The database is currently unavailable.');
         }
     }
 
@@ -85,6 +107,34 @@ export class Database {
         return this._mongoClient && this._mongoClient.isConnected('byzance-bigdata');
     }
 
+    protected validateData(data: Object|Array<Object>): void {
+        if (Array.isArray(data)) {
+            let invalid: Object = data.find((obj) => {
+                return typeof obj !== 'object';
+            });
+
+            if (invalid) {
+                throw new DatabaseError('Attempting to write invalid data. Data must be object or array of objects.');
+            }
+        } else if (typeof data !== 'object') {
+            throw new DatabaseError('Attempting to write invalid data. Data must be object or array of objects.');
+        }
+    }
+
+    protected doInsert(data: Object | Array<Object>): void {
+
+        let callback: (error, result) => void = (error, result) => {
+            if (error) {
+                throw new DatabaseError('Insert failed.');
+            }
+        };
+
+        if (Array.isArray(data)) {
+            this._mongoCollection.insertMany(data, callback);
+        } else {
+            this._mongoCollection.insertOne(data, callback);
+        }
+    }
 }
 
 export class DatabaseError extends Error {

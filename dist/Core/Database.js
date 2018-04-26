@@ -16,17 +16,15 @@ class DatabaseDao {
 }
 exports.DatabaseDao = DatabaseDao;
 class Database {
-    static set connectionString(value) {
-        Database._connectionString = value;
-    }
     constructor(secret) {
+        this._queue = [];
         if (isNode) {
-            Promise.resolve().then(() => require('mongodb')).then((mongodb) => {
-                MongoDb = mongodb;
-            })
-                .catch((error) => {
-                console.error(error);
-            });
+            try {
+                MongoDb = require('mongodb');
+            }
+            catch (e) {
+                console.error('require(\'mongodb\') failed. Is mongodb module installed?');
+            }
         }
         else {
             throw new DatabaseError('Database cannot be accessed in the browser.');
@@ -41,29 +39,70 @@ class Database {
             }
         });
     }
+    static set connectionString(value) {
+        Database._connectionString = value;
+    }
     insert(data) {
+        this.validateData(data);
         if (this.isConnected()) {
-            let callback = (error, result) => {
-                if (error) {
-                    throw new DatabaseError('Insert failed.');
-                }
-            };
-            if (Array.isArray(data)) {
-                this._mongoCollection.insertMany(data, callback);
+            let toInsert;
+            if (this._queue.length > 0) {
+                toInsert = this._queue.slice();
+                this._queue = [];
             }
-            else if (typeof data === 'object') {
-                this._mongoCollection.insertOne(data, callback);
+            if (toInsert) {
+                if (Array.isArray(data)) {
+                    toInsert.concat(data);
+                }
+                else {
+                    toInsert.push(data);
+                }
+                this.doInsert(toInsert);
             }
             else {
-                throw new DatabaseError('Attempting to write invalid data. Data must be object or array of objects.');
+                this.doInsert(data);
             }
         }
         else {
-            throw new DatabaseError('The database is currently unavailable.');
+            while (this._queue.length > 100) {
+                this._queue.shift();
+            }
+            if (Array.isArray(data)) {
+                this._queue.concat(data);
+            }
+            else {
+                this._queue.push(data);
+            }
         }
     }
     isConnected() {
         return this._mongoClient && this._mongoClient.isConnected('byzance-bigdata');
+    }
+    validateData(data) {
+        if (Array.isArray(data)) {
+            let invalid = data.find((obj) => {
+                return typeof obj !== 'object';
+            });
+            if (invalid) {
+                throw new DatabaseError('Attempting to write invalid data. Data must be object or array of objects.');
+            }
+        }
+        else if (typeof data !== 'object') {
+            throw new DatabaseError('Attempting to write invalid data. Data must be object or array of objects.');
+        }
+    }
+    doInsert(data) {
+        let callback = (error, result) => {
+            if (error) {
+                throw new DatabaseError('Insert failed.');
+            }
+        };
+        if (Array.isArray(data)) {
+            this._mongoCollection.insertMany(data, callback);
+        }
+        else {
+            this._mongoCollection.insertOne(data, callback);
+        }
     }
 }
 exports.Database = Database;

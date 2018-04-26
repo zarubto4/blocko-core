@@ -9,6 +9,7 @@ export * from "./TSBlock/TSBlockError";
 export * from "./Libraries/TSBlockLib";
 export * from "./Libraries/ServiceLib";
 export * from "./Libraries/FetchLib";
+export * from "./Libraries/DatabaseLib";
 
 export * from "./Services/XmlApiService";
 export * from "./Services/FetchService";

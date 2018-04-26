@@ -27,8 +27,8 @@ export class DatabaseLib implements Library {
 
     public external(machine: Machine): {[p: string]: any} {
         return {
-            DatabaseDao: DatabaseDao,
-            DatabaseError: DatabaseError
+            'DatabaseDao': DatabaseDao,
+            'DatabaseError': DatabaseError
         };
     }
 }

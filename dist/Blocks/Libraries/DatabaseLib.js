@@ -11,8 +11,8 @@ class DatabaseLib {
     clean() { }
     external(machine) {
         return {
-            DatabaseDao: Database_1.DatabaseDao,
-            DatabaseError: Database_1.DatabaseError
+            'DatabaseDao': Database_1.DatabaseDao,
+            'DatabaseError': Database_1.DatabaseError
         };
     }
 }

@@ -1,6 +1,6 @@
 {
   "name": "blocko-core",
-  "version": "0.2.25",
+  "version": "0.2.26",
   "description": "BLOCKOcore",
   "main": "dist/index.js",
   "typings": "dist/index",
@@ -26,7 +26,6 @@
     "detect-node": "^2.0.3",
     "later": "RickCarlino/later",
     "node-fetch": "^1.6.3",
-    "require_optional": "^1.0.1",
     "script-engine": "git+ssh://git@github.com:ByzanceIoT/script-engine.git#v0.0.39",
     "typescript": "^2.2.1",
     "xmldom": "^0.1.27"
