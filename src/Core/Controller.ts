@@ -109,6 +109,10 @@ export class Controller {
 
     public addBlock(block: Block) {
 
+        if (!block.id) {
+            block.id = this.getFreeBlockId();
+        }
+
         block.registerInputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.inputConnectorEvent(connector, eventType, value));
         block.registerOutputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.outputConnectorEvent(connector, eventType, value));
 
@@ -145,6 +149,11 @@ export class Controller {
         }
 
         this.connections.push(connection);
+
+        if (connection.getInputConnector().isDigital() || connection.getInputConnector().isAnalog()) {
+            connection.getInputConnector()._inputSetValue(connection.getOutputConnector().value);
+        }
+
         this.connectionAddedCallbacks.forEach(callback => callback(connection));
 
         //this._emitDataChanged();
@@ -160,6 +169,14 @@ export class Controller {
         let index = this.connections.indexOf(connection);
         if (index > -1) {
             this.connections.splice(index, 1);
+
+            if (connection.getInputConnector().isDigital()) {
+                connection.getInputConnector()._inputSetValue(false);
+            }
+            if (connection.getInputConnector().isAnalog()) {
+                connection.getInputConnector()._inputSetValue(0);
+            }
+
             this.connectionRemovedCallbacks.forEach(callback => callback(connection));
         }
 

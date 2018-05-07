@@ -1,5 +1,4 @@
 export * from "./Manager";
-export * from "./ExecutionController";
 export * from "./TSBlock/TSBlock";
 export * from "./TSBlock/TSBlockError";
 export * from "./Libraries/TSBlockLib";

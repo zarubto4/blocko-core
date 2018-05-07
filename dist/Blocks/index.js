@@ -4,7 +4,6 @@ function __export(m) {
 }
 Object.defineProperty(exports, "__esModule", { value: true });
 __export(require("./Manager"));
-__export(require("./ExecutionController"));
 __export(require("./TSBlock/TSBlock"));
 __export(require("./TSBlock/TSBlockError"));
 __export(require("./Libraries/TSBlockLib"));
