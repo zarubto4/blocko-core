@@ -385,15 +385,11 @@ class Controller {
         }
         let id = this.getInterfaceBlockId();
         let inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(id + '-IN', iface);
-        inputsBlock.x = iface.pos_x;
-        inputsBlock.y = iface.pos_y;
         if (iface.grid) {
             inputsBlock.setTargetId(iface.interfaceId);
         }
         this.addBlock(inputsBlock);
         let outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(id + '-OUT', iface);
-        outputsBlock.x = iface.pos_x + 70;
-        outputsBlock.y = iface.pos_y;
         if (iface.grid) {
             outputsBlock.setTargetId(iface.interfaceId);
         }

@@ -532,16 +532,12 @@ export class Controller {
         let id = this.getInterfaceBlockId();
 
         let inputsBlock: InputsInterfaceBlock = new InputsInterfaceBlock(id + '-IN', iface);
-        inputsBlock.x = iface.pos_x;
-        inputsBlock.y = iface.pos_y;
         if (iface.grid) {
             inputsBlock.setTargetId(iface.interfaceId);
         }
         this.addBlock(inputsBlock);
 
         let outputsBlock: OutputsInterfaceBlock = new OutputsInterfaceBlock(id + '-OUT', iface);
-        outputsBlock.x = iface.pos_x + 70;
-        outputsBlock.y = iface.pos_y;
         if (iface.grid) {
             outputsBlock.setTargetId(iface.interfaceId);
         }

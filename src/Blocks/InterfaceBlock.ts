@@ -18,8 +18,6 @@ export interface BlockoTargetInterface {
     grid?: boolean;
     displayName: string;
     color: string;
-    pos_x: number;
-    pos_y: number;
     interface: {
         digitalInputs?: {[name:string]:any};
         digitalOutputs?: {[name:string]:any};
