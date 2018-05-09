@@ -378,22 +378,13 @@ class Controller {
             console.error('Controller::addInterface - invalid interface');
             return;
         }
-        let interfaceId = iface.interfaceId;
-        if (!interfaceId) {
-            console.error('Controller::addInterface - interfaceId is missing in interface');
+        if ((!iface.code && !iface.grid) || (iface.code && iface.grid)) {
+            console.error('Controller::addInterface - \'code\' and \'grid\' property are both (un)defined, you must define exactly one of them');
             return;
         }
         let id = this.getInterfaceBlockId();
-        let inputsBlock = new InterfaceBlock_1.InputsInterfaceBlock(id + '-IN', iface);
-        if (iface.grid) {
-            inputsBlock.setTargetId(iface.interfaceId);
-        }
-        this.addBlock(inputsBlock);
-        let outputsBlock = new InterfaceBlock_1.OutputsInterfaceBlock(id + '-OUT', iface);
-        if (iface.grid) {
-            outputsBlock.setTargetId(iface.interfaceId);
-        }
-        this.addBlock(outputsBlock);
+        this.addBlock(new InterfaceBlock_1.InputsInterfaceBlock(id + '-IN', iface));
+        this.addBlock(new InterfaceBlock_1.OutputsInterfaceBlock(id + '-OUT', iface));
     }
     registerInterfaceBoundCallback(callback) {
         this.interfaceBoundCallbacks.push(callback);

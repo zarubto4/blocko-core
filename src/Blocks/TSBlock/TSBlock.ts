@@ -92,7 +92,8 @@ export class TSBlock extends Core.Block {
             displayName: this._displayName,
             backgroundColor: this._backgroundColor,
             description: this._description,
-            block_version: this._blockVersion
+            version_id: this._versionId,
+            block_id: this._blockId
         });
     }
 
@@ -120,10 +121,17 @@ export class TSBlock extends Core.Block {
             } else {
                 this._description = null;
             }
-            if (dj['block_version']) {
-                this._blockVersion = dj['block_version'];
+            if (dj['version_id']) {
+                this._versionId = dj['version_id'];
+            } else if (dj['block_version']) {
+                this._versionId = dj['block_version'];
             } else {
-                this._blockVersion = null;
+                this._versionId = null;
+            }
+            if (dj['block_id']) {
+                this._blockId = dj['block_id'];
+            } else {
+                this._blockId = null;
             }
         }
         

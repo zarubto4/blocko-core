@@ -5,8 +5,17 @@ export declare enum InterfaceBlockType {
     Outputs = 1,
 }
 export interface BlockoTargetInterface {
-    interfaceId: string;
-    grid?: boolean;
+    code?: {
+        programId: string;
+        versionId: string;
+    };
+    grid?: {
+        projectId: string;
+        programs: Array<{
+            programId: string;
+            versionId: string;
+        }>;
+    };
     displayName: string;
     color: string;
     interface: {
@@ -42,7 +51,7 @@ export declare abstract class BaseInterfaceBlock extends Block {
     constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType);
     setInterface(iface: BlockoTargetInterface): void;
     setTargetId(targetId: string): void;
-    readonly interface: any;
+    readonly interface: BlockoTargetInterface;
     readonly targetId: string;
     readonly interfaceId: string;
     group: boolean;

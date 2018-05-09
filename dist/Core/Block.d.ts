@@ -15,8 +15,8 @@ export declare class Block {
     protected externalInputConnectors: Array<ExternalConnector<any>>;
     protected externalOutputsConnectors: Array<ExternalConnector<any>>;
     protected configProperties: Array<ConfigProperty>;
-    protected _typeOfBlock: string;
-    protected _blockVersion: string;
+    protected _blockId: string;
+    protected _versionId: string;
     protected _color: string;
     id: string;
     type: string;
@@ -99,5 +99,6 @@ export declare class Block {
     rendererGetBlockDescription(): string;
     rendererGetCodeName(): string;
     rendererIsHwAttached(): boolean;
-    blockVersion: string;
+    readonly blockId: string;
+    versionId: string;
 }

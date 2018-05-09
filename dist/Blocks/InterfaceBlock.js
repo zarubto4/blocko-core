@@ -29,8 +29,17 @@ class BaseInterfaceBlock extends Core_1.Block {
         this._deviceInputsCount = 0;
         this._deviceOutputsCount = 0;
         this._interface = iface;
+        if (iface.code) {
+            this._interfaceId = iface.code.versionId;
+        }
+        else if (iface.grid && typeof iface.grid === 'object') {
+            this._interfaceId = iface.grid.projectId;
+            this._targetId = iface.grid.projectId;
+        }
+        else if (iface['interfaceId']) {
+            this._interfaceId = iface['interfaceId'];
+        }
         this._color = iface['color'];
-        this._interfaceId = iface['interfaceId'];
         this._displayName = iface['displayName'] || this._interfaceId;
         let inOutInterfaces = iface['interface'];
         let digitalInputs = inOutInterfaces['digitalInputs'];
@@ -247,7 +256,7 @@ class BaseInterfaceBlock extends Core_1.Block {
         return this instanceof InputsInterfaceBlock;
     }
     isGrid() {
-        return this._interface.grid;
+        return !!this._interface.grid;
     }
     externalInputEvent(event) {
         if (!event.connector)

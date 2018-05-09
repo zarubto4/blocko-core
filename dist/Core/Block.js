@@ -8,8 +8,8 @@ const Message_1 = require("./Message");
 const common_lib_1 = require("common-lib");
 class Block {
     constructor(id, type, visualType) {
-        this._typeOfBlock = null;
-        this._blockVersion = null;
+        this._blockId = null;
+        this._versionId = null;
         this._color = null;
         this.configPropertiesDescription = null;
         this._controller = null;
@@ -366,11 +366,14 @@ class Block {
     rendererIsHwAttached() {
         return false;
     }
-    get blockVersion() {
-        return this._blockVersion;
+    get blockId() {
+        return this._blockId;
     }
-    set blockVersion(version) {
-        this._blockVersion = version;
+    get versionId() {
+        return this._versionId;
+    }
+    set versionId(version) {
+        this._versionId = version;
     }
 }
 exports.Block = Block;

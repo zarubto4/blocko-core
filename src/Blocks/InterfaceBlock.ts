@@ -14,8 +14,14 @@ import { Block, ConnectorEvent, ExternalConnectorEvent } from '../Core';
 export enum InterfaceBlockType { Inputs, Outputs }
 
 export interface BlockoTargetInterface {
-    interfaceId: string;
-    grid?: boolean;
+    code?: {
+        programId: string;
+        versionId: string;
+    };
+    grid?: {
+        projectId: string;
+        programs: Array<{ programId: string; versionId: string; }>;
+    };
     displayName: string;
     color: string;
     interface: {
@@ -47,7 +53,7 @@ export abstract class BaseInterfaceBlock extends Block {
         this._interfaceType = interfaceType;
     }
 
-    public setInterface(iface: BlockoTargetInterface):void {
+    public setInterface(iface: BlockoTargetInterface): void {
 
         let wantedInputsOrder = [];
         let wantedOutputsOrder = [];
@@ -63,8 +69,16 @@ export abstract class BaseInterfaceBlock extends Block {
 
         this._interface = iface;
 
+        if (iface.code) {
+            this._interfaceId = iface.code.versionId;
+        } else if (iface.grid && typeof iface.grid === 'object') {
+            this._interfaceId = iface.grid.projectId;
+            this._targetId = iface.grid.projectId;
+        } else if (iface['interfaceId']) {
+            this._interfaceId = iface['interfaceId']
+        }
+
         this._color = iface['color'];
-        this._interfaceId = iface['interfaceId'];
         this._displayName = iface['displayName'] || this._interfaceId;
 
         let inOutInterfaces = iface['interface'];
@@ -269,7 +283,7 @@ export abstract class BaseInterfaceBlock extends Block {
         });
     }
 
-    get interface(): any {
+    get interface(): BlockoTargetInterface {
         return this._interface;
     }
 
@@ -309,7 +323,7 @@ export abstract class BaseInterfaceBlock extends Block {
     }
 
     public isGrid(): boolean {
-        return this._interface.grid;
+        return !!this._interface.grid;
     }
 
     public externalInputEvent(event: ExternalConnectorEvent):void {

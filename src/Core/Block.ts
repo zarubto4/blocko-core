@@ -25,11 +25,11 @@ export class Block {
     protected externalOutputsConnectors: Array<ExternalConnector<any>>;
     protected configProperties: Array<ConfigProperty>;
 
-    protected _typeOfBlock: string = null;
-    protected _blockVersion: string = null;
+    protected _blockId: string = null; // Id assigned from tyrion
+    protected _versionId: string = null; // Id assigned from tyrion
     protected _color: string = null;
 
-    public id: string;
+    public id: string; // Id in blocko program (assigned from blocko)
 
     public type: string;
     public visualType: string;
@@ -480,12 +480,16 @@ export class Block {
         return false;
     }
 
-    public get blockVersion(): string {
-        return this._blockVersion;
+    public get blockId(): string {
+        return this._blockId;
     }
 
-    public set blockVersion(version: string) {
-        this._blockVersion = version;
+    public get versionId(): string {
+        return this._versionId;
+    }
+
+    public set versionId(version: string) {
+        this._versionId = version;
     }
 
 }
