@@ -7,6 +7,7 @@ import { Service } from '../Blocks/Services/Service';
 import { ExternalConnector } from './ExternalConnector';
 import { BlockoTargetInterface } from '../Blocks/InterfaceBlock';
 import { Message, MessageJson } from './Message';
+import { BaseInterfaceBlock } from '../Blocks';
 import { IRenderer } from './Renderer';
 export interface IRendererFactory {
     factoryBlockRenderer(block: Block): IBlockRenderer;
@@ -92,9 +93,7 @@ export declare class Controller {
     getMessageOutputNames(): Array<string>;
     setError(blockId: string, enabled: boolean): void;
     addInterface(iface: BlockoTargetInterface): void;
-    private interfaceBoundCallbacks;
-    registerInterfaceBoundCallback(callback: (iface: BoundInterface) => void): void;
-    bindInterface(targetId: string, group?: boolean): BoundInterface;
+    bindInterface(block: BaseInterfaceBlock, targetId: string, group?: boolean): BoundInterface;
     getBindings(): Array<BoundInterface>;
     getDataJson(): string;
     setDataJson(jsonString: string): string;

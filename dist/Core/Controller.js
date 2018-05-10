@@ -30,7 +30,6 @@ class Controller {
         this.externalOutputConnectorEventCallbacks = [];
         this.errorCallbacks = [];
         this.logCallbacks = [];
-        this.interfaceBoundCallbacks = [];
         this.blocks = [];
         this.connections = [];
         this.blocksRegister = [];
@@ -386,29 +385,20 @@ class Controller {
         this.addBlock(new InterfaceBlock_1.InputsInterfaceBlock(id + '-IN', iface));
         this.addBlock(new InterfaceBlock_1.OutputsInterfaceBlock(id + '-OUT', iface));
     }
-    registerInterfaceBoundCallback(callback) {
-        this.interfaceBoundCallbacks.push(callback);
-    }
-    bindInterface(targetId, group) {
-        let block = this.blocks.find((b) => {
-            return b.renderer && b.renderer.isHovered();
-        });
-        if (block && block instanceof Blocks_1.BaseInterfaceBlock && block.interfaceId !== block.targetId) {
-            block.setTargetId(targetId);
-            block.renderer.refresh();
+    bindInterface(block, targetId, group) {
+        if (block.interfaceId !== block.targetId) {
             let other = block.getOther();
-            if (other) {
-                other.setTargetId(targetId);
-                other.renderer.refresh();
-            }
-            let interfaceId = block.interfaceId;
+            block.setTargetId(targetId);
+            other.setTargetId(targetId);
             if (group) {
                 block.group = group;
+                other.group = group;
             }
-            this.interfaceBoundCallbacks.forEach(callback => callback({ targetId: targetId, interfaceId: interfaceId }));
+            block.renderer.refresh();
+            other.renderer.refresh();
             return {
                 targetId: targetId,
-                interfaceId: interfaceId,
+                interfaceId: block.interfaceId,
                 group: block.group
             };
         }

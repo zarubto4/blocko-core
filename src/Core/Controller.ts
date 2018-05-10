@@ -533,45 +533,30 @@ export class Controller {
         this.addBlock(new OutputsInterfaceBlock(id + '-OUT', iface));
     }
 
-    private interfaceBoundCallbacks: Array<(iface: BoundInterface) => void> = [];
-
-    public registerInterfaceBoundCallback(callback: (iface: BoundInterface) => void) {
-        this.interfaceBoundCallbacks.push(callback);
-    }
-
     /**
-     * Binds specific HW or HW group to an hovered interface.
-     * This method works only in gui with drag'n'drop.
+     * Binds specific HW or HW group to the given interface block.
+     * @param {BaseInterfaceBlock} block to bind to
      * @param {string} targetId of WH
      * @param {boolean} group
      */
-    public bindInterface(targetId: string, group?: boolean): BoundInterface {
-        let block = this.blocks.find((b) => {
-            return b.renderer && b.renderer.isHovered();
-        });
-
-        if (block && block instanceof BaseInterfaceBlock && block.interfaceId !== block.targetId) {
+    public bindInterface(block: BaseInterfaceBlock, targetId: string, group?: boolean): BoundInterface {
+        if (block.interfaceId !== block.targetId) {
+            let other = block.getOther();
 
             block.setTargetId(targetId);
-            block.renderer.refresh();
-
-            let other = block.getOther();
-            if (other) {
-                other.setTargetId(targetId);
-                other.renderer.refresh();
-            }
-
-            let interfaceId: string = block.interfaceId;
+            other.setTargetId(targetId);
 
             if (group) {
                 block.group = group;
+                other.group = group;
             }
 
-            this.interfaceBoundCallbacks.forEach(callback => callback({ targetId: targetId, interfaceId: interfaceId }));
+            block.renderer.refresh();
+            other.renderer.refresh();
 
             return {
                 targetId: targetId,
-                interfaceId: interfaceId,
+                interfaceId: block.interfaceId,
                 group: block.group
             }
 
