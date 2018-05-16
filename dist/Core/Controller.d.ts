@@ -95,6 +95,10 @@ export declare class Controller {
     addInterface(iface: BlockoTargetInterface): void;
     bindInterface(block: BaseInterfaceBlock, targetId: string, group?: boolean): BoundInterface;
     getBindings(): Array<BoundInterface>;
+    protected hardwareRestartCallback: (targetId: string) => void;
+    registerHardwareRestartCallback(callback: (targetId: string) => void): void;
+    callHardwareRestartCallback(targetId: string): void;
+    setHardwareNetworkStatus(targetId: string, groupIds: Array<string>, online: boolean): void;
     getDataJson(): string;
     setDataJson(jsonString: string): string;
     isDeployable(): boolean;

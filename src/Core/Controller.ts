@@ -587,6 +587,31 @@ export class Controller {
         return bindings;
     }
 
+    protected hardwareRestartCallback: (targetId: string) => void;
+
+    public registerHardwareRestartCallback(callback: (targetId: string) => void): void {
+        this.hardwareRestartCallback = callback;
+    }
+
+    public callHardwareRestartCallback(targetId: string): void {
+        if (this.hardwareRestartCallback) {
+            this.hardwareRestartCallback(targetId);
+        }
+    }
+
+    public setHardwareNetworkStatus(targetId: string, groupIds: Array<string>, online: boolean) {
+        let block: BaseInterfaceBlock = <BaseInterfaceBlock>this.blocks.find(block => {
+            return block instanceof BaseInterfaceBlock && block.interface.code && (block.targetId === targetId || (groupIds && groupIds.indexOf(block.targetId) !== -1))
+        });
+
+        if (block) {
+            let connector: Connector = block.getNetworkStatusOutput();
+            if (connector) {
+                connector._outputSetValue(online, block.group ? targetId : null);
+            }
+        }
+    }
+
     // Saving and loading
     public getDataJson(): string {
         let json:any = {

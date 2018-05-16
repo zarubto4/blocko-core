@@ -31,6 +31,39 @@ class BaseInterfaceBlock extends Core_1.Block {
         this._interface = iface;
         if (iface.code) {
             this._interfaceId = iface.code.versionId;
+            if (this._interfaceType == InterfaceBlockType.Inputs) {
+                this._deviceInputsCount++;
+                let n = 'd_byzance_device_restart';
+                wantedInputsOrder.push(n);
+                let c = null;
+                inputsToDelete.forEach((con) => {
+                    if ((con.name == n) && (con.type == common_lib_1.Types.ConnectorType.DigitalInput)) {
+                        c = con;
+                    }
+                });
+                if (c) {
+                    inputsToDelete.splice(inputsToDelete.indexOf(c), 1);
+                }
+                else {
+                    this.restartDeviceInput = this.addInputConnector(n, common_lib_1.Types.ConnectorType.DigitalInput, 'Restart');
+                }
+            }
+            if (this._interfaceType == InterfaceBlockType.Outputs) {
+                let n = 'd_byzance_device_online';
+                wantedOutputsOrder.push(n);
+                let c = null;
+                outputsToDelete.forEach((con) => {
+                    if ((con.name == n) && (con.type == common_lib_1.Types.ConnectorType.DigitalOutput)) {
+                        c = con;
+                    }
+                });
+                if (c) {
+                    outputsToDelete.splice(outputsToDelete.indexOf(c), 1);
+                }
+                else {
+                    this.networkStatusOutput = this.addOutputConnector(n, common_lib_1.Types.ConnectorType.DigitalOutput, 'Online');
+                }
+            }
         }
         else if (iface.grid && typeof iface.grid === 'object') {
             this._interfaceId = iface.grid.projectId;
@@ -281,6 +314,9 @@ class BaseInterfaceBlock extends Core_1.Block {
             return;
         let type = event.connector.name.substr(0, 1);
         let name = event.connector.name.substr(2);
+        if (this.restartDeviceInput.name === event.connector.name) {
+            this.controller.callHardwareRestartCallback(event.interfaceId ? event.interfaceId : this._targetId);
+        }
         this.getExternalOutputConnectors().forEach((con) => {
             if (con.name == name) {
                 if ((type == 'a') && (con instanceof ExternalConnector_1.ExternalAnalogConnector)) {
@@ -294,6 +330,12 @@ class BaseInterfaceBlock extends Core_1.Block {
                 }
             }
         });
+    }
+    getRestartDeviceInput() {
+        return this.restartDeviceInput;
+    }
+    getNetworkStatusOutput() {
+        return this.networkStatusOutput;
     }
     remove() {
         super.remove();

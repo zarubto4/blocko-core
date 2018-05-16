@@ -420,6 +420,25 @@ class Controller {
         });
         return bindings;
     }
+    registerHardwareRestartCallback(callback) {
+        this.hardwareRestartCallback = callback;
+    }
+    callHardwareRestartCallback(targetId) {
+        if (this.hardwareRestartCallback) {
+            this.hardwareRestartCallback(targetId);
+        }
+    }
+    setHardwareNetworkStatus(targetId, groupIds, online) {
+        let block = this.blocks.find(block => {
+            return block instanceof Blocks_1.BaseInterfaceBlock && block.interface.code && (block.targetId === targetId || (groupIds && groupIds.indexOf(block.targetId) !== -1));
+        });
+        if (block) {
+            let connector = block.getNetworkStatusOutput();
+            if (connector) {
+                connector._outputSetValue(online, block.group ? targetId : null);
+            }
+        }
+    }
     getDataJson() {
         let json = {
             blocks: {}

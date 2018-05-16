@@ -1,3 +1,4 @@
+import { Connector } from '../Core/Connector';
 import { Size } from '../Core/Size';
 import { Block, ConnectorEvent, ExternalConnectorEvent } from '../Core';
 export declare enum InterfaceBlockType {
@@ -48,6 +49,8 @@ export declare abstract class BaseInterfaceBlock extends Block {
     private _deviceInputsCount;
     private _deviceOutputsCount;
     private _interface;
+    protected restartDeviceInput: Connector;
+    protected networkStatusOutput: Connector;
     constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType);
     setInterface(iface: BlockoTargetInterface): void;
     setTargetId(targetId: string): void;
@@ -60,6 +63,8 @@ export declare abstract class BaseInterfaceBlock extends Block {
     isGrid(): boolean;
     externalInputEvent(event: ExternalConnectorEvent): void;
     inputChanged(event: ConnectorEvent): void;
+    getRestartDeviceInput(): Connector;
+    getNetworkStatusOutput(): Connector;
     remove(): void;
     isInterface(): boolean;
     rendererGetBlockSize(): Size;
