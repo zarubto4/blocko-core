@@ -600,15 +600,19 @@ export class Controller {
     }
 
     public setHardwareNetworkStatus(targetId: string, groupIds: Array<string>, online: boolean) {
-        let block: BaseInterfaceBlock = <BaseInterfaceBlock>this.blocks.find(block => {
-            return block instanceof BaseInterfaceBlock && block.interface.code && (block.targetId === targetId || (groupIds && groupIds.indexOf(block.targetId) !== -1))
-        });
+        if (targetId && typeof online === 'boolean') {
+            let block: OutputsInterfaceBlock = <OutputsInterfaceBlock>this.blocks.find(block => {
+                return block instanceof OutputsInterfaceBlock && block.interface.code && (block.targetId === targetId || (groupIds && groupIds.indexOf(block.targetId) !== -1))
+            });
 
-        if (block) {
-            let connector: Connector = block.getNetworkStatusOutput();
-            if (connector) {
-                connector._outputSetValue(online, block.group ? targetId : null);
+            if (block) {
+                let connector: Connector = block.getNetworkStatusOutput();
+                if (connector) {
+                    connector._outputSetValue(online, block.group ? targetId : null);
+                }
             }
+        } else {
+            console.warn('Controller::setHardwareNetworkStatus - invalid values, got targetId:', targetId, 'and online:', online)
         }
     }
 

@@ -314,7 +314,7 @@ class BaseInterfaceBlock extends Core_1.Block {
             return;
         let type = event.connector.name.substr(0, 1);
         let name = event.connector.name.substr(2);
-        if (this.restartDeviceInput.name === event.connector.name) {
+        if (this.restartDeviceInput.name === event.connector.name && event.value) {
             this.controller.callHardwareRestartCallback(event.interfaceId ? event.interfaceId : this._targetId);
         }
         this.getExternalOutputConnectors().forEach((con) => {

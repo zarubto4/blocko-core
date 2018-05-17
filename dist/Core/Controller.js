@@ -429,14 +429,19 @@ class Controller {
         }
     }
     setHardwareNetworkStatus(targetId, groupIds, online) {
-        let block = this.blocks.find(block => {
-            return block instanceof Blocks_1.BaseInterfaceBlock && block.interface.code && (block.targetId === targetId || (groupIds && groupIds.indexOf(block.targetId) !== -1));
-        });
-        if (block) {
-            let connector = block.getNetworkStatusOutput();
-            if (connector) {
-                connector._outputSetValue(online, block.group ? targetId : null);
+        if (targetId && typeof online === 'boolean') {
+            let block = this.blocks.find(block => {
+                return block instanceof InterfaceBlock_1.OutputsInterfaceBlock && block.interface.code && (block.targetId === targetId || (groupIds && groupIds.indexOf(block.targetId) !== -1));
+            });
+            if (block) {
+                let connector = block.getNetworkStatusOutput();
+                if (connector) {
+                    connector._outputSetValue(online, block.group ? targetId : null);
+                }
             }
+        }
+        else {
+            console.warn('Controller::setHardwareNetworkStatus - invalid values, got targetId:', targetId, 'and online:', online);
         }
     }
     getDataJson() {
