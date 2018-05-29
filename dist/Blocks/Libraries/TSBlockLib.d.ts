@@ -1,6 +1,7 @@
 import { Library, Machine } from "script-engine";
 import { Events } from "common-lib";
 import { TSBlock } from "../TSBlock/TSBlock";
+import { Message } from "../../Core/Message";
 import { Connector } from "../../Core/Connector";
 import { ConfigProperty } from "../../Core/ConfigProperty";
 import { ConnectorEvent } from '../../Core';
@@ -32,9 +33,9 @@ export declare class DestroyEvent extends Events.Event {
     constructor();
 }
 export declare abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent | MessageReceivedEvent | GroupInputEvent> {
-    protected connector: Connector;
+    protected connector: Connector<boolean | number | Message | Object>;
     protected tsBlockLib: TSBlockLib;
-    constructor(connector: Connector, tsBlockLib: TSBlockLib);
+    constructor(connector: Connector<boolean | number | Message | Object>, tsBlockLib: TSBlockLib);
     readonly name: string;
     readonly displayName: string;
     readonly type: string;
@@ -86,7 +87,7 @@ export declare class TSBlockLib implements Library {
     private argTypesValidator(argTypes, method);
     private getInputOutputType(type, direction, method);
     private getConfigPropertyType(type, method);
-    sendValueToOutputConnector(connector: Connector, value: boolean | number | any[], interfaceId?: string): void;
+    sendValueToOutputConnector(connector: Connector<boolean | number | Message | Object>, value: boolean | number | any[], interfaceId?: string): void;
     inputEvent(event: ConnectorEvent): void;
     configChanged(): void;
     callReady(): void;

@@ -1,9 +1,10 @@
 import { Block, ConfigProperty, Connector, ConnectorEvent, ConnectorEventType } from '../../Core';
 import { Types } from 'common-lib';
+import { Message } from '../../Core/Message';
 
 export class AnalogInput extends Block {
 
-    public connectorOutput: Connector;
+    public connectorOutput: Connector<boolean|number|Message|Object>;
     protected currentValue: number = 0;
     
     protected analogValue: ConfigProperty;

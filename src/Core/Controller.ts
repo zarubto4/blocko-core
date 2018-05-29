@@ -113,8 +113,8 @@ export class Controller {
             block.id = this.getFreeBlockId();
         }
 
-        block.registerInputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.inputConnectorEvent(connector, eventType, value));
-        block.registerOutputEventCallback((connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.outputConnectorEvent(connector, eventType, value));
+        block.registerInputEventCallback((connector: Connector<boolean|number|Message|Object>, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.inputConnectorEvent(connector, eventType, value));
+        block.registerOutputEventCallback((connector: Connector<boolean|number|Message|Object>, eventType:ConnectorEventType, value:boolean|number|MessageJson) => this.outputConnectorEvent(connector, eventType, value));
 
         block.registerExternalInputEventCallback((connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => this.externalInputConnectorEvent(connector, eventType, value));
         block.registerExternalOutputEventCallback((connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => this.externalOutputConnectorEvent(connector, eventType, value));
@@ -244,43 +244,43 @@ export class Controller {
         return id;
     }
 
-    private factoryBlockRendererCallback:(block: Block) => IBlockRenderer = null;
+    private factoryBlockRendererCallback: (block: Block) => IBlockRenderer = null;
 
     public registerFactoryBlockRendererCallback(callback: (block: Block) => IBlockRenderer): void {
         this.factoryBlockRendererCallback = callback;
     }
 
-    private factoryConnectionRendererCallback:(connection:Connection) => IRenderer = null;
+    private factoryConnectionRendererCallback: (connection: Connection) => IRenderer = null;
 
-    public registerFactoryConnectionRendererCallback(callback:(connection:Connection) => IRenderer):void {
+    public registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IRenderer):void {
         this.factoryConnectionRendererCallback = callback;
     }
 
     // Internal connectors
 
-    private inputConnectorEventCallbacks:Array<(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void> = [];
+    private inputConnectorEventCallbacks: Array<(block:Block, connector: Connector<boolean|number|Message|Object>, eventType: ConnectorEventType, value: boolean|number|MessageJson) => void> = [];
 
-    public registerInputConnectorEventCallback(callback:(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void):void {
+    public registerInputConnectorEventCallback(callback: (block:Block, connector: Connector<boolean|number|Message|Object>, eventType: ConnectorEventType, value: boolean|number|MessageJson) => void): void {
         this.inputConnectorEventCallbacks.push(callback);
     }
 
-    private outputConnectorEventCallbacks:Array<(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void> = [];
+    private outputConnectorEventCallbacks: Array<(block:Block, connector: Connector<boolean|number|Message|Object>, eventType: ConnectorEventType, value:boolean|number|MessageJson) => void> = [];
 
-    public registerOutputConnectorEventCallback(callback:(block:Block, connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson) => void):void {
+    public registerOutputConnectorEventCallback(callback: (block:Block, connector: Connector<boolean|number|Message|Object>, eventType: ConnectorEventType, value: boolean|number|MessageJson) => void): void {
         this.outputConnectorEventCallbacks.push(callback);
     }
 
     // External connectors
     
-    private externalInputConnectorEventCallbacks:Array<(block:Block, connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => void> = [];
+    private externalInputConnectorEventCallbacks: Array<(block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void> = [];
 
-    public registerExternalInputConnectorEventCallback(callback:(block:Block, connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => void):void {
+    public registerExternalInputConnectorEventCallback(callback: (block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void): void {
         this.externalInputConnectorEventCallbacks.push(callback);
     }
 
-    private externalOutputConnectorEventCallbacks:Array<(block:Block, connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => void> = [];
+    private externalOutputConnectorEventCallbacks: Array<(block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void> = [];
 
-    public registerExternalOutputConnectorEventCallback(callback:(block:Block, connector:ExternalConnector<any>, eventType:ConnectorEventType, value:boolean|number|Message) => void):void {
+    public registerExternalOutputConnectorEventCallback(callback: (block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void): void {
         this.externalOutputConnectorEventCallbacks.push(callback);
     }
 
@@ -298,25 +298,25 @@ export class Controller {
 
     // internal callbacks
 
-    private inputConnectorEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson):void {
+    private inputConnectorEvent(connector: Connector<boolean|number|Message|Object>, eventType: ConnectorEventType, value: boolean|number|MessageJson): void {
         this.inputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
 
-    private outputConnectorEvent(connector:Connector, eventType:ConnectorEventType, value:boolean|number|MessageJson):void {
+    private outputConnectorEvent(connector: Connector<boolean|number|Message|Object>, eventType: ConnectorEventType, value: boolean|number|MessageJson): void {
         this.outputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
 
-    private externalInputConnectorEvent(connector:ExternalAnalogConnector|ExternalDigitalConnector|ExternalMessageConnector, eventType:ConnectorEventType, value:boolean|number|Message):void {
+    private externalInputConnectorEvent(connector: ExternalAnalogConnector|ExternalDigitalConnector|ExternalMessageConnector, eventType: ConnectorEventType, value: boolean|number|Message): void {
         this.externalInputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
 
-    private externalOutputConnectorEvent(connector:ExternalAnalogConnector|ExternalDigitalConnector|ExternalMessageConnector, eventType:ConnectorEventType, value:boolean|number|Message):void {
+    private externalOutputConnectorEvent(connector: ExternalAnalogConnector|ExternalDigitalConnector|ExternalMessageConnector, eventType: ConnectorEventType, value: boolean|number|Message): void {
         this.externalOutputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
 
     // Error callback
 
-    private errorCallbacks:Array<(block: Block, error: any) => void> = [];
+    private errorCallbacks: Array<(block: Block, error: any) => void> = [];
 
     public registerErrorCallback(callback:(block: Block, error: any) => void): void {
         this.errorCallbacks.push(callback);
@@ -328,13 +328,13 @@ export class Controller {
 
     // Log callback
 
-    private logCallbacks:Array<(block: Block, type: string, message: any) => void> = [];
+    private logCallbacks: Array<(block: Block, type: string, message: any) => void> = [];
 
     public registerLogCallback(callback:(block: Block, type: string, message: any) => void): void {
         this.logCallbacks.push(callback);
     }
 
-    public _emitLog(block:Block, type:string, message:any) {
+    public _emitLog(block: Block, type: string, message: any) {
         this.logCallbacks.forEach(callback => callback(block, type, message));
     }
 
@@ -395,7 +395,7 @@ export class Controller {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
                 //TODO what about interface connectors rename? ... m_, d_, a_ ??
-                let connector:Connector = block.getInputConnectorByName(connectorName);
+                let connector: Connector<boolean|number|Message|Object> = block.getInputConnectorById(connectorName);
                 if (connector) {
                     connector._inputSetValue(value);
                 }
@@ -407,7 +407,7 @@ export class Controller {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
                 //TODO what about interface connectors rename? ... m_, d_, a_ ??
-                let connector:Connector = block.getOutputConnectorByName(connectorName);
+                let connector: Connector<boolean|number|Message|Object> = block.getOutputConnectorById(connectorName);
                 if (connector) {
                     connector._outputSetValue(value);
                 }
@@ -606,7 +606,7 @@ export class Controller {
             });
 
             if (block) {
-                let connector: Connector = block.getNetworkStatusOutput();
+                let connector: Connector<boolean> = block.getNetworkStatusOutput();
                 if (connector) {
                     connector._outputSetValue(online, block.group ? targetId : null);
                 }
@@ -618,12 +618,12 @@ export class Controller {
 
     // Saving and loading
     public getDataJson(): string {
-        let json:any = {
+        let json: any = {
             blocks: {}
         };
 
-        this.blocks.forEach((block:Block) => {
-            let blockJson:any = {
+        this.blocks.forEach((block: Block) => {
+            let blockJson: any = {
                 editor: {},
                 outputs: {}
             };
@@ -635,19 +635,19 @@ export class Controller {
             blockJson['editor']['x'] = block.x;
             blockJson['editor']['y'] = block.y;
 
-            let outputs:Array<Connector> = block.getOutputConnectors();
-            outputs.forEach((connector:Connector) => {
+            let outputs: Array<Connector<boolean|number|Message|Object>> = block.getOutputConnectors();
+            outputs.forEach((connector: Connector<boolean|number|Message|Object>) => {
                 let connectionsJson:Array<any> = [];
 
                 connector.connections.forEach((connection:Connection) => {
-                    let otherConnector:Connector = connection.getOtherConnector(connector);
+                    let otherConnector: Connector<boolean|number|Message|Object> = connection.getOtherConnector(connector);
                     connectionsJson.push({
                         'block': otherConnector.block.id,
-                        'connector': otherConnector.name
+                        'connector': otherConnector.id
                     })
                 });
 
-                blockJson['outputs'][connector.name] = connectionsJson;
+                blockJson['outputs'][connector.id] = connectionsJson;
             });
 
             if (block instanceof BaseInterfaceBlock) {
@@ -733,9 +733,9 @@ export class Controller {
                                     let b2name = connParams['block'];
                                     let inputName = connParams['connector'];
 
-                                    let c1:Connector = b1.getOutputConnectorByName(outputName);
-                                    let b2:Block = this.getBlockById(b2name);
-                                    let c2:Connector = b2.getInputConnectorByName(inputName);
+                                    let c1: Connector<boolean|number|Message|Object> = b1.getOutputConnectorById(outputName);
+                                    let b2: Block = this.getBlockById(b2name);
+                                    let c2: Connector<boolean|number|Message|Object> = b2.getInputConnectorById(inputName);
 
                                     c1.connect(c2);
                                 });

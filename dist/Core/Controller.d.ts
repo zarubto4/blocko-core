@@ -63,9 +63,9 @@ export declare class Controller {
     private factoryConnectionRendererCallback;
     registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IRenderer): void;
     private inputConnectorEventCallbacks;
-    registerInputConnectorEventCallback(callback: (block: Block, connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
+    registerInputConnectorEventCallback(callback: (block: Block, connector: Connector<boolean | number | Message | Object>, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private outputConnectorEventCallbacks;
-    registerOutputConnectorEventCallback(callback: (block: Block, connector: Connector, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
+    registerOutputConnectorEventCallback(callback: (block: Block, connector: Connector<boolean | number | Message | Object>, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private externalInputConnectorEventCallbacks;
     registerExternalInputConnectorEventCallback(callback: (block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
     private externalOutputConnectorEventCallbacks;

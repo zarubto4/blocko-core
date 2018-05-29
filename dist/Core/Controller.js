@@ -264,7 +264,7 @@ class Controller {
     setInputConnectorValue(blockId, connectorName, value) {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
-                let connector = block.getInputConnectorByName(connectorName);
+                let connector = block.getInputConnectorById(connectorName);
                 if (connector) {
                     connector._inputSetValue(value);
                 }
@@ -274,7 +274,7 @@ class Controller {
     setOutputConnectorValue(blockId, connectorName, value) {
         this.blocks.forEach((block) => {
             if (block.id == blockId) {
-                let connector = block.getOutputConnectorByName(connectorName);
+                let connector = block.getOutputConnectorById(connectorName);
                 if (connector) {
                     connector._outputSetValue(value);
                 }
@@ -465,10 +465,10 @@ class Controller {
                     let otherConnector = connection.getOtherConnector(connector);
                     connectionsJson.push({
                         'block': otherConnector.block.id,
-                        'connector': otherConnector.name
+                        'connector': otherConnector.id
                     });
                 });
-                blockJson['outputs'][connector.name] = connectionsJson;
+                blockJson['outputs'][connector.id] = connectionsJson;
             });
             if (block instanceof Blocks_1.BaseInterfaceBlock) {
                 blockJson['interface'] = block.interface;
@@ -529,9 +529,9 @@ class Controller {
                                 connections.forEach((connParams) => {
                                     let b2name = connParams['block'];
                                     let inputName = connParams['connector'];
-                                    let c1 = b1.getOutputConnectorByName(outputName);
+                                    let c1 = b1.getOutputConnectorById(outputName);
                                     let b2 = this.getBlockById(b2name);
-                                    let c2 = b2.getInputConnectorByName(inputName);
+                                    let c2 = b2.getInputConnectorById(inputName);
                                     c1.connect(c2);
                                 });
                             }

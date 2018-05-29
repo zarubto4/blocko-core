@@ -161,10 +161,10 @@ class TSBlock extends Core.Block {
             c.connections.forEach((cc) => {
                 let otherC = cc.getOtherConnector(c);
                 let out = {
-                    name: c.name,
+                    name: c.id,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(',')
+                    argTypes: c.isMessage() ? c.stringArgTypes.join(',') : ''
                 };
                 this.storedInputs.push(out);
             });
@@ -174,10 +174,10 @@ class TSBlock extends Core.Block {
             c.connections.forEach((cc) => {
                 let otherC = cc.getOtherConnector(c);
                 let out = {
-                    name: c.name,
+                    name: c.id,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(',')
+                    argTypes: c.isMessage() ? c.stringArgTypes.join(',') : ''
                 };
                 this.storedOutputs.push(out);
             });
@@ -185,17 +185,17 @@ class TSBlock extends Core.Block {
     }
     restoreConnections() {
         this.storedInputs.forEach((si) => {
-            let c = this.getInputConnectorByName(si.name);
+            let c = this.getInputConnectorById(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
+                if (si.type == c.type && si.argTypes == (c.isMessage() ? c.stringArgTypes.join(',') : '')) {
                     c.connect(si.otherConnector);
                 }
             }
         });
         this.storedOutputs.forEach((si) => {
-            let c = this.getOutputConnectorByName(si.name);
+            let c = this.getOutputConnectorById(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
+                if (si.type == c.type && si.argTypes == (c.isMessage() ? c.stringArgTypes.join(',') : '')) {
                     c.connect(si.otherConnector);
                 }
             }

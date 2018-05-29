@@ -35,7 +35,7 @@ class And extends Core.Block {
         }
         else {
             for (i = wantedCount; i < currentCount; i++) {
-                var c = this.getInputConnectorByName("in" + i);
+                var c = this.getInputConnectorById("in" + i);
                 if (c) {
                     this.removeInputConnector(c);
                 }

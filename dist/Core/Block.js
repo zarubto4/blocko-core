@@ -67,26 +67,62 @@ class Block {
             event.connector._outputSetValue(event.value, event.interfaceId);
         }
         else {
-            console.log("Connector named " + event.connector.name + " is not output connector on block " + this.id);
+            console.log("Connector named " + event.connector.id + " is not output connector on block " + this.id);
         }
     }
-    addOutputConnector(name, type, displayName = null, argTypes = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalOutput || type == common_lib_1.Types.ConnectorType.AnalogOutput || type == common_lib_1.Types.ConnectorType.MessageOutput) {
-            let connector = new Connector_1.Connector(this, name, displayName, type, argTypes);
-            this.outputConnectors.push(connector);
-            return connector;
+    addOutputConnector(id, type, name = null, argTypes = null) {
+        let connector;
+        switch (type) {
+            case common_lib_1.Types.ConnectorType.DigitalOutput: {
+                connector = new Connector_1.DigitalConnector(this, id, name, type);
+                break;
+            }
+            case common_lib_1.Types.ConnectorType.AnalogOutput: {
+                connector = new Connector_1.AnalogConnector(this, id, name, type);
+                break;
+            }
+            case common_lib_1.Types.ConnectorType.MessageOutput: {
+                connector = new Connector_1.MessageConnector(this, id, name, type, argTypes);
+                break;
+            }
+            case common_lib_1.Types.ConnectorType.JsonOutput: {
+                connector = new Connector_1.JsonConnector(this, id, name, type);
+                break;
+            }
+            default: {
+                console.error('Block::addOutputConnector - cannot add connector with type ' + type + ' as output connector.');
+                return null;
+            }
         }
-        console.log("Cannot add connector with type " + type + " as output connector.");
-        return null;
+        this.outputConnectors.push(connector);
+        return connector;
     }
-    addInputConnector(name, type, displayName = null, argTypes = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalInput || type == common_lib_1.Types.ConnectorType.AnalogInput || type == common_lib_1.Types.ConnectorType.MessageInput) {
-            let connector = new Connector_1.Connector(this, name, displayName, type, argTypes);
-            this.inputConnectors.push(connector);
-            return connector;
+    addInputConnector(id, type, name = null, argTypes = null) {
+        let connector;
+        switch (type) {
+            case common_lib_1.Types.ConnectorType.DigitalInput: {
+                connector = new Connector_1.DigitalConnector(this, id, name, type);
+                break;
+            }
+            case common_lib_1.Types.ConnectorType.AnalogInput: {
+                connector = new Connector_1.AnalogConnector(this, id, name, type);
+                break;
+            }
+            case common_lib_1.Types.ConnectorType.MessageInput: {
+                connector = new Connector_1.MessageConnector(this, id, name, type, argTypes);
+                break;
+            }
+            case common_lib_1.Types.ConnectorType.JsonInput: {
+                connector = new Connector_1.JsonConnector(this, id, name, type);
+                break;
+            }
+            default: {
+                console.error('Block::addInputConnector - cannot add connector with type ' + type + ' as input connector.');
+                return null;
+            }
         }
-        console.log("Cannot add connector with type " + type + " as input connector.");
-        return null;
+        this.inputConnectors.push(connector);
+        return connector;
     }
     removeOutputConnector(connector) {
         if (!connector)
@@ -106,7 +142,7 @@ class Block {
             this.inputConnectors.splice(index, 1);
         }
     }
-    addExternalInputConnector(targetId, name, type, argTypes = null, kind = null) {
+    addExternalInputConnector(targetId, name, type, argTypes = null) {
         if (type == common_lib_1.Types.ConnectorType.DigitalInput) {
             let connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
@@ -125,7 +161,7 @@ class Block {
         console.log("Cannot add connector with type " + type + " as external input connector.");
         return null;
     }
-    addExternalOutputConnector(targetId, name, type, argTypes = null, kind = null) {
+    addExternalOutputConnector(targetId, name, type, argTypes = null) {
         if (type == common_lib_1.Types.ConnectorType.DigitalOutput) {
             let connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
@@ -301,19 +337,19 @@ class Block {
             this.controller._removeBlock(this);
         }
     }
-    getOutputConnectorByName(name) {
+    getOutputConnectorById(id) {
         let connector = null;
         this.outputConnectors.forEach((c) => {
-            if (c.name == name) {
+            if (c.id == id) {
                 connector = c;
             }
         });
         return connector;
     }
-    getInputConnectorByName(name) {
+    getInputConnectorById(id) {
         let connector = null;
         this.inputConnectors.forEach((c) => {
-            if (c.name == name) {
+            if (c.id == id) {
                 connector = c;
             }
         });

@@ -20,20 +20,20 @@
   "author": "Tomáš Záruba",
   "license": "UNLICENCED",
   "dependencies": {
-    "atob": "^2.0.3",
-    "btoa": "^1.1.2",
-    "common-lib": "git+ssh://git@github.com:ByzanceIoT/common-lib.git#v0.0.31",
+    "atob": "^2.1.1",
+    "btoa": "^1.2.1",
+    "common-lib": "git+ssh://git@github.com:ByzanceIoT/common-lib.git#v0.0.32",
     "detect-node": "^2.0.3",
-    "later": "RickCarlino/later",
+    "later": "github:RickCarlino/later",
     "node-fetch": "^1.6.3",
-    "script-engine": "git+ssh://git@github.com:ByzanceIoT/script-engine.git#v0.0.39",
-    "typescript": "^2.2.1",
+    "script-engine": "git+ssh://git@github.com/ByzanceIoT/script-engine.git#v0.0.39",
+    "typescript": "^2.8.3",
     "xmldom": "^0.1.27"
   },
   "devDependencies": {
-    "@types/mongodb": "^3.0.15",
+    "@types/mongodb": "^3.0.18",
     "rimraf": "^2.6.1",
-    "tslint": "^5.9.1",
+    "tslint": "^5.10.0",
     "tslint-eslint-rules": "^4.1.1"
   },
   "peerDependencies": {
