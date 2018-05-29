@@ -278,6 +278,9 @@ export class TSBlock extends Core.Block {
             this.cleanBlock();
         } else {
             this._tsBlockLib.callReady();
+
+            if (this.renderer) this.renderer.refresh();
+
             this.restoreConnections();
         }
 

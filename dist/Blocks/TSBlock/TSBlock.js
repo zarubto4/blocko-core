@@ -240,6 +240,8 @@ class TSBlock extends Core.Block {
         }
         else {
             this._tsBlockLib.callReady();
+            if (this.renderer)
+                this.renderer.refresh();
             this.restoreConnections();
         }
         if (this.renderer)

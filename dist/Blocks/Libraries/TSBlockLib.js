@@ -6,7 +6,7 @@ const Message_1 = require("../../Core/Message");
 const Connector_1 = require("../../Core/Connector");
 class ValueChangedEvent extends common_lib_1.Events.Event {
     constructor(value) {
-        super("valueChanged");
+        super('valueChanged');
         this.value = value;
     }
     ;
@@ -14,7 +14,7 @@ class ValueChangedEvent extends common_lib_1.Events.Event {
 exports.ValueChangedEvent = ValueChangedEvent;
 class ConfigValueChangedEvent extends common_lib_1.Events.Event {
     constructor(value) {
-        super("valueChanged");
+        super('valueChanged');
         this.value = value;
     }
     ;
@@ -22,7 +22,7 @@ class ConfigValueChangedEvent extends common_lib_1.Events.Event {
 exports.ConfigValueChangedEvent = ConfigValueChangedEvent;
 class MessageReceivedEvent extends common_lib_1.Events.Event {
     constructor(message) {
-        super("messageReceived");
+        super('messageReceived');
         this.message = message;
     }
     ;
@@ -30,7 +30,7 @@ class MessageReceivedEvent extends common_lib_1.Events.Event {
 exports.MessageReceivedEvent = MessageReceivedEvent;
 class GroupInputEvent extends common_lib_1.Events.Event {
     constructor(value, interfaceId) {
-        super("groupInput");
+        super('groupInput');
         this.value = value;
         this.interfaceId = interfaceId;
     }
@@ -39,14 +39,14 @@ class GroupInputEvent extends common_lib_1.Events.Event {
 exports.GroupInputEvent = GroupInputEvent;
 class ReadyEvent extends common_lib_1.Events.Event {
     constructor() {
-        super("ready");
+        super('ready');
     }
     ;
 }
 exports.ReadyEvent = ReadyEvent;
 class DestroyEvent extends common_lib_1.Events.Event {
     constructor() {
-        super("destroy");
+        super('destroy');
     }
     ;
 }
@@ -97,10 +97,20 @@ class OutputConnector extends BaseConnector {
         return this.connector.value;
     }
     set value(value) {
-        this.tsBlockLib.sendValueToOutputConnector(this.connector, value);
+        if (typeof value === 'boolean' || typeof value === 'number') {
+            this.tsBlockLib.sendValueToOutputConnector(this.connector, value);
+        }
+        else {
+            throw new TSBlockError_1.TSBlockError('Attempt to set wrong value on a connector. The type of value must be \'boolean\' or \'number\', but got \'' + typeof value + '\'');
+        }
     }
     send(message) {
-        this.tsBlockLib.sendValueToOutputConnector(this.connector, message);
+        if (Array.isArray(message)) {
+            this.tsBlockLib.sendValueToOutputConnector(this.connector, message);
+        }
+        else {
+            throw new TSBlockError_1.TSBlockError('Attempt to send invalid data. Message must be an array, but got \'' + typeof message + '\'');
+        }
     }
     groupOutput(value, interfaceId) {
         this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
@@ -157,7 +167,7 @@ class TSBlockLib {
         this.contextEmitter = new common_lib_1.Events.Emitter();
     }
     nameValidator(name, method) {
-        if (typeof name != "string" || name == "") {
+        if (typeof name != 'string' || name == '') {
             throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: input/output name must be string and cannot be empty`);
         }
         if (!(/^[A-Za-z0-9]+$/.test(name))) {
@@ -183,7 +193,7 @@ class TSBlockLib {
                 (argType != common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Float]) &&
                 (argType != common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Integer]) &&
                 (argType != common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.String])) {
-                throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: message types parameter can contain only types: <b>"boolean"</b>, <b>"integer"</b>, <b>"float"</b>, <b>"string"</b>).`);
+                throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: message types parameter can contain only types: <b>'boolean'</b>, <b>'integer'</b>, <b>'float'</b>, <b>'string'</b>).`);
             }
         });
     }
@@ -212,12 +222,12 @@ class TSBlockLib {
         let strings = common_lib_1.Types.getStringsFromConnectorType(connector.type);
         let tsEvent;
         if (interfaceId) {
-            tsEvent = new GroupInputEvent(strings.type !== "message" ? value : {
+            tsEvent = new GroupInputEvent(strings.type !== 'message' ? value : {
                 types: connector.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                 values: value
             }, interfaceId);
         }
-        else if (strings.type == "message") {
+        else if (strings.type == 'message') {
             tsEvent = new MessageReceivedEvent({
                 types: connector.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                 values: value
@@ -226,14 +236,14 @@ class TSBlockLib {
         else {
             tsEvent = new ValueChangedEvent(value);
         }
-        if (strings.direction == "input") {
+        if (strings.direction == 'input') {
             let connectorWrapper = this.inputConnectors[connector.name];
             if (connectorWrapper && tsEvent) {
                 this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                 connectorWrapper.emit(connectorWrapper, tsEvent);
             }
         }
-        else if (strings.direction == "output") {
+        else if (strings.direction == 'output') {
             let connectorWrapper = this.outputConnectors[connector.name];
             if (connectorWrapper && tsEvent) {
                 this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
@@ -257,16 +267,19 @@ class TSBlockLib {
                     });
                 }
                 else if (event.eventType == Connector_1.ConnectorEventType.GroupInput) {
-                    tsEvent = new GroupInputEvent(event.value, event.interfaceId);
+                    tsEvent = new GroupInputEvent(strings.type !== 'message' ? event.value : {
+                        types: event.value.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
+                        values: event.value.values
+                    }, event.interfaceId);
                 }
-                if (strings.direction == "input") {
+                if (strings.direction == 'input') {
                     let connectorWrapper = this.inputConnectors[event.connector.name];
                     if (connectorWrapper && tsEvent) {
                         this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                         connectorWrapper.emit(connectorWrapper, tsEvent);
                     }
                 }
-                else if (strings.direction == "output") {
+                else if (strings.direction == 'output') {
                     let connectorWrapper = this.outputConnectors[event.connector.name];
                     if (connectorWrapper && tsEvent) {
                         this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
@@ -318,10 +331,10 @@ class TSBlockLib {
                     if (!this.tsBlock.canAddsIO) {
                         throw new TSBlockError_1.TSBlockError(`You can add inputs only in first loop of your program`);
                     }
-                    this.nameValidator(name, "context.inputs.add");
-                    let conType = this.getInputOutputType(type, "input", "context.inputs.add");
+                    this.nameValidator(name, 'context.inputs.add');
+                    let conType = this.getInputOutputType(type, 'input', 'context.inputs.add');
                     if (conType == common_lib_1.Types.ConnectorType.MessageInput) {
-                        this.argTypesValidator(types, "context.inputs.add");
+                        this.argTypesValidator(types, 'context.inputs.add');
                     }
                     if (types && Array.isArray(types)) {
                         types = types.map((t) => common_lib_1.Types.StringToTypeTable[t]);
@@ -350,10 +363,10 @@ class TSBlockLib {
                     if (!this.tsBlock.canAddsIO) {
                         throw new TSBlockError_1.TSBlockError(`You can add outputs only in first loop of your program`);
                     }
-                    this.nameValidator(name, "context.outputs.add");
-                    let conType = this.getInputOutputType(type, "output", "context.outputs.add");
+                    this.nameValidator(name, 'context.outputs.add');
+                    let conType = this.getInputOutputType(type, 'output', 'context.outputs.add');
                     if (conType == common_lib_1.Types.ConnectorType.MessageOutput) {
-                        this.argTypesValidator(types, "context.outputs.add");
+                        this.argTypesValidator(types, 'context.outputs.add');
                     }
                     if (types && Array.isArray(types)) {
                         types = types.map((t) => common_lib_1.Types.StringToTypeTable[t]);
@@ -382,8 +395,8 @@ class TSBlockLib {
                     if (!this.tsBlock.canAddsIO) {
                         throw new TSBlockError_1.TSBlockError(`You can add config properties only in first loop of your program`);
                     }
-                    this.nameValidator(name, "context.configProperties.add");
-                    let cpType = this.getConfigPropertyType(type, "context.configProperties.add");
+                    this.nameValidator(name, 'context.configProperties.add');
+                    let cpType = this.getConfigPropertyType(type, 'context.configProperties.add');
                     this.usedInputOutputNames.push(name.toLowerCase());
                     let cp = this.tsBlock.addConfigProperty(cpType, name, displayName, defaultValue, options);
                     let cpWrapper = new ConfigPropertyWrapper(cp, this);
@@ -427,7 +440,7 @@ class TSBlockLib {
         };
     }
 }
-TSBlockLib.libName = "TSBlockLib";
+TSBlockLib.libName = 'TSBlockLib';
 TSBlockLib.libTypings = common_lib_1.Libs.ContextLibTypings + `
 // BEGIN
 
@@ -465,7 +478,7 @@ declare interface BlockContext {
      * @param callback Callback with first param ContextReadyEvent object
      * @returns EventListener object, important for removing event listener
      */
-    listenEvent(key: "ready", callback: (event: ContextReadyEvent) => void): EventListener;
+    listenEvent(key: 'ready', callback: (event: ContextReadyEvent) => void): EventListener;
 
     /**
      * Adds event listener to block context
@@ -473,7 +486,7 @@ declare interface BlockContext {
      * @param callback Callback with first param ContextDestroyEvent object
      * @returns EventListener object, important for removing event listener
      */
-    listenEvent(key: "destroy", callback: (event: ContextDestroyEvent) => void): EventListener;
+    listenEvent(key: 'destroy', callback: (event: ContextDestroyEvent) => void): EventListener;
 
     /**
      * Remove event listener from block context

@@ -22,7 +22,7 @@
   "dependencies": {
     "atob": "^2.0.3",
     "btoa": "^1.1.2",
-    "common-lib": "git+ssh://git@github.com:ByzanceIoT/common-lib.git#v0.0.31",
+    "common-lib": "git+ssh://git@github.com/ByzanceIoT/common-lib.git#v0.0.32",
     "detect-node": "^2.0.3",
     "later": "RickCarlino/later",
     "node-fetch": "^1.6.3",
