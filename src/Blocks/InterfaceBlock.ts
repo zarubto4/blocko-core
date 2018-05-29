@@ -390,7 +390,7 @@ export abstract class BaseInterfaceBlock extends Block {
         let type = event.connector.name.substr(0, 1);
         let name = event.connector.name.substr(2);
 
-        if (this.restartDeviceInput.name === event.connector.name && event.value) {
+        if (this.restartDeviceInput && this.restartDeviceInput.name === event.connector.name && event.value) {
             this.controller.callHardwareRestartCallback(event.interfaceId ? event.interfaceId : this._targetId);
         }
 
