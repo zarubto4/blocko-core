@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const machineWrap = (o, machine) => {
-    let ret = new Proxy(o, {
+    return new Proxy(o, {
         get: function (target, property) {
             let descriptor = Object.getOwnPropertyDescriptor(target, property);
             if (!descriptor) {
@@ -11,7 +11,7 @@ const machineWrap = (o, machine) => {
                     p = p.__proto__;
                 }
             }
-            if (property === "_machine_") {
+            if (property === '_machine_') {
                 return machine;
             }
             let out;
@@ -24,7 +24,6 @@ const machineWrap = (o, machine) => {
             return out;
         }
     });
-    return ret;
 };
 class ServicesHandler {
     constructor(name) {
@@ -89,7 +88,7 @@ class ServiceLib {
         };
     }
 }
-ServiceLib.libName = "ServiceLib";
+ServiceLib.libName = 'ServiceLib';
 ServiceLib.libTypings = `
 
         declare interface Promise<T> {

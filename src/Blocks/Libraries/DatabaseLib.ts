@@ -3,7 +3,7 @@ import { DatabaseDao, DatabaseError } from '../../Core/Database';
 
 export class DatabaseLib implements Library {
 
-    public static libName: string = "DatabaseLib";
+    public static libName: string = 'DatabaseLib';
     public static libTypings: string = `
         declare class DatabaseDao {
             insert(data: Object | Array<Object>): void;
@@ -18,7 +18,7 @@ export class DatabaseLib implements Library {
     constructor() {
     }
 
-    get name():string {
+    get name(): string {
         return DatabaseLib.libName;
     }
 

@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Connector_1 = require("./Connector");
 const ExternalConnector_1 = require("./ExternalConnector");
 const ConfigProperty_1 = require("./ConfigProperty");
-const Size_1 = require("./Size");
 const Message_1 = require("./Message");
 const common_lib_1 = require("common-lib");
 class Block {
@@ -48,116 +47,117 @@ class Block {
         return this._x;
     }
     set x(value) {
-        if (value == this._x)
-            return;
-        this._x = value;
+        if (value !== this._x) {
+            this._x = value;
+        }
     }
     get y() {
         return this._y;
     }
     set y(value) {
-        if (value == this._y)
-            return;
-        this._y = value;
+        if (value !== this._y) {
+            this._y = value;
+        }
     }
     sendValueToOutputConnector(event) {
-        if (!this.controller || (this.controller && !this.controller.configuration.outputEnabled))
+        if (!this.controller || (this.controller && !this.controller.configuration.outputEnabled)) {
             return;
-        if (this.outputConnectors.indexOf(event.connector) != -1) {
+        }
+        if (this.outputConnectors.indexOf(event.connector) !== -1) {
             event.connector._outputSetValue(event.value, event.interfaceId);
         }
         else {
-            console.log("Connector named " + event.connector.name + " is not output connector on block " + this.id);
+            console.warn('Connector named ' + event.connector.name + ' is not output connector on block ' + this.id);
         }
     }
     addOutputConnector(name, type, displayName = null, argTypes = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalOutput || type == common_lib_1.Types.ConnectorType.AnalogOutput || type == common_lib_1.Types.ConnectorType.MessageOutput) {
+        if (type === common_lib_1.Types.ConnectorType.DigitalOutput || type === common_lib_1.Types.ConnectorType.AnalogOutput || type === common_lib_1.Types.ConnectorType.MessageOutput) {
             let connector = new Connector_1.Connector(this, name, displayName, type, argTypes);
             this.outputConnectors.push(connector);
             return connector;
         }
-        console.log("Cannot add connector with type " + type + " as output connector.");
+        console.warn('Cannot add connector with type ' + type + ' as output connector.');
         return null;
     }
     addInputConnector(name, type, displayName = null, argTypes = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalInput || type == common_lib_1.Types.ConnectorType.AnalogInput || type == common_lib_1.Types.ConnectorType.MessageInput) {
+        if (type === common_lib_1.Types.ConnectorType.DigitalInput || type === common_lib_1.Types.ConnectorType.AnalogInput || type === common_lib_1.Types.ConnectorType.MessageInput) {
             let connector = new Connector_1.Connector(this, name, displayName, type, argTypes);
             this.inputConnectors.push(connector);
             return connector;
         }
-        console.log("Cannot add connector with type " + type + " as input connector.");
+        console.warn('Cannot add connector with type ' + type + ' as input connector.');
         return null;
     }
     removeOutputConnector(connector) {
-        if (!connector)
-            return;
-        this.disconnectConnectionFromConnector(connector);
-        let index = this.outputConnectors.indexOf(connector);
-        if (index > -1) {
-            this.outputConnectors.splice(index, 1);
+        if (connector) {
+            this.disconnectConnectionFromConnector(connector);
+            let index = this.outputConnectors.indexOf(connector);
+            if (index > -1) {
+                this.outputConnectors.splice(index, 1);
+            }
         }
     }
     removeInputConnector(connector) {
-        if (!connector)
-            return;
-        this.disconnectConnectionFromConnector(connector);
-        let index = this.inputConnectors.indexOf(connector);
-        if (index > -1) {
-            this.inputConnectors.splice(index, 1);
+        if (connector) {
+            this.disconnectConnectionFromConnector(connector);
+            let index = this.inputConnectors.indexOf(connector);
+            if (index > -1) {
+                this.inputConnectors.splice(index, 1);
+            }
         }
     }
     addExternalInputConnector(targetId, name, type, argTypes = null, kind = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalInput) {
+        if (type === common_lib_1.Types.ConnectorType.DigitalInput) {
             let connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
-        if (type == common_lib_1.Types.ConnectorType.AnalogInput) {
+        if (type === common_lib_1.Types.ConnectorType.AnalogInput) {
             let connector = new ExternalConnector_1.ExternalAnalogConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
-        if (type == common_lib_1.Types.ConnectorType.MessageInput) {
+        if (type === common_lib_1.Types.ConnectorType.MessageInput) {
             let connector = new ExternalConnector_1.ExternalMessageConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input, argTypes);
             this.externalInputConnectors.push(connector);
             return connector;
         }
-        console.log("Cannot add connector with type " + type + " as external input connector.");
+        console.warn('Cannot add connector with type ' + type + ' as external input connector.');
         return null;
     }
-    addExternalOutputConnector(targetId, name, type, argTypes = null, kind = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalOutput) {
+    addExternalOutputConnector(targetId, name, type, argTypes = null) {
+        if (type === common_lib_1.Types.ConnectorType.DigitalOutput) {
             let connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
-        if (type == common_lib_1.Types.ConnectorType.AnalogOutput) {
+        if (type === common_lib_1.Types.ConnectorType.AnalogOutput) {
             let connector = new ExternalConnector_1.ExternalAnalogConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
-        if (type == common_lib_1.Types.ConnectorType.MessageOutput) {
+        if (type === common_lib_1.Types.ConnectorType.MessageOutput) {
             let connector = new ExternalConnector_1.ExternalMessageConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output, argTypes);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
-        console.log("Cannot add connector with type " + type + " as external output connector.");
+        console.warn('Cannot add connector with type ' + type + ' as external output connector.');
         return null;
     }
     removeExternalInputConnector(connector) {
-        if (!connector)
-            return;
-        let index = this.externalInputConnectors.indexOf(connector);
-        if (index > -1) {
-            this.externalInputConnectors.splice(index, 1);
+        if (connector) {
+            let index = this.externalInputConnectors.indexOf(connector);
+            if (index > -1) {
+                this.externalInputConnectors.splice(index, 1);
+            }
         }
     }
     removeExternalOutputConnector(connector) {
-        if (!connector)
-            return;
-        let index = this.externalOutputsConnectors.indexOf(connector);
-        if (index > -1) {
-            this.externalOutputsConnectors.splice(index, 1);
+        if (connector) {
+            let index = this.externalOutputsConnectors.indexOf(connector);
+            if (index > -1) {
+                this.externalOutputsConnectors.splice(index, 1);
+            }
         }
     }
     addConfigProperty(type, id, displayName, defaultValue, config) {
@@ -169,11 +169,11 @@ class Block {
         return this.configProperties;
     }
     removeConfigProperty(configProperty) {
-        if (!configProperty)
-            return;
-        let index = this.configProperties.indexOf(configProperty);
-        if (index > -1) {
-            this.configProperties.splice(index, 1);
+        if (configProperty) {
+            let index = this.configProperties.indexOf(configProperty);
+            if (index > -1) {
+                this.configProperties.splice(index, 1);
+            }
         }
     }
     getInputConnectors() {
@@ -193,8 +193,9 @@ class Block {
     }
     initialize() {
         this.initializationCallbacks.forEach(callback => callback());
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     registerOutputEventCallback(callback) {
         this.outputEventCallbacks.push(callback);
@@ -204,8 +205,9 @@ class Block {
         if (this.controller.configuration.outputEnabled) {
             this.outputChanged(event);
         }
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     outputChanged(event) {
         event.connector.connections.forEach(connection => {
@@ -221,8 +223,9 @@ class Block {
         if (this.controller.configuration.inputEnabled) {
             this.inputChanged(event);
         }
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     inputChanged(event) {
     }
@@ -232,8 +235,9 @@ class Block {
     _externalOutputEvent(event) {
         this.externalOutputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
         this.externalOutputEvent(event);
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     externalOutputEvent(event) {
     }
@@ -243,8 +247,9 @@ class Block {
     _externalInputEvent(event) {
         this.externalInputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
         this.externalInputEvent(event);
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     externalInputEvent(event) {
     }
@@ -265,7 +270,7 @@ class Block {
     getConfigPropertyByName(name) {
         let cp = null;
         this.configProperties.forEach((configProperty) => {
-            if (configProperty.name == name) {
+            if (configProperty.name === name) {
                 cp = configProperty;
             }
         });
@@ -295,8 +300,9 @@ class Block {
         this.outputConnectors.forEach((connector) => {
             this.disconnectConnectionFromConnector(connector);
         });
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.destroy();
+        }
         if (this.controller) {
             this.controller._removeBlock(this);
         }
@@ -304,7 +310,7 @@ class Block {
     getOutputConnectorByName(name) {
         let connector = null;
         this.outputConnectors.forEach((c) => {
-            if (c.name == name) {
+            if (c.name === name) {
                 connector = c;
             }
         });
@@ -313,7 +319,7 @@ class Block {
     getInputConnectorByName(name) {
         let connector = null;
         this.inputConnectors.forEach((c) => {
-            if (c.name == name) {
+            if (c.name === name) {
                 connector = c;
             }
         });
@@ -328,40 +334,14 @@ class Block {
     isInterface() {
         return false;
     }
-    rendererGetBlockBackgroundColor() {
-        return "#ccc";
-    }
     rendererGetDisplayName() {
         return this.visualType;
     }
     rendererGetBlockName() {
         return this.id;
     }
-    rendererGetDisplayNameCursor() {
-        return "move";
-    }
-    rendererGetBlockSize() {
-        let maxCon = Math.max(this.inputConnectors.length, this.outputConnectors.length);
-        let height = Math.max(69, 69 + ((maxCon - 2) * 20));
-        return new Size_1.Size(59, height);
-    }
-    rendererCanDelete() {
-        return true;
-    }
-    rendererShowBlockName() {
-        return true;
-    }
-    rendererRotateDisplayName() {
-        return 0;
-    }
-    rendererCustomSvgPath(size) {
-        return null;
-    }
-    rendererGetBlockDescription() {
-        return null;
-    }
     rendererGetCodeName() {
-        return "";
+        return '';
     }
     rendererIsHwAttached() {
         return false;

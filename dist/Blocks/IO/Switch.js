@@ -5,14 +5,11 @@ const Core_1 = require("../../Core");
 const common_lib_1 = require("common-lib");
 class Switch extends DigitalInput_1.DigitalInput {
     constructor(id) {
-        super(id, "switch");
+        super(id, 'switch');
         this.switchValue = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Boolean, 'switchValue', 'Switch value', false, { controlPanel: true });
     }
     rendererGetDisplayName() {
-        return "Switch";
-    }
-    rendererGetDisplayNameCursor() {
-        return "hand";
+        return 'Switch';
     }
     onMouseClick() {
         if (this.controller) {

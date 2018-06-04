@@ -30,8 +30,9 @@ class TSBlock extends Core.Block {
         };
         this.runError = (e) => {
             this._tsCodeError = true;
-            if (this.renderer)
+            if (this.renderer) {
                 this.renderer.refresh();
+            }
             if (this.controller) {
                 this.controller._emitError(this, e);
             }
@@ -125,8 +126,9 @@ class TSBlock extends Core.Block {
                 this._blockId = null;
             }
         }
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     remove() {
         if (this._tsBlockLib) {
@@ -187,7 +189,7 @@ class TSBlock extends Core.Block {
         this.storedInputs.forEach((si) => {
             let c = this.getInputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
+                if (si.type === c.type && si.argTypes === c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -195,7 +197,7 @@ class TSBlock extends Core.Block {
         this.storedOutputs.forEach((si) => {
             let c = this.getOutputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
+                if (si.type === c.type && si.argTypes === c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -213,8 +215,9 @@ class TSBlock extends Core.Block {
         }
         this.cleanBlock();
         this._tsCodeError = false;
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
         let transpileModule = null;
         if (typeof ts === 'undefined' && typeof require === 'function') {
             const typescriptModuleName = 'typescript';
@@ -240,12 +243,14 @@ class TSBlock extends Core.Block {
         }
         else {
             this._tsBlockLib.callReady();
-            if (this.renderer)
+            if (this.renderer) {
                 this.renderer.refresh();
+            }
             this.restoreConnections();
         }
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     configChanged() {
         if (this._tsBlockLib) {
@@ -271,25 +276,14 @@ class TSBlock extends Core.Block {
         }
         return this._displayName;
     }
-    rendererGetBlockBackgroundColor() {
-        if (this._tsCodeError) {
-            return '#c00';
-        }
-        return this._backgroundColor;
-    }
-    rendererGetBlockDescription() {
-        if (this._tsCodeError) {
-            return 'TypeScript Error';
-        }
-        return this._description;
-    }
     rendererGetCodeName() {
         return 'TS';
     }
     setError(enabled) {
         this._tsCodeError = enabled;
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
 }
 exports.TSBlock = TSBlock;

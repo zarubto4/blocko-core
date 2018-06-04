@@ -4,16 +4,12 @@ import { ConnectorEventType } from '../../Core/Connector';
 
 export class PushButton extends DigitalInput {
 
-    public constructor(id:string) {
+    public constructor(id: string) {
         super(id, 'pushButton');
     }
 
-    public rendererGetDisplayName():string {
+    public rendererGetDisplayName(): string {
         return 'Button';
-    }
-
-    public rendererGetDisplayNameCursor():string {
-        return 'hand';
     }
 
     public onMouseDown(): void {
@@ -47,5 +43,4 @@ export class PushButton extends DigitalInput {
     public onMouseDrag(event: {dx: number, dy: number}): boolean {
         return true;
     }
-
 }

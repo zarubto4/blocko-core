@@ -5,51 +5,50 @@ const common_lib_1 = require("common-lib");
 const Connector_1 = require("../../Core/Connector");
 class And extends Core.Block {
     constructor(id) {
-        super(id, "and", "and");
-        this.confInputsCount = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Integer, "inputsCount", "Inputs count", 2, {
+        super(id, 'and', 'and');
+        this.confInputsCount = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {
             range: true,
             min: 1,
             max: 16
         });
-        this.confNegate = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Boolean, "negate", "Negate", false);
-        this.connectorOutput = this.addOutputConnector("output", common_lib_1.Types.ConnectorType.DigitalOutput);
+        this.confNegate = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Boolean, 'negate', 'Negate', false);
+        this.connectorOutput = this.addOutputConnector('output', common_lib_1.Types.ConnectorType.DigitalOutput);
         this.configChanged();
     }
     afterControllerSet() {
         this.inputsChanged();
     }
-    rendererGetBlockBackgroundColor() {
-        return "#a1887f";
-    }
     rendererGetDisplayName() {
-        return "AND";
+        return 'AND';
     }
     configChanged() {
-        var wantedCount = this.confInputsCount.value;
-        var currentCount = this.inputConnectors.length;
-        var i;
+        let wantedCount = this.confInputsCount.value;
+        let currentCount = this.inputConnectors.length;
+        let i;
         if (wantedCount > currentCount) {
             for (i = currentCount; i < wantedCount; i++) {
-                this.addInputConnector("in" + i, common_lib_1.Types.ConnectorType.DigitalInput, "Input " + (i + 1));
+                this.addInputConnector('in' + i, common_lib_1.Types.ConnectorType.DigitalInput, 'Input ' + (i + 1));
             }
         }
         else {
             for (i = wantedCount; i < currentCount; i++) {
-                var c = this.getInputConnectorByName("in" + i);
+                let c = this.getInputConnectorByName('in' + i);
                 if (c) {
                     this.removeInputConnector(c);
                 }
             }
         }
         this.inputsChanged();
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     inputsChanged() {
-        var out = true;
+        let out = true;
         this.inputConnectors.forEach((con) => {
-            if (!con.value)
+            if (!con.value) {
                 out = false;
+            }
         });
         if (this.confNegate.value) {
             out = !out;

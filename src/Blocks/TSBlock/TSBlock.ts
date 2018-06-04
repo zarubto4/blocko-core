@@ -9,33 +9,31 @@ import { Libs } from 'common-lib';
 import { ConnectorEvent } from '../../Core';
 import { DatabaseLib } from '../Libraries/DatabaseLib';
 
-//import * as src from 'typescript';
-
 declare let ts;
 declare const require;
 
 export class TSBlock extends Core.Block {
 
-    private _tsCode:string = '';
+    private _tsCode: string = '';
     private _tsCodeError = false;
 
-    private _machine:Machine = null;
-    private _utilsLib:Libs.UtilsLib = null;
-    private _tsBlockLib:TSBlockLib = null;
-    private _consoleLib:Libs.ConsoleLib = null;
-    private _serviceLib:ServiceLib = null;
-    private _fetchLib:FetchLib = null;
+    private _machine: Machine = null;
+    private _utilsLib: Libs.UtilsLib = null;
+    private _tsBlockLib: TSBlockLib = null;
+    private _consoleLib: Libs.ConsoleLib = null;
+    private _serviceLib: ServiceLib = null;
+    private _fetchLib: FetchLib = null;
     private _dbLib: DatabaseLib = null;
 
-    protected _displayName:string = '';
-    protected _backgroundColor:string = '';
-    protected _description:string = null;
+    protected _displayName: string = '';
+    protected _backgroundColor: string = '';
+    protected _description: string = null;
 
     public canAddsIO = false;
 
     protected _designJson: string;
 
-    public constructor(id:string, tsCode?:string, designJson?:string) {
+    public constructor(id: string, tsCode?: string, designJson?: string) {
         super(id, 'tsBlock', 'tsBlock');
         this._codeBlock = true;
 
@@ -73,21 +71,21 @@ export class TSBlock extends Core.Block {
         }
     }
 
-    protected onLog = (type:string, message:string) => {
+    protected onLog = (type: string, message: string) => {
         if (this.controller) {
             this.controller._emitLog(this, type, message);
         }
     };
 
-    get code():string {
+    get code(): string {
         return this._tsCode;
     }
 
-    get codeError():boolean {
+    get codeError(): boolean {
         return this._tsCodeError;
     }
 
-    get designJson():string {
+    get designJson(): string {
         return JSON.stringify({
             displayName: this._displayName,
             backgroundColor: this._backgroundColor,
@@ -97,14 +95,14 @@ export class TSBlock extends Core.Block {
         });
     }
 
-    public setDesignJson(designJson:string) {
+    public setDesignJson(designJson: string) {
         let dj = null;
         try {
             dj = JSON.parse(designJson);
         } catch (e) {
             // TODO: maybe do something
         }
-        
+
         if (dj) {
             if (dj['backgroundColor']) {
                 this._backgroundColor = dj['backgroundColor']
@@ -134,20 +132,22 @@ export class TSBlock extends Core.Block {
                 this._blockId = null;
             }
         }
-        
-        if (this.renderer) this.renderer.refresh();
+
+        if (this.renderer) {
+            this.renderer.refresh();
+        }
     }
 
-    public remove():void {
+    public remove(): void {
         if (this._tsBlockLib) { this._tsBlockLib.callDestroy(); }
 
         if (this._machine) { this._machine.terminate(); }
         super.remove();
     }
 
-    public setCode(tsCode:string) {
+    public setCode(tsCode: string) {
         this._tsCode = tsCode;
-        this.run((this.controller)?this.controller.safeRun:false);
+        this.run((this.controller) ? this.controller.safeRun : false);
     }
 
     protected cleanBlock() {
@@ -170,14 +170,16 @@ export class TSBlock extends Core.Block {
 
     protected runError = (e) => {
         this._tsCodeError = true;
-        if (this.renderer) this.renderer.refresh();
+        if (this.renderer) {
+            this.renderer.refresh();
+        }
         if (this.controller) {
             this.controller._emitError(this, e);
         }
     };
 
-    private storedInputs:{ name:string, type:number, otherConnector:Connector, argTypes:string }[] = [];
-    private storedOutputs:{ name:string, type:number, otherConnector:Connector, argTypes:string }[] = [];
+    private storedInputs: { name: string, type: number, otherConnector: Connector, argTypes: string }[] = [];
+    private storedOutputs: { name: string, type: number, otherConnector: Connector, argTypes: string }[] = [];
 
     private storeConnections() {
 
@@ -216,7 +218,7 @@ export class TSBlock extends Core.Block {
         this.storedInputs.forEach((si) => {
             let c = this.getInputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
+                if (si.type === c.type && si.argTypes === c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -225,7 +227,7 @@ export class TSBlock extends Core.Block {
         this.storedOutputs.forEach((si) => {
             let c = this.getOutputConnectorByName(si.name);
             if (c) {
-                if (si.type == c.type && si.argTypes == c.stringArgTypes.join(',')) {
+                if (si.type === c.type && si.argTypes === c.stringArgTypes.join(',')) {
                     c.connect(si.otherConnector);
                 }
             }
@@ -246,12 +248,15 @@ export class TSBlock extends Core.Block {
         this.cleanBlock();
 
         this._tsCodeError = false;
-        if (this.renderer) this.renderer.refresh();
+        if (this.renderer) {
+            this.renderer.refresh();
+        }
 
         let transpileModule = null;
 
         if (typeof ts === 'undefined' && typeof require === 'function') {
             const typescriptModuleName = 'typescript';
+            /*tslint:disable:no-eval*/
             transpileModule = eval('require(typescriptModuleName).transpileModule');
         } else {
             transpileModule = ts.transpileModule;
@@ -279,12 +284,16 @@ export class TSBlock extends Core.Block {
         } else {
             this._tsBlockLib.callReady();
 
-            if (this.renderer) this.renderer.refresh();
+            if (this.renderer) {
+                this.renderer.refresh();
+            }
 
             this.restoreConnections();
         }
 
-        if (this.renderer) this.renderer.refresh();
+        if (this.renderer) {
+            this.renderer.refresh();
+        }
 
     }
 
@@ -294,7 +303,7 @@ export class TSBlock extends Core.Block {
         }
     }
 
-    protected inputChanged(event: ConnectorEvent):void {
+    protected inputChanged(event: ConnectorEvent): void {
         super.inputChanged(event);
         if (this._tsBlockLib) {
             if (event.connector) {
@@ -312,26 +321,11 @@ export class TSBlock extends Core.Block {
         }
     }
 
-    public rendererGetDisplayName():string {
+    public rendererGetDisplayName(): string {
         if (this._tsCodeError) {
             return 'ERROR!';
         }
         return this._displayName;
-    }
-
-    public rendererGetBlockBackgroundColor():string {
-        if (this._tsCodeError) {
-            return '#c00';
-        }
-        return this._backgroundColor;
-    }
-
-
-    public rendererGetBlockDescription(): string {
-        if (this._tsCodeError) {
-            return 'TypeScript Error';
-        }
-        return this._description;
     }
 
     public rendererGetCodeName(): string {
@@ -340,7 +334,8 @@ export class TSBlock extends Core.Block {
 
     public setError(enabled: boolean) {
         this._tsCodeError = enabled;
-        if (this.renderer) this.renderer.refresh();
+        if (this.renderer) {
+            this.renderer.refresh();
+        }
     }
-
 }

@@ -28,10 +28,6 @@ export class Or extends Core.Block {
         this.inputsChanged();
     }
 
-    public rendererGetBlockBackgroundColor(): string {
-        return '#a1887f';
-    }
-
     public rendererGetDisplayName(): string {
         return 'OR';
     }
@@ -54,7 +50,9 @@ export class Or extends Core.Block {
         }
         this.inputsChanged();
 
-        if (this.renderer) this.renderer.refresh();
+        if (this.renderer) {
+            this.renderer.refresh();
+        }
     }
 
     public inputsChanged(): void {
@@ -62,7 +60,9 @@ export class Or extends Core.Block {
         let out = false;
 
         this.inputConnectors.forEach((con: Core.Connector) => {
-            if (con.value) out = true;
+            if (con.value) {
+                out = true;
+            }
         });
 
         if (this.confNegate.value) {

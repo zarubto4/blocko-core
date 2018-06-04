@@ -99,7 +99,7 @@ export class InputConnector extends BaseConnector<boolean|number|MessageValue> {
 
 export class OutputConnector extends BaseConnector<boolean|number|MessageValue> {
 
-    public get value():boolean|number {
+    public get value(): boolean|number {
         return <boolean|number><any>this.connector.value;
     }
 
@@ -130,19 +130,19 @@ export class ConfigPropertyWrapper extends Events.Emitter<ConfigValueChangedEven
         super();
     }
 
-    public get value():any {
+    public get value(): any {
         return this.configProperty.value;
     }
 
-    public get name():string {
+    public get name(): string {
         return this.configProperty.name;
     }
 
-    public get displayName():string {
+    public get displayName(): string {
         return this.configProperty.displayName;
     }
 
-    public get type():string {
+    public get type(): string {
         return Types.ConfigPropertyTypeToStringTable[this.configProperty.type];
     }
 
@@ -151,7 +151,7 @@ export class ConfigPropertyWrapper extends Events.Emitter<ConfigValueChangedEven
 export class TSBlockLib implements Library {
 
     public static libName: string = 'TSBlockLib';
-    public static libTypings: string = Libs.ContextLibTypings+`
+    public static libTypings: string = Libs.ContextLibTypings + `
 // BEGIN
 
 // SERVICES
@@ -211,7 +211,7 @@ declare const context: BlockContext;
 // END
 `;
 
-    protected usedInputOutputNames:string[] = [];
+    protected usedInputOutputNames: string[] = [];
 
     protected inputConnectors: { [name: string]: InputConnector } = {};
     protected outputConnectors: { [name: string]: OutputConnector } = {};
@@ -252,7 +252,7 @@ declare const context: BlockContext;
     }
 
     private nameValidator(name: string, method: string): void {
-        if (typeof name != 'string' || name == '') {
+        if (typeof name !== 'string' || name === '') {
             throw new TSBlockError(`In <b>${method}</b>: input/output name must be string and cannot be empty`);
         }
         if (!(/^[A-Za-z0-9]+$/.test(name))) {
@@ -263,11 +263,11 @@ declare const context: BlockContext;
         }
     };
 
-    private argTypesValidator(argTypes:any, method:string):void {
+    private argTypesValidator(argTypes: any, method: string): void {
         if (!Array.isArray(argTypes)) {
             throw new TSBlockError(`In <b>${method}</b>: message types parameter must be array`);
         }
-        if (argTypes.length == 0) {
+        if (argTypes.length === 0) {
             throw new TSBlockError(`In <b>${method}</b>: message types parameter must contain at least 1 type`);
         }
         if (argTypes.length > 8) {
@@ -275,17 +275,17 @@ declare const context: BlockContext;
         }
         argTypes.forEach((argType: any) => {
             if (
-                (argType != Types.TypeToStringTable[Types.Type.Boolean]) &&
-                (argType != Types.TypeToStringTable[Types.Type.Float]) &&
-                (argType != Types.TypeToStringTable[Types.Type.Integer]) &&
-                (argType != Types.TypeToStringTable[Types.Type.String])
+                (argType !== Types.TypeToStringTable[Types.Type.Boolean]) &&
+                (argType !== Types.TypeToStringTable[Types.Type.Float]) &&
+                (argType !== Types.TypeToStringTable[Types.Type.Integer]) &&
+                (argType !== Types.TypeToStringTable[Types.Type.String])
             ) {
                 throw new TSBlockError(`In <b>${method}</b>: message types parameter can contain only types: <b>'boolean'</b>, <b>'integer'</b>, <b>'float'</b>, <b>'string'</b>).`);
             }
         });
     };
 
-    private getInputOutputType(type:string, direction:'input'|'output', method:string):Types.ConnectorType {
+    private getInputOutputType(type: string, direction: 'input'|'output', method: string): Types.ConnectorType {
         let ct = Types.getConnectorTypeFromStrings(type, direction);
         if (ct) {
             return ct;
@@ -293,7 +293,7 @@ declare const context: BlockContext;
         throw new TSBlockError(`In <b>${method}</b>: unknown ${direction} type <b>${type}</b>`);
     }
 
-    private getConfigPropertyType(type:string, method:string):Types.ConfigPropertyType {
+    private getConfigPropertyType(type: string, method: string): Types.ConfigPropertyType {
         let t = Types.StringToConfigPropertyTypeTable[type];
         if (t) {
             return t;
@@ -317,7 +317,7 @@ declare const context: BlockContext;
                 types: connector.argTypes.map((at) => Types.TypeToStringTable[at]),
                 values: value
             }, interfaceId)
-        } else if (strings.type == 'message') {
+        } else if (strings.type === 'message') {
             tsEvent = new MessageReceivedEvent({
                 types: connector.argTypes.map((at) => Types.TypeToStringTable[at]),
                 values: <Array<boolean|number|string>>value
@@ -326,7 +326,7 @@ declare const context: BlockContext;
             tsEvent = new ValueChangedEvent(<boolean|number>value);
         }
 
-        if (strings.direction == 'input') {
+        if (strings.direction === 'input') {
 
             let connectorWrapper = this.inputConnectors[connector.name];
 
@@ -335,7 +335,7 @@ declare const context: BlockContext;
                 connectorWrapper.emit(connectorWrapper, tsEvent);
             }
 
-        } else if (strings.direction == 'output') {
+        } else if (strings.direction === 'output') {
 
             let connectorWrapper = this.outputConnectors[connector.name];
 
@@ -346,80 +346,88 @@ declare const context: BlockContext;
         }
     }
 
-    public inputEvent(event: ConnectorEvent):void {
-        if (this.machine) this.machine.call(() => {
+    public inputEvent(event: ConnectorEvent): void {
+        if (this.machine) {
+            this.machine.call(() => {
 
-            let strings = Types.getStringsFromConnectorType(event.connector.type);
+                let strings = Types.getStringsFromConnectorType(event.connector.type);
 
-            let tsEvent;
-            if (event.eventType == ConnectorEventType.ValueChange) {
-                tsEvent = new ValueChangedEvent(<boolean|number>event.value);
-            } else if (event.eventType == ConnectorEventType.NewMessage) {
-                let message = (<Message>event.value);
-                tsEvent = new MessageReceivedEvent({
-                    types: message.argTypes.map((at) => Types.TypeToStringTable[at]),
-                    values: message.values
+                let tsEvent;
+                if (event.eventType === ConnectorEventType.ValueChange) {
+                    tsEvent = new ValueChangedEvent(<boolean|number>event.value);
+                } else if (event.eventType === ConnectorEventType.NewMessage) {
+                    let message = (<Message>event.value);
+                    tsEvent = new MessageReceivedEvent({
+                        types: message.argTypes.map((at) => Types.TypeToStringTable[at]),
+                        values: message.values
+                    });
+                } else if (event.eventType === ConnectorEventType.GroupInput) {
+                    tsEvent = new GroupInputEvent(strings.type !== 'message' ? <boolean|number>event.value : <MessageValue>{
+                        types: (<Message>event.value).argTypes.map((at) => Types.TypeToStringTable[at]),
+                        values: (<Message>event.value).values
+                    }, event.interfaceId)
+                }
+
+                if (strings.direction === 'input') {
+
+                    let connectorWrapper = this.inputConnectors[event.connector.name];
+
+                    if (connectorWrapper && tsEvent) {
+                        this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                        connectorWrapper.emit(connectorWrapper, tsEvent);
+                    }
+
+                } else if (strings.direction === 'output') {
+
+                    let connectorWrapper = this.outputConnectors[event.connector.name];
+
+                    if (connectorWrapper && tsEvent) {
+                        this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
+                        connectorWrapper.emit(connectorWrapper, tsEvent);
+                    }
+
+                }
+            });
+        }
+    }
+
+    public configChanged(): void {
+        if (this.machine) {
+            this.machine.call(() => {
+
+                let out = {};
+                this.tsBlock.getConfigProperties().forEach((cp) => {
+                    out[cp.name] = cp.value;
                 });
-            } else if (event.eventType == ConnectorEventType.GroupInput) {
-                tsEvent = new GroupInputEvent(strings.type !== 'message' ? <boolean|number>event.value : <MessageValue>{
-                    types: (<Message>event.value).argTypes.map((at) => Types.TypeToStringTable[at]),
-                    values: (<Message>event.value).values
-                }, event.interfaceId)
-            }
 
-            if (strings.direction == 'input') {
+                this.configPropertiesConnectorsEmitter.emit(null, new ConfigValueChangedEvent(out));
 
-                let connectorWrapper = this.inputConnectors[event.connector.name];
+                // TODO: only changed values
+                this.tsBlock.getConfigProperties().forEach((cp) => {
+                    if (this.configPropertiesConnectors.hasOwnProperty(cp.name)) {
+                        let configProperty = this.configPropertiesConnectors[cp.name];
+                        configProperty.emit(configProperty, new ConfigValueChangedEvent(configProperty.value));
+                    }
+                });
 
-                if (connectorWrapper && tsEvent) {
-                    this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
-                    connectorWrapper.emit(connectorWrapper, tsEvent);
-                }
-
-            } else if (strings.direction == 'output') {
-
-                let connectorWrapper = this.outputConnectors[event.connector.name];
-
-                if (connectorWrapper && tsEvent) {
-                    this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
-                    connectorWrapper.emit(connectorWrapper, tsEvent);
-                }
-
-            }
-        });
-    }
-
-    public configChanged():void {
-        if (this.machine) this.machine.call(() => {
-
-            let out = {};
-            this.tsBlock.getConfigProperties().forEach((cp) => {
-                out[cp.name] = cp.value;
             });
+        }
+    }
 
-            this.configPropertiesConnectorsEmitter.emit(null, new ConfigValueChangedEvent(out));
-
-            // TODO: only changed values
-            this.tsBlock.getConfigProperties().forEach((cp) => {
-                if (this.configPropertiesConnectors.hasOwnProperty(cp.name)) {
-                    let configProperty = this.configPropertiesConnectors[cp.name];
-                    configProperty.emit(configProperty, new ConfigValueChangedEvent(configProperty.value));
-                }
+    public callReady(): void {
+        if (this.machine) {
+            this.machine.call(() => {
+                this.contextEmitter.emit(null, new ReadyEvent());
             });
-
-        });
+        }
     }
 
-    public callReady():void {
-        if (this.machine) this.machine.call(() => {
-            this.contextEmitter.emit(null, new ReadyEvent());
-        });
-    }
-
-    public callDestroy():void {
-        if (this.machine) this.machine.call(() => {
-            this.contextEmitter.emit(null, new DestroyEvent());
-        });
+    public callDestroy(): void {
+        if (this.machine) {
+            this.machine.call(() => {
+                this.contextEmitter.emit(null, new DestroyEvent());
+            });
+        }
     }
 
     public external(machine: Machine): {[p: string]: any} {
@@ -436,13 +444,13 @@ declare const context: BlockContext;
                 this.contextEmitter.removeListener(listener);
             },
             inputs: {
-                add: (name:string, type:string, displayName:string, types?:Types.Type[]) => {
+                add: (name: string, type: string, displayName: string, types?: Types.Type[]) => {
                     if (!this.tsBlock.canAddsIO) {
                         throw new TSBlockError(`You can add inputs only in first loop of your program`);
                     }
                     this.nameValidator(name, 'context.inputs.add');
                     let conType = this.getInputOutputType(type, 'input', 'context.inputs.add');
-                    if (conType == Types.ConnectorType.MessageInput) {
+                    if (conType === Types.ConnectorType.MessageInput) {
                         this.argTypesValidator(types, 'context.inputs.add');
                     }
                     if (types && Array.isArray(types)) {
@@ -457,7 +465,7 @@ declare const context: BlockContext;
                     this.inputConnectors[name] = conWrapper;
                     return conWrapper;
                 },
-                get: (name:string) => {
+                get: (name: string) => {
                     if (this.inputConnectors.hasOwnProperty(name)) {
                         return this.inputConnectors[name];
                     }
@@ -471,13 +479,13 @@ declare const context: BlockContext;
                 },
             },
             outputs: {
-                add: (name:string, type:string, displayName:string, types?:Types.Type[]) => {
+                add: (name: string, type: string, displayName: string, types?: Types.Type[]) => {
                     if (!this.tsBlock.canAddsIO) {
                         throw new TSBlockError(`You can add outputs only in first loop of your program`);
                     }
                     this.nameValidator(name, 'context.outputs.add');
                     let conType = this.getInputOutputType(type, 'output', 'context.outputs.add');
-                    if (conType == Types.ConnectorType.MessageOutput) {
+                    if (conType === Types.ConnectorType.MessageOutput) {
                         this.argTypesValidator(types, 'context.outputs.add');
                     }
                     if (types && Array.isArray(types)) {
@@ -492,7 +500,7 @@ declare const context: BlockContext;
                     this.outputConnectors[name] = conWrapper;
                     return conWrapper;
                 },
-                get: (name:string) => {
+                get: (name: string) => {
                     if (this.outputConnectors.hasOwnProperty(name)) {
                         return this.outputConnectors[name];
                     }
@@ -506,7 +514,7 @@ declare const context: BlockContext;
                 },
             },
             configProperties: {
-                add: (name:string, type:string, displayName:string, defaultValue:any, options?:any) => {
+                add: (name: string, type: string, displayName: string, defaultValue: any, options?: any) => {
                     if (!this.tsBlock.canAddsIO) {
                         throw new TSBlockError(`You can add config properties only in first loop of your program`);
                     }
@@ -522,7 +530,7 @@ declare const context: BlockContext;
                     this.configPropertiesConnectors[name] = cpWrapper;
                     return cpWrapper;
                 },
-                get: (name:string) => {
+                get: (name: string) => {
                     if (this.outputConnectors.hasOwnProperty(name)) {
                         return this.outputConnectors[name];
                     }
@@ -559,8 +567,5 @@ declare const context: BlockContext;
         return {
             context: context
         }
-
     }
-
-
 }

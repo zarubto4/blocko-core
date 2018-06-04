@@ -10,8 +10,6 @@ __export(require("./Connection"));
 __export(require("./Connector"));
 __export(require("./Controller"));
 __export(require("./ExternalConnector"));
-__export(require("./Point"));
-__export(require("./Size"));
 __export(require("./Message"));
 __export(require("./RendererHelper"));
 __export(require("./Renderer"));

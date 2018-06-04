@@ -5,26 +5,18 @@ export class AnalogInput extends Block {
 
     public connectorOutput: Connector;
     protected currentValue: number = 0;
-    
+
     protected analogValue: ConfigProperty;
 
-    public constructor(id:string) {
+    public constructor(id: string) {
         super(id, 'analogInput', 'analogInput');
         this.connectorOutput = this.addOutputConnector('output', Types.ConnectorType.AnalogOutput, 'Output');
-        
+
         this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1, input: true })
     }
 
-    public rendererGetBlockBackgroundColor():string {
-        return '#d1e7d1';
-    }
-
-    public rendererGetDisplayName():string {
+    public rendererGetDisplayName(): string {
         return 'A-IN';
-    }
-
-    public rendererGetDisplayNameCursor():string {
-        return 'ns-resize';
     }
 
     public onMouseDrag(e: {dx: number, dy: number}): boolean {

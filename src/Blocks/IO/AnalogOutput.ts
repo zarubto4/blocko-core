@@ -12,10 +12,6 @@ export class AnalogOutput extends Block {
         this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1 })
     }
 
-    public rendererGetBlockBackgroundColor(): string {
-        return '#d1e7d1';
-    }
-
     public rendererGetDisplayName(): string {
         return 'A-OUT'
     }

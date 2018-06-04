@@ -9,9 +9,6 @@ class PushButton extends DigitalInput_1.DigitalInput {
     rendererGetDisplayName() {
         return 'Button';
     }
-    rendererGetDisplayNameCursor() {
-        return 'hand';
-    }
     onMouseDown() {
         if (this.controller) {
             let event = {

@@ -1,7 +1,7 @@
-import {Block} from "./Block";
+import { Block } from './Block';
 import { ConnectorEventType } from './Connector';
-import {Message, MessageHelpers} from "./Message";
-import {Types} from "common-lib";
+import { Message, MessageHelpers } from './Message';
+import { Types } from 'common-lib';
 
 export enum ExternalConnectorType {Input, Output}
 
@@ -13,21 +13,21 @@ export interface ExternalConnectorEvent {
 }
 
 export class ExternalConnector<T extends boolean|number|Message> {
-    public block:Block;
-    public type:ExternalConnectorType;
-    protected value:T;
+    public block: Block;
+    public type: ExternalConnectorType;
+    protected value: T;
 
-    private _targetId:string;
-    private _name:string;
+    private _targetId: string;
+    private _name: string;
 
-    public constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+    public constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType) {
         this.block = block;
         this._targetId = targetId;
         this._name = name;
         this.type = type;
     }
 
-    public getValue():T {
+    public getValue(): T {
         return this.value;
     }
 
@@ -45,18 +45,18 @@ export class ExternalConnector<T extends boolean|number|Message> {
             value: value,
             interfaceId: interfaceId
         };
-        if (this.type == ExternalConnectorType.Input) {
+        if (this.type === ExternalConnectorType.Input) {
             this.block._externalInputEvent(event)
         } else {
             this.block._externalOutputEvent(event)
         }
     }
 
-    get name():string {
+    get name(): string {
         return this._name;
     }
 
-    set name(value:string) {
+    set name(value: string) {
         this._name = value;
     }
 
@@ -64,20 +64,20 @@ export class ExternalConnector<T extends boolean|number|Message> {
         this._targetId = value;
     }
 
-    get targetId():string {
+    get targetId(): string {
         return this._targetId;
     }
 }
 
 export class ExternalDigitalConnector extends ExternalConnector<boolean> {
-    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+    constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType) {
         super(block, targetId, name, type);
         this.value = false;
     }
 }
 
 export class ExternalAnalogConnector extends ExternalConnector<number> {
-    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType) {
+    constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType) {
         super(block, targetId, name, type);
         this.value = 0;
     }
@@ -85,23 +85,23 @@ export class ExternalAnalogConnector extends ExternalConnector<number> {
 
 export class ExternalMessageConnector extends ExternalConnector<Message> {
 
-    private _argTypes:Types.Type[];
+    private _argTypes: Types.Type[];
 
-    constructor(block:Block, targetId:string, name:string, type:ExternalConnectorType, argTypes:Types.Type[]) {
+    constructor(block: Block, targetId: string, name: string, type: ExternalConnectorType, argTypes: Types.Type[]) {
         super(block, targetId, name, type);
         this._argTypes = argTypes;
         this.value = null;
     }
 
-    get argTypes():Types.Type[] {
+    get argTypes(): Types.Type[] {
         return this._argTypes;
     }
 
-    public isArgTypesEqual(argTypes:Types.Type[]):boolean {
+    public isArgTypesEqual(argTypes: Types.Type[]): boolean {
         return MessageHelpers.isArgTypesEqual(this._argTypes, argTypes);
     }
 
-    public setValue(value:Message, interfaceId?: string):void {
+    public setValue(value: Message, interfaceId?: string): void {
         // validate argTypes
         if (this.isArgTypesEqual(value.argTypes)) {
             super.setValue(value, interfaceId);

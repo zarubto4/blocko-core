@@ -1,4 +1,4 @@
-import { DigitalInput } from "./DigitalInput";
+import { DigitalInput } from './DigitalInput';
 import { ConfigProperty, ConnectorEvent, ConnectorEventType } from '../../Core';
 import { Types } from 'common-lib';
 
@@ -6,18 +6,14 @@ export class Switch extends DigitalInput {
 
     protected switchValue: ConfigProperty;
 
-    public constructor(id:string) {
-        super(id, "switch");
+    public constructor(id: string) {
+        super(id, 'switch');
 
         this.switchValue = this.addConfigProperty(Types.ConfigPropertyType.Boolean, 'switchValue', 'Switch value', false, { controlPanel: true });
     }
 
-    public rendererGetDisplayName():string {
-        return "Switch";
-    }
-
-    public rendererGetDisplayNameCursor():string {
-        return "hand";
+    public rendererGetDisplayName(): string {
+        return 'Switch';
     }
 
     public onMouseClick(): void {

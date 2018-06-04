@@ -13,7 +13,7 @@ export class Connection {
     }
 
     public getOtherConnector(self: Connector): Connector {
-        if (this.connectorA == self) {
+        if (this.connectorA === self) {
             return this.connectorB;
         } else {
             return this.connectorA;
@@ -41,7 +41,8 @@ export class Connection {
             this.connectorB.block.controller._removeConnection(this);
         }
 
-        if (this.renderer) this.renderer.destroy();
-
+        if (this.renderer) {
+            this.renderer.destroy();
+        }
     }
 }

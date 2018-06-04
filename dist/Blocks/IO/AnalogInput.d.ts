@@ -4,9 +4,7 @@ export declare class AnalogInput extends Block {
     protected currentValue: number;
     protected analogValue: ConfigProperty;
     constructor(id: string);
-    rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
-    rendererGetDisplayNameCursor(): string;
     onMouseDrag(e: {
         dx: number;
         dy: number;

@@ -1,7 +1,7 @@
 
-/*
- * Fetchlib provides objects for wraping requests and responses for FetchService
- * 
+/**
+ * FetchLib provides objects for wrapping requests and responses for FetchService
+ *
  * Included objects:
  *  -ResponseStatus
  *  -FetchResponse
@@ -12,18 +12,18 @@
  *  -DeleteRequest
  *  -HeadRequest
  *  -OptionsRequest
- * 
+ *
  * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  * Be careful, you must have included ServiceLib in your machine and added FetchService into this instance of ServiceLib.
- * 
+ *
  */
 import { Library, Machine } from "script-engine";
 import { RequestMethod, ResponseStatus, FetchResponse, FetchRequest, GetRequest, PostRequest, PutRequest, DeleteRequest, HeadRequest, OptionsRequest, ProxyCommunicationError, FetchError } from '../../Core/Fetch';
 
 export class FetchLib implements Library {
 
-    public static libName:string = "FetchLib";
-    public static libTypings:string = `
+    public static libName: string = 'FetchLib';
+    public static libTypings: string = `
         declare type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD';
         declare enum ResponseStatus {
             CONTINUE = 100,
@@ -167,7 +167,7 @@ export class FetchLib implements Library {
     constructor() {
     }
 
-    get name():string {
+    get name(): string {
         return FetchLib.libName;
     }
 

@@ -17,25 +17,25 @@ class ConfigProperty {
     }
     validateOptions() {
         if (this.config && this.config.options && Array.isArray(this.config.options)) {
-            if (this._type == common_lib_1.Types.ConfigPropertyType.Boolean) {
-                throw "Boolean type can not have specified any options";
+            if (this._type === common_lib_1.Types.ConfigPropertyType.Boolean) {
+                throw new Error('Boolean type can not have specified any options');
             }
             const options = this.config.options;
             let baseType = null;
-            if (this._type == common_lib_1.Types.ConfigPropertyType.Integer || this._type == common_lib_1.Types.ConfigPropertyType.Float) {
-                baseType = "number";
+            if (this._type === common_lib_1.Types.ConfigPropertyType.Integer || this._type === common_lib_1.Types.ConfigPropertyType.Float) {
+                baseType = 'number';
             }
-            else if (this._type == common_lib_1.Types.ConfigPropertyType.String || this._type == common_lib_1.Types.ConfigPropertyType.Color || this._type == common_lib_1.Types.ConfigPropertyType.FAIcon) {
-                baseType = "string";
+            else if (this._type === common_lib_1.Types.ConfigPropertyType.String || this._type === common_lib_1.Types.ConfigPropertyType.Color || this._type === common_lib_1.Types.ConfigPropertyType.FAIcon) {
+                baseType = 'string';
             }
             let valid = true;
             for (let i = 0; i < options.length; i++) {
-                if (typeof options[i] != baseType) {
+                if (typeof options[i] !== baseType) {
                     valid = false;
                 }
             }
             if (!valid) {
-                throw "Options data type must be same, as type of property";
+                throw new Error('Options data type must be same, as type of property');
             }
             return true;
         }
@@ -48,8 +48,9 @@ class ConfigProperty {
         return this._displayName;
     }
     get config() {
-        if (!this._config)
+        if (!this._config) {
             return {};
+        }
         return this._config;
     }
     get value() {

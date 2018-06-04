@@ -9,14 +9,8 @@ class AnalogInput extends Core_1.Block {
         this.connectorOutput = this.addOutputConnector('output', common_lib_1.Types.ConnectorType.AnalogOutput, 'Output');
         this.analogValue = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1, input: true });
     }
-    rendererGetBlockBackgroundColor() {
-        return '#d1e7d1';
-    }
     rendererGetDisplayName() {
         return 'A-IN';
-    }
-    rendererGetDisplayNameCursor() {
-        return 'ns-resize';
     }
     onMouseDrag(e) {
         if (this.controller) {

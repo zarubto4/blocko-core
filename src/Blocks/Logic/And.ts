@@ -1,28 +1,26 @@
-
-
 import * as Core from '../../Core/index';
-import {Types} from "common-lib";
+import { Types } from 'common-lib';
 import { ConnectorEvent } from '../../Core';
 import { ConnectorEventType } from '../../Core/Connector';
 
 export class And extends Core.Block {
 
-    public connectorOutput:Core.Connector;
+    public connectorOutput: Core.Connector;
 
-    protected confInputsCount:Core.ConfigProperty;
-    protected confNegate:Core.ConfigProperty;
+    protected confInputsCount: Core.ConfigProperty;
+    protected confNegate: Core.ConfigProperty;
 
-    public constructor(id:string) {
-        super(id, "and", "and");
+    public constructor(id: string) {
+        super(id, 'and', 'and');
 
-        this.confInputsCount = this.addConfigProperty(Types.ConfigPropertyType.Integer, "inputsCount", "Inputs count", 2, {
-            range:true,
+        this.confInputsCount = this.addConfigProperty(Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {
+            range: true,
             min: 1,
             max: 16
         });
-        this.confNegate = this.addConfigProperty(Types.ConfigPropertyType.Boolean, "negate", "Negate", false);
+        this.confNegate = this.addConfigProperty(Types.ConfigPropertyType.Boolean, 'negate', 'Negate', false);
 
-        this.connectorOutput = this.addOutputConnector("output", Types.ConnectorType.DigitalOutput);
+        this.connectorOutput = this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
         this.configChanged();
     }
 
@@ -30,25 +28,21 @@ export class And extends Core.Block {
         this.inputsChanged();
     }
 
-    public rendererGetBlockBackgroundColor():string {
-        return "#a1887f";
+    public rendererGetDisplayName(): string {
+        return 'AND';
     }
 
-    public rendererGetDisplayName():string {
-        return "AND";
-    }
-
-    public configChanged():void {
-        var wantedCount = this.confInputsCount.value;
-        var currentCount = this.inputConnectors.length;
-        var i;
+    public configChanged(): void {
+        let wantedCount = this.confInputsCount.value;
+        let currentCount = this.inputConnectors.length;
+        let i;
         if (wantedCount > currentCount) {
             for (i = currentCount; i < wantedCount; i++) {
-                this.addInputConnector("in"+i, Types.ConnectorType.DigitalInput, "Input "+(i+1));
+                this.addInputConnector('in' + i, Types.ConnectorType.DigitalInput, 'Input ' + (i + 1));
             }
         } else {
             for (i = wantedCount; i < currentCount; i++) {
-                var c = this.getInputConnectorByName("in"+i);
+                let c = this.getInputConnectorByName('in' + i);
                 if (c) {
                     this.removeInputConnector(c);
                 }
@@ -56,15 +50,19 @@ export class And extends Core.Block {
         }
         this.inputsChanged();
 
-        if (this.renderer) this.renderer.refresh();
+        if (this.renderer) {
+            this.renderer.refresh();
+        }
     }
 
-    public inputsChanged():void {
+    public inputsChanged(): void {
 
-        var out = true;
+        let out = true;
 
-        this.inputConnectors.forEach((con:Core.Connector) => {
-            if (!con.value) out = false;
+        this.inputConnectors.forEach((con: Core.Connector) => {
+            if (!con.value) {
+                out = false;
+            }
         });
 
         if (this.confNegate.value) {
@@ -80,8 +78,7 @@ export class And extends Core.Block {
         this.sendValueToOutputConnector(event);
     }
 
-    protected inputChanged(event):void {
+    protected inputChanged(event): void {
         this.inputsChanged();
     }
-
 }

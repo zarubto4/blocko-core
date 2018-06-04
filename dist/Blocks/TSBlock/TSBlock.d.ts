@@ -35,8 +35,6 @@ export declare class TSBlock extends Core.Block {
     protected inputChanged(event: ConnectorEvent): void;
     callReady(): void;
     rendererGetDisplayName(): string;
-    rendererGetBlockBackgroundColor(): string;
-    rendererGetBlockDescription(): string;
     rendererGetCodeName(): string;
     setError(enabled: boolean): void;
 }

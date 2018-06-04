@@ -1,5 +1,4 @@
 import { Connector } from '../Core/Connector';
-import { Size } from '../Core/Size';
 import { Block, ConnectorEvent, ExternalConnectorEvent } from '../Core';
 export declare enum InterfaceBlockType {
     Inputs = 0,
@@ -67,13 +66,8 @@ export declare abstract class BaseInterfaceBlock extends Block {
     getNetworkStatusOutput(): Connector;
     remove(): void;
     isInterface(): boolean;
-    rendererGetBlockSize(): Size;
     rendererShowBlockName(): boolean;
-    rendererCanDelete(): boolean;
     rendererGetDisplayName(): string;
-    rendererRotateDisplayName(): number;
-    rendererGetBlockBackgroundColor(): string;
-    rendererCustomSvgPath(size: Size): string;
     rendererIsHwAttached(): boolean;
 }
 export declare class InputsInterfaceBlock extends BaseInterfaceBlock {

@@ -62,7 +62,7 @@ class Controller {
     getBlockClassByVisualType(visualType) {
         let blockClass = null;
         this.blocksRegister.forEach((blockRegistration) => {
-            if (blockRegistration.visualType == visualType) {
+            if (blockRegistration.visualType === visualType) {
                 blockClass = blockRegistration.blockClass;
             }
         });
@@ -143,7 +143,7 @@ class Controller {
     getBlockById(id) {
         let block = null;
         this.blocks.forEach((b) => {
-            if (b.id == id) {
+            if (b.id === id) {
                 block = b;
             }
         });
@@ -211,13 +211,13 @@ class Controller {
         this.blocks.find(block => {
             let found = false;
             let group = false;
-            block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) {
+            block.getExternalInputConnectors().find(con => {
+                if ((con.targetId === targetId || (groupIds && groupIds.find(i => { if (i === con.targetId) {
                     group = true;
                     return true;
-                } return false; }))) && connector.name == name && connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
+                } return false; }))) && con.name === name && con instanceof ExternalConnector_1.ExternalDigitalConnector) {
                     found = true;
-                    connector.setValue(value, group ? targetId : undefined);
+                    con.setValue(value, group ? targetId : undefined);
                     return true;
                 }
                 return false;
@@ -229,13 +229,13 @@ class Controller {
         this.blocks.find(block => {
             let found = false;
             let group = false;
-            block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) {
+            block.getExternalInputConnectors().find(con => {
+                if ((con.targetId === targetId || (groupIds && groupIds.find(i => { if (i === con.targetId) {
                     group = true;
                     return true;
-                } return false; }))) && connector.name == name && connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
+                } return false; }))) && con.name === name && con instanceof ExternalConnector_1.ExternalAnalogConnector) {
                     found = true;
-                    connector.setValue(value, group ? targetId : undefined);
+                    con.setValue(value, group ? targetId : undefined);
                     return true;
                 }
                 return false;
@@ -247,13 +247,13 @@ class Controller {
         this.blocks.find(block => {
             let found = false;
             let group = false;
-            block.getExternalInputConnectors().find(connector => {
-                if ((connector.targetId == targetId || (groupIds && groupIds.find(i => { if (i == connector.targetId) {
+            block.getExternalInputConnectors().find(con => {
+                if ((con.targetId === targetId || (groupIds && groupIds.find(i => { if (i === con.targetId) {
                     group = true;
                     return true;
-                } return false; }))) && connector.name == name && connector instanceof ExternalConnector_1.ExternalMessageConnector) {
+                } return false; }))) && con.name === name && con instanceof ExternalConnector_1.ExternalMessageConnector) {
                     found = true;
-                    connector.setValue(message, group ? targetId : undefined);
+                    con.setValue(message, group ? targetId : undefined);
                     return true;
                 }
                 return false;
@@ -263,7 +263,7 @@ class Controller {
     }
     setInputConnectorValue(blockId, connectorName, value) {
         this.blocks.forEach((block) => {
-            if (block.id == blockId) {
+            if (block.id === blockId) {
                 let connector = block.getInputConnectorByName(connectorName);
                 if (connector) {
                     connector._inputSetValue(value);
@@ -273,7 +273,7 @@ class Controller {
     }
     setOutputConnectorValue(blockId, connectorName, value) {
         this.blocks.forEach((block) => {
-            if (block.id == blockId) {
+            if (block.id === blockId) {
                 let connector = block.getOutputConnectorByName(connectorName);
                 if (connector) {
                     connector._outputSetValue(value);
@@ -367,13 +367,13 @@ class Controller {
     }
     setError(blockId, enabled) {
         this.blocks.forEach(block => {
-            if (block.id == blockId) {
+            if (block.id === blockId) {
                 block.setError(enabled);
             }
         });
     }
     addInterface(iface) {
-        if (typeof iface != 'object') {
+        if (typeof iface !== 'object') {
             console.error('Controller::addInterface - invalid interface');
             return;
         }
@@ -403,7 +403,7 @@ class Controller {
             };
         }
         else {
-            console.log('Controller::bindInterface - not found block');
+            console.warn('Controller::bindInterface - not found block');
             return null;
         }
     }
@@ -430,8 +430,8 @@ class Controller {
     }
     setHardwareNetworkStatus(targetId, groupIds, online) {
         if (targetId && typeof online === 'boolean') {
-            let block = this.blocks.find(block => {
-                return block instanceof InterfaceBlock_1.OutputsInterfaceBlock && block.interface.code && (block.targetId === targetId || (groupIds && groupIds.indexOf(block.targetId) !== -1));
+            let block = this.blocks.find(b => {
+                return b instanceof InterfaceBlock_1.OutputsInterfaceBlock && b.interface.code && (b.targetId === targetId || (groupIds && groupIds.indexOf(b.targetId) !== -1));
             });
             if (block) {
                 let connector = block.getNetworkStatusOutput();
@@ -494,7 +494,7 @@ class Controller {
                         let block = blocks[id];
                         let bc = this.getBlockClassByVisualType(block['visualType']);
                         let blockObj = null;
-                        if (bc == TSBlock_1.TSBlock) {
+                        if (bc === TSBlock_1.TSBlock) {
                             blockObj = new TSBlock_1.TSBlock(id, '', block['designJson']);
                         }
                         else {

@@ -16,7 +16,7 @@ class DatabaseLib {
         };
     }
 }
-DatabaseLib.libName = "DatabaseLib";
+DatabaseLib.libName = 'DatabaseLib';
 DatabaseLib.libTypings = `
         declare class DatabaseDao {
             insert(data: Object | Array<Object>): void;

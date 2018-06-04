@@ -3,7 +3,5 @@ import { ConnectorEvent } from '../../Core';
 export declare class DigitalOutput extends Core.Block {
     connectorInput: Core.Connector;
     constructor(id: string, visibleType: string);
-    rendererGetDisplayNameCursor(): string;
-    rendererGetBlockBackgroundColor(): string;
     protected inputChanged(event: ConnectorEvent): void;
 }

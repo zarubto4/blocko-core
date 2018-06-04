@@ -29,7 +29,7 @@ if (typeof atob === 'undefined' && typeof require === 'function') {
 
 /**
  *
- * Promise wraper for handling promise rejections to our safe machine!
+ * Promise wrapper for handling promise rejections to our safe machine!
  *
  */
 export class PromiseChainScope {
@@ -42,7 +42,7 @@ export class PromiseChainScope {
     }
 
     public setTo(type: 'then'|'catch'): boolean {
-        while(this.chain[0] != type && this.chain.shift());
+        while (this.chain[0] !== type && this.chain.shift());
         return this.chain.length > 0;
     }
 
@@ -70,7 +70,7 @@ export class PromiseWraper<T> {
         }
     }
 
-    public then<PromiseResult>(fnc:(value: T) => PromiseResult): PromiseWraper<PromiseResult> {
+    public then<PromiseResult>(fnc: (value: T) => PromiseResult): PromiseWraper<PromiseResult> {
         //  push to chain scope;
         this._chainScope.chain.push('then');
 
@@ -81,7 +81,7 @@ export class PromiseWraper<T> {
 
             try {
                 return fnc(value);
-            } catch(e) {
+            } catch (e) {
                 //  go to next catch in chain, if exists and then throw error
                 if (this._chainScope.setTo('catch')) {
                     throw e;
@@ -93,7 +93,7 @@ export class PromiseWraper<T> {
         }), this._chainScope);
     }
 
-    public catch<PromiseResult>(fnc:(e: Error) => PromiseResult): PromiseWraper<T | PromiseResult> {
+    public catch<PromiseResult>(fnc: (e: Error) => PromiseResult): PromiseWraper<T | PromiseResult> {
         //  push to chain scope;
         this._chainScope.chain.push('catch');
 
@@ -104,7 +104,7 @@ export class PromiseWraper<T> {
 
             try {
                 return fnc(e);
-            } catch(e) {
+            } catch (e) {
                 //  go to next catch in chain, if exists and then throw error
                 if (this._chainScope.setTo('catch')) {
                     throw e;
@@ -118,10 +118,10 @@ export class PromiseWraper<T> {
 }
 
 
-/*
+/**
  *
  * Constants
- * 
+ *
  */
 export type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD';
 
@@ -185,12 +185,12 @@ export enum ResponseStatus {
     NOT_EXTENDED = 510
 }
 
-/*
+/**
  *
  * Definition of protocol for communication between this service and proxy
- * 
+ *
  */
-export const RequestDefKeys = ['url','method','headers','body','timeout','max_redirects','reject_unauthorized','follow_redirect','auth_user','auth_pass'];
+export const RequestDefKeys = ['url', 'method', 'headers', 'body', 'timeout', 'max_redirects', 'reject_unauthorized', 'follow_redirect', 'auth_user', 'auth_pass'];
 export interface RequestDef {
     url: string;
     method: string;
@@ -213,16 +213,16 @@ export interface ResponseDef {
     error_message?: string;
 };
 
-/*
- * 
+/**
+ *
  * Error in communication with proxy
- * 
+ *
  */
 export class ProxyCommunicationError extends Error {
-    message:string;
+    message: string;
     type: string;
 
-    constructor(type: string, message:string) {
+    constructor(type: string, message: string) {
         super(message);
         this.name = 'ProxyCommunicationError';
         this.message = message;
@@ -232,16 +232,16 @@ export class ProxyCommunicationError extends Error {
     }
 }
 
-/*
- * 
+/**
+ *
  * Error in communication with target server
- * 
+ *
  */
 export class FetchError extends Error {
-    message:string;
+    message: string;
     code: string;
 
-    constructor(code: string, message:string) {
+    constructor(code: string, message: string) {
         super(message);
         this.name = 'FetchError';
         this.message = message;
@@ -251,16 +251,16 @@ export class FetchError extends Error {
     }
 }
 
-/*
+/**
  *
  * Static helper for executing fetch request to our proxy server
- * 
+ *
  */
 export class FetchExecutor {
-    /*
+    /**
      *
      * Utilities
-     * 
+     *
      */
     public static b64EncodeUnicode(str: string) {
         return btoaFunction(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, function(match, p1) {
@@ -276,7 +276,7 @@ export class FetchExecutor {
 
     public static copyRequestDef(input: RequestDef, defaultHeaders?: {[key: string]: string}): RequestDef {
         let def: RequestDef = <any>{};
-        for (let i = 0; i < RequestDefKeys.length; i++) {
+        for (let i = 0; i < RequestDefKeys.length; i++) {
             if (input[RequestDefKeys[i]]) {
                 def[RequestDefKeys[i]] = input[RequestDefKeys[i]];
             }
@@ -303,15 +303,15 @@ export class FetchExecutor {
         return headersCopy;
     }
 
-    /*
+    /**
      *
      * Fetch request, that will be sended to proxy server
-     * 
+     *
      * It will be parsed from json and base64 and you will get promise, that looks like normal fetch from browser,
      * but its not!. You will get object FetchResponse, that is not same as standart response object.
      *
      */
-    static fetch(machine: Machine, params: RequestDef, additionalParams?:{[key: string]: string}, proxyUrl?: string): PromiseWraper<FetchResponse> {//url: string, method: RequestMethod, headers: { [key: string]: string } = {}, body: any = null, configuration: FetchConfiguration = {}): Promise<FetchResponse> {
+    static fetch(machine: Machine, params: RequestDef, additionalParams?: {[key: string]: string}, proxyUrl?: string): PromiseWraper<FetchResponse> {
         let paramsCopy = FetchExecutor.copyRequestDef(params);
 
         //  prepare headers
@@ -330,14 +330,14 @@ export class FetchExecutor {
         }
 
         if (additionalParams) {
-            for( let i in additionalParams) {
+            for (let i in additionalParams) {
                 if (additionalParams.hasOwnProperty(i)) {
                     paramsCopy[i] = additionalParams[i];
                 }
             }
         }
 
-        //paramsCopy['auth_token'] = '';//TODO auth token from controller
+        // paramsCopy['auth_token'] = ''; // TODO auth token from controller
 
         //  prepare fetch configuration
         let fetchParams = {
@@ -353,35 +353,35 @@ export class FetchExecutor {
         //  status of request
         let status: number = null;
 
-        const proxyServerUrl = proxyUrl?proxyUrl:FetchRequest.PROXY_SERVER_URL;
+        const proxyServerUrl = proxyUrl ? proxyUrl : FetchRequest.PROXY_SERVER_URL;
 
         //  do it!, post our request to proxy
-        const ret = fetchFunction(proxyServerUrl,fetchParams).then((response: Response) => {
+        const ret = fetchFunction(proxyServerUrl, fetchParams).then((response: Response) => {
             status = response.status;
             return <ResponseDef><any>response.json();
         }).then((response: ResponseDef)  => {
 
             //  request to proxy failed
-            if (response.error_type && response.error_message){
-                throw new ProxyCommunicationError(response.error_type,response.error_message);
+            if (response.error_type && response.error_message) {
+                throw new ProxyCommunicationError(response.error_type, response.error_message);
             }
 
             //  checking status between proxy and service
-            if (status == ResponseStatus.OK) {
+            if (status === ResponseStatus.OK) {
                 return response;
             } else {
-                throw new ProxyCommunicationError('unknown','Internal request failed (status: '+ status +')');
+                throw new ProxyCommunicationError('unknown', 'Internal request failed (status: ' + status + ')');
             }
 
         }).then((response: ResponseDef) => {
 
             //  request from proxy to external server failed
-            if (response.error_type && response.error_message){
-                throw new FetchError(response.error_code,response.error_message);
+            if (response.error_type && response.error_message) {
+                throw new FetchError(response.error_code, response.error_message);
             }
 
             //  is there body in response?
-            let body = null
+            let body = null;
             if (response.body) {
                 body = FetchExecutor.b64DecodeUnicode(response.body);
             }
@@ -399,10 +399,10 @@ export class FetchExecutor {
     }
 }
 
-/*
+/**
  *
  * Request object - holder of neccessary informations
- * 
+ *
  */
 export class FetchRequest implements RequestDef {
 
@@ -417,12 +417,12 @@ export class FetchRequest implements RequestDef {
     public auth_user?: string;
     public auth_pass?: string;
 
-    /*
+    /**
      *
      * Our byzance proxy url
-     * 
+     *
      */
-    static PROXY_SERVER_URL = 'http://127.0.0.1:4000/fetch/';// 'http://192.168.65.30:3000/fetch/';//'https://someproxyshit.biz/fetch-proxy';
+    static PROXY_SERVER_URL = 'http://127.0.0.1:4000/fetch/'; // 'http://192.168.65.30:3000/fetch/';//'https://someproxyshit.biz/fetch-proxy';
 
     public constructor(method: RequestMethod, url: string, body: any = null) {
         this.method = method;
@@ -431,10 +431,10 @@ export class FetchRequest implements RequestDef {
     }
 }
 
-/*
- * 
+/**
+ *
  * Response object
- * 
+ *
  */
 export class FetchResponse {
     private _status: number;
@@ -442,7 +442,7 @@ export class FetchResponse {
     private _body: any;
 
     constructor(status: number, headers: {[key: string]: string}, body: any) {
-        this._status = status
+        this._status = status;
         this._headers = headers;
         this._body = body;
     }
@@ -460,9 +460,8 @@ export class FetchResponse {
     }
 }
 
-/*
+/**
  *
- * 
  * Requests with defined methods
  *
  */

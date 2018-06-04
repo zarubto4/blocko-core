@@ -2,13 +2,13 @@
 import { Library, Machine } from 'script-engine';
 import { Service } from '../Services/Service';
 
-declare const Proxy:any;
+declare const Proxy: any;
 
-const machineWrap = (o:Object, machine:Machine) => {
-    let ret = new Proxy(o, {
+const machineWrap = (o: Object, machine: Machine) => {
+    return new Proxy(o, {
 
         //  getter modify output. It wrap output object (if output is object) to proxy
-        get: function(target:any, property:string) {
+        get: function(target: any, property: string) {
             let descriptor = Object.getOwnPropertyDescriptor(target, property);
 
             if (!descriptor) {
@@ -19,7 +19,7 @@ const machineWrap = (o:Object, machine:Machine) => {
                 }
             }
 
-            if (property === "_machine_") {
+            if (property === '_machine_') {
                 return machine;
             }
 
@@ -32,9 +32,7 @@ const machineWrap = (o:Object, machine:Machine) => {
             return out;
         }
     });
-
-    return ret;
-}
+};
 
 export class ServicesHandler {
     private _name: string;
@@ -46,14 +44,14 @@ export class ServicesHandler {
         this._services = {};
     }
 
-    public get libName():string {
+    public get libName(): string {
         return this._name;
     }
 
     public get libTypings(): string {
         let output = '';
 
-        for(let i in this._services) {
+        for (let i in this._services) {
             if (this._services.hasOwnProperty(i)) {
                 output += this._services[i].libTypings;
             }
@@ -78,7 +76,7 @@ export class ServicesHandler {
     public set configuration(configuration: any) {
         this._configuration = configuration;
         const allServices = this.services;
-        for(let i in allServices) {
+        for (let i in allServices) {
             if (allServices.hasOwnProperty(i) && allServices[i]) {
                 allServices[i].configuration = this._configuration;
             }
@@ -91,8 +89,8 @@ export class ServicesHandler {
 }
 
 export class ServiceLib implements Library {
-    public static libName:string = "ServiceLib";
-    public static libTypings:string = `
+    public static libName: string = 'ServiceLib';
+    public static libTypings: string = `
 
         declare interface Promise<T> {
             /**
@@ -116,7 +114,7 @@ export class ServiceLib implements Library {
         this.handler = handler;
     }
 
-    get name():string {
+    get name(): string {
         return ServiceLib.libName;
     }
 
@@ -126,7 +124,7 @@ export class ServiceLib implements Library {
     public external(machine: Machine): {[p: string]: any} {
         let newServices = {};
 
-        for(let i in this.handler.services) {
+        for (let i in this.handler.services) {
             if (this.handler.services.hasOwnProperty(i)) {
                 newServices[i] = machineWrap(this.handler.services[i], machine);
             }

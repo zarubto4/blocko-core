@@ -30,7 +30,7 @@ class PromiseChainScope {
         this._machine = machine;
     }
     setTo(type) {
-        while (this.chain[0] != type && this.chain.shift())
+        while (this.chain[0] !== type && this.chain.shift())
             ;
         return this.chain.length > 0;
     }
@@ -246,7 +246,7 @@ class FetchExecutor {
             if (response.error_type && response.error_message) {
                 throw new ProxyCommunicationError(response.error_type, response.error_message);
             }
-            if (status == ResponseStatus.OK) {
+            if (status === ResponseStatus.OK) {
                 return response;
             }
             else {

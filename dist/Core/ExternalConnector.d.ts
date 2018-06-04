@@ -1,7 +1,7 @@
-import { Block } from "./Block";
+import { Block } from './Block';
 import { ConnectorEventType } from './Connector';
-import { Message } from "./Message";
-import { Types } from "common-lib";
+import { Message } from './Message';
+import { Types } from 'common-lib';
 export declare enum ExternalConnectorType {
     Input = 0,
     Output = 1,

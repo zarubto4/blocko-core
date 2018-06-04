@@ -25,7 +25,7 @@ class FetchLib {
         };
     }
 }
-FetchLib.libName = "FetchLib";
+FetchLib.libName = 'FetchLib';
 FetchLib.libTypings = `
         declare type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | 'OPTIONS' | 'HEAD';
         declare enum ResponseStatus {

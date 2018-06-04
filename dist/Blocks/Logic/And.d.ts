@@ -5,7 +5,6 @@ export declare class And extends Core.Block {
     protected confNegate: Core.ConfigProperty;
     constructor(id: string);
     protected afterControllerSet(): void;
-    rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
     configChanged(): void;
     inputsChanged(): void;

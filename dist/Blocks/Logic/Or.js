@@ -18,9 +18,6 @@ class Or extends Core.Block {
     afterControllerSet() {
         this.inputsChanged();
     }
-    rendererGetBlockBackgroundColor() {
-        return '#a1887f';
-    }
     rendererGetDisplayName() {
         return 'OR';
     }
@@ -42,14 +39,16 @@ class Or extends Core.Block {
             }
         }
         this.inputsChanged();
-        if (this.renderer)
+        if (this.renderer) {
             this.renderer.refresh();
+        }
     }
     inputsChanged() {
         let out = false;
         this.inputConnectors.forEach((con) => {
-            if (con.value)
+            if (con.value) {
                 out = true;
+            }
         });
         if (this.confNegate.value) {
             out = !out;

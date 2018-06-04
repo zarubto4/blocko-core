@@ -1,4 +1,4 @@
-import { Types } from "common-lib";
+import { Types } from 'common-lib';
 export declare class ConfigProperty {
     private _name;
     private _displayName;

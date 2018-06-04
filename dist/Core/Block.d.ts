@@ -1,10 +1,9 @@
 import { ConnectorEvent, Connector, ConnectorEventType } from './Connector';
 import { ExternalConnector, ExternalConnectorEvent } from './ExternalConnector';
-import { ConfigProperty } from "./ConfigProperty";
+import { ConfigProperty } from './ConfigProperty';
 import { Controller } from './Controller';
-import { Size } from "./Size";
 import { Message, MessageJson } from './Message';
-import { Types } from "common-lib";
+import { Types } from 'common-lib';
 import { IRenderer } from './Renderer';
 export interface IBlockRenderer extends IRenderer {
     isHovered(): boolean;
@@ -39,7 +38,7 @@ export declare class Block {
     removeOutputConnector(connector: Connector): void;
     removeInputConnector(connector: Connector): void;
     protected addExternalInputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes?: Types.Type[], kind?: string): ExternalConnector<any>;
-    protected addExternalOutputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes?: Types.Type[], kind?: string): ExternalConnector<any>;
+    protected addExternalOutputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes?: Types.Type[]): ExternalConnector<any>;
     protected removeExternalInputConnector(connector: ExternalConnector<any>): void;
     protected removeExternalOutputConnector(connector: ExternalConnector<any>): void;
     addConfigProperty(type: Types.ConfigPropertyType, id: string, displayName: string, defaultValue: any, config?: any): ConfigProperty;
@@ -87,16 +86,8 @@ export declare class Block {
     onMouseDown(): void;
     onMouseUp(): void;
     isInterface(): boolean;
-    rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
     rendererGetBlockName(): string;
-    rendererGetDisplayNameCursor(): string;
-    rendererGetBlockSize(): Size;
-    rendererCanDelete(): boolean;
-    rendererShowBlockName(): boolean;
-    rendererRotateDisplayName(): number;
-    rendererCustomSvgPath(size: Size): string;
-    rendererGetBlockDescription(): string;
     rendererGetCodeName(): string;
     rendererIsHwAttached(): boolean;
     readonly blockId: string;

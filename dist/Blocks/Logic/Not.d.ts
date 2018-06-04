@@ -5,7 +5,6 @@ export declare class Not extends Core.Block {
     connectorOutput: Core.Connector;
     constructor(id: string);
     protected afterControllerSet(): void;
-    rendererGetBlockBackgroundColor(): string;
     rendererGetDisplayName(): string;
     inputsChanged(): void;
     protected inputChanged(event: ConnectorEvent): void;

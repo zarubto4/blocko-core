@@ -167,7 +167,7 @@ class TSBlockLib {
         this.contextEmitter = new common_lib_1.Events.Emitter();
     }
     nameValidator(name, method) {
-        if (typeof name != 'string' || name == '') {
+        if (typeof name !== 'string' || name === '') {
             throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: input/output name must be string and cannot be empty`);
         }
         if (!(/^[A-Za-z0-9]+$/.test(name))) {
@@ -182,17 +182,17 @@ class TSBlockLib {
         if (!Array.isArray(argTypes)) {
             throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: message types parameter must be array`);
         }
-        if (argTypes.length == 0) {
+        if (argTypes.length === 0) {
             throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: message types parameter must contain at least 1 type`);
         }
         if (argTypes.length > 8) {
             throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: message types parameter must contain maximal 8 type`);
         }
         argTypes.forEach((argType) => {
-            if ((argType != common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Boolean]) &&
-                (argType != common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Float]) &&
-                (argType != common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Integer]) &&
-                (argType != common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.String])) {
+            if ((argType !== common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Boolean]) &&
+                (argType !== common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Float]) &&
+                (argType !== common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.Integer]) &&
+                (argType !== common_lib_1.Types.TypeToStringTable[common_lib_1.Types.Type.String])) {
                 throw new TSBlockError_1.TSBlockError(`In <b>${method}</b>: message types parameter can contain only types: <b>'boolean'</b>, <b>'integer'</b>, <b>'float'</b>, <b>'string'</b>).`);
             }
         });
@@ -227,7 +227,7 @@ class TSBlockLib {
                 values: value
             }, interfaceId);
         }
-        else if (strings.type == 'message') {
+        else if (strings.type === 'message') {
             tsEvent = new MessageReceivedEvent({
                 types: connector.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                 values: value
@@ -236,14 +236,14 @@ class TSBlockLib {
         else {
             tsEvent = new ValueChangedEvent(value);
         }
-        if (strings.direction == 'input') {
+        if (strings.direction === 'input') {
             let connectorWrapper = this.inputConnectors[connector.name];
             if (connectorWrapper && tsEvent) {
                 this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                 connectorWrapper.emit(connectorWrapper, tsEvent);
             }
         }
-        else if (strings.direction == 'output') {
+        else if (strings.direction === 'output') {
             let connectorWrapper = this.outputConnectors[connector.name];
             if (connectorWrapper && tsEvent) {
                 this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
@@ -252,34 +252,34 @@ class TSBlockLib {
         }
     }
     inputEvent(event) {
-        if (this.machine)
+        if (this.machine) {
             this.machine.call(() => {
                 let strings = common_lib_1.Types.getStringsFromConnectorType(event.connector.type);
                 let tsEvent;
-                if (event.eventType == Connector_1.ConnectorEventType.ValueChange) {
+                if (event.eventType === Connector_1.ConnectorEventType.ValueChange) {
                     tsEvent = new ValueChangedEvent(event.value);
                 }
-                else if (event.eventType == Connector_1.ConnectorEventType.NewMessage) {
+                else if (event.eventType === Connector_1.ConnectorEventType.NewMessage) {
                     let message = event.value;
                     tsEvent = new MessageReceivedEvent({
                         types: message.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                         values: message.values
                     });
                 }
-                else if (event.eventType == Connector_1.ConnectorEventType.GroupInput) {
+                else if (event.eventType === Connector_1.ConnectorEventType.GroupInput) {
                     tsEvent = new GroupInputEvent(strings.type !== 'message' ? event.value : {
                         types: event.value.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                         values: event.value.values
                     }, event.interfaceId);
                 }
-                if (strings.direction == 'input') {
+                if (strings.direction === 'input') {
                     let connectorWrapper = this.inputConnectors[event.connector.name];
                     if (connectorWrapper && tsEvent) {
                         this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                         connectorWrapper.emit(connectorWrapper, tsEvent);
                     }
                 }
-                else if (strings.direction == 'output') {
+                else if (strings.direction === 'output') {
                     let connectorWrapper = this.outputConnectors[event.connector.name];
                     if (connectorWrapper && tsEvent) {
                         this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
@@ -287,9 +287,10 @@ class TSBlockLib {
                     }
                 }
             });
+        }
     }
     configChanged() {
-        if (this.machine)
+        if (this.machine) {
             this.machine.call(() => {
                 let out = {};
                 this.tsBlock.getConfigProperties().forEach((cp) => {
@@ -303,18 +304,21 @@ class TSBlockLib {
                     }
                 });
             });
+        }
     }
     callReady() {
-        if (this.machine)
+        if (this.machine) {
             this.machine.call(() => {
                 this.contextEmitter.emit(null, new ReadyEvent());
             });
+        }
     }
     callDestroy() {
-        if (this.machine)
+        if (this.machine) {
             this.machine.call(() => {
                 this.contextEmitter.emit(null, new DestroyEvent());
             });
+        }
     }
     external(machine) {
         this.machine = machine;
@@ -333,7 +337,7 @@ class TSBlockLib {
                     }
                     this.nameValidator(name, 'context.inputs.add');
                     let conType = this.getInputOutputType(type, 'input', 'context.inputs.add');
-                    if (conType == common_lib_1.Types.ConnectorType.MessageInput) {
+                    if (conType === common_lib_1.Types.ConnectorType.MessageInput) {
                         this.argTypesValidator(types, 'context.inputs.add');
                     }
                     if (types && Array.isArray(types)) {
@@ -365,7 +369,7 @@ class TSBlockLib {
                     }
                     this.nameValidator(name, 'context.outputs.add');
                     let conType = this.getInputOutputType(type, 'output', 'context.outputs.add');
-                    if (conType == common_lib_1.Types.ConnectorType.MessageOutput) {
+                    if (conType === common_lib_1.Types.ConnectorType.MessageOutput) {
                         this.argTypesValidator(types, 'context.outputs.add');
                     }
                     if (types && Array.isArray(types)) {

@@ -32,7 +32,7 @@ class ExternalConnector {
             value: value,
             interfaceId: interfaceId
         };
-        if (this.type == ExternalConnectorType.Input) {
+        if (this.type === ExternalConnectorType.Input) {
             this.block._externalInputEvent(event);
         }
         else {
