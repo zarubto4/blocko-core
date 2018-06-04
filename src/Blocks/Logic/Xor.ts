@@ -2,10 +2,11 @@ import * as Core from '../../Core/index';
 import { Types } from 'common-lib';
 import { ConnectorEvent } from '../../Core';
 import { ConnectorEventType } from '../../Core/Connector';
+import { Message } from '../../Core/Message';
 
 export class Xor extends Core.Block {
 
-    public connectorOutput: Core.Connector;
+    public connectorOutput: Core.Connector<boolean|number|Message|Object>;
 
     protected confInputsCount: Core.ConfigProperty;
     protected confNegate: Core.ConfigProperty;
@@ -42,7 +43,7 @@ export class Xor extends Core.Block {
             }
         } else {
             for (i = wantedCount; i < currentCount; i++) {
-                let c = this.getInputConnectorByName('in' + i);
+                let c = this.getInputConnectorById('in' + i);
                 if (c) {
                     this.removeInputConnector(c);
                 }
@@ -59,7 +60,7 @@ export class Xor extends Core.Block {
 
         let trueValuesCount = 0;
 
-        this.inputConnectors.forEach((con: Core.Connector) => {
+        this.inputConnectors.forEach((con: Core.Connector<boolean|number|Message|Object>) => {
             if (con.value) {
                 trueValuesCount++;
             }

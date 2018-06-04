@@ -1,5 +1,4 @@
-import { Connector } from '../Core/Connector';
-import { Block, ConnectorEvent, ExternalConnectorEvent } from '../Core';
+import { Block, ConnectorEvent, DigitalConnector, ExternalConnectorEvent } from '../Core';
 export declare enum InterfaceBlockType {
     Inputs = 0,
     Outputs = 1,
@@ -48,8 +47,8 @@ export declare abstract class BaseInterfaceBlock extends Block {
     private _deviceInputsCount;
     private _deviceOutputsCount;
     private _interface;
-    protected restartDeviceInput: Connector;
-    protected networkStatusOutput: Connector;
+    protected restartDeviceInput: DigitalConnector;
+    protected networkStatusOutput: DigitalConnector;
     constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType);
     setInterface(iface: BlockoTargetInterface): void;
     setTargetId(targetId: string): void;
@@ -62,8 +61,8 @@ export declare abstract class BaseInterfaceBlock extends Block {
     isGrid(): boolean;
     externalInputEvent(event: ExternalConnectorEvent): void;
     inputChanged(event: ConnectorEvent): void;
-    getRestartDeviceInput(): Connector;
-    getNetworkStatusOutput(): Connector;
+    getRestartDeviceInput(): DigitalConnector;
+    getNetworkStatusOutput(): DigitalConnector;
     remove(): void;
     isInterface(): boolean;
     rendererShowBlockName(): boolean;

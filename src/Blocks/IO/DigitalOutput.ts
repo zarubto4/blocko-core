@@ -1,10 +1,11 @@
 import * as Core from '../../Core/index';
 import { Types } from 'common-lib';
 import { ConnectorEvent } from '../../Core';
+import { Message } from '../../Core/Message';
 
 export class DigitalOutput extends Core.Block {
 
-    public connectorInput: Core.Connector;
+    public connectorInput: Core.Connector<boolean|number|Message|Object>;
 
     public constructor(id: string, visibleType: string) {
         super(id, 'digitalOutput', visibleType);

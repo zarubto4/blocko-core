@@ -1,5 +1,8 @@
 
-import { ConnectorEvent, Connector, ConnectorEventType } from './Connector';
+import {
+    ConnectorEvent, Connector, ConnectorEventType, DigitalConnector, AnalogConnector,
+    MessageConnector, JsonConnector
+} from './Connector';
 import {
     ExternalConnector, ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnectorType,
     ExternalMessageConnector, ExternalConnectorEvent
@@ -18,8 +21,8 @@ export interface IBlockRenderer extends IRenderer {
 
 export class Block {
 
-    protected inputConnectors: Array<Connector>;
-    protected outputConnectors: Array<Connector>;
+    protected inputConnectors: Array<Connector<boolean|number|Message|Object>>;
+    protected outputConnectors: Array<Connector<boolean|number|Message|Object>>;
     protected externalInputConnectors: Array<ExternalConnector<any>>;
     protected externalOutputsConnectors: Array<ExternalConnector<any>>;
     protected configProperties: Array<ConfigProperty>;
@@ -106,53 +109,92 @@ export class Block {
         if (this.outputConnectors.indexOf(event.connector) !== -1) {
             event.connector._outputSetValue(event.value, event.interfaceId);
         } else {
-            console.warn('Connector named ' + event.connector.name + ' is not output connector on block ' + this.id);
+            console.warn('Connector named ' + event.connector.id + ' is not output connector on block ' + this.id);
         }
     }
 
-    public addOutputConnector(name: string, type: Types.ConnectorType, displayName: string = null, argTypes: Types.Type[] = null): Connector {
-        if (type === Types.ConnectorType.DigitalOutput || type === Types.ConnectorType.AnalogOutput || type === Types.ConnectorType.MessageOutput) {
-            let connector: Connector = new Connector(this, name, displayName, type, argTypes);
-            this.outputConnectors.push(connector);
-            return connector;
-        }
-        console.warn('Cannot add connector with type ' + type + ' as output connector.');
-        return null;
-    }
+    public addOutputConnector(id: string, type: Types.ConnectorType, name: string = null, argTypes: Types.Type[] = null): Connector<boolean|number|Message|Object> {
+        let connector: Connector<boolean|number|Message|Object>;
 
-    public addInputConnector(name: string, type: Types.ConnectorType, displayName: string = null, argTypes: Types.Type[] = null): Connector {
-        if (type === Types.ConnectorType.DigitalInput || type === Types.ConnectorType.AnalogInput || type === Types.ConnectorType.MessageInput) {
-            let connector: Connector = new Connector(this, name, displayName, type, argTypes);
-            this.inputConnectors.push(connector);
-            return connector;
-        }
-        console.warn('Cannot add connector with type ' + type + ' as input connector.');
-        return null;
-    }
-
-    public removeOutputConnector(connector: Connector): void {
-        if (connector) {
-            this.disconnectConnectionFromConnector(connector);
-            let index = this.outputConnectors.indexOf(connector);
-            if (index > -1) {
-                this.outputConnectors.splice(index, 1);
+        switch (type) {
+            case Types.ConnectorType.DigitalOutput: {
+                connector = new DigitalConnector(this, id, name, type);
+                break;
+            }
+            case Types.ConnectorType.AnalogOutput: {
+                connector = new AnalogConnector(this, id, name, type);
+                break;
+            }
+            case Types.ConnectorType.MessageOutput: {
+                connector = new MessageConnector(this, id, name, type, argTypes);
+                break;
+            }
+            case Types.ConnectorType.JsonOutput: {
+                connector = new JsonConnector(this, id, name, type);
+                break;
+            }
+            default: {
+                console.error('Block::addOutputConnector - cannot add connector with type ' + type + ' as output connector.');
+                return null;
             }
         }
+
+        this.outputConnectors.push(connector);
+
+        return connector;
     }
 
-    public removeInputConnector(connector: Connector): void {
-        if (connector) {
-            this.disconnectConnectionFromConnector(connector);
-            let index = this.inputConnectors.indexOf(connector);
-            if (index > -1) {
-                this.inputConnectors.splice(index, 1);
+    public addInputConnector(id:string, type:Types.ConnectorType, name: string = null, argTypes: Types.Type[] = null): Connector<boolean|number|Message|Object> {
+        let connector: Connector<boolean|number|Message|Object>;
+
+        switch (type) {
+            case Types.ConnectorType.DigitalInput: {
+                connector = new DigitalConnector(this, id, name, type);
+                break;
             }
+            case Types.ConnectorType.AnalogInput: {
+                connector = new AnalogConnector(this, id, name, type);
+                break;
+            }
+            case Types.ConnectorType.MessageInput: {
+                connector = new MessageConnector(this, id, name, type, argTypes);
+                break;
+            }
+            case Types.ConnectorType.JsonInput: {
+                connector = new JsonConnector(this, id, name, type);
+                break;
+            }
+            default: {
+                console.error('Block::addInputConnector - cannot add connector with type ' + type + ' as input connector.');
+                return null;
+            }
+        }
+
+        this.inputConnectors.push(connector);
+        return connector;
+    }
+
+    public removeOutputConnector(connector: Connector<boolean|number|Message|Object>): void {
+        if (!connector) return;
+        this.disconnectConnectionFromConnector(connector);
+        let index = this.outputConnectors.indexOf(connector);
+        if (index > -1) {
+            this.outputConnectors.splice(index, 1);
         }
     }
 
-    protected addExternalInputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes: Types.Type[] = null, kind: string = null): ExternalConnector<any> {
-        if (type === Types.ConnectorType.DigitalInput) {
-            let connector: ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Input);
+    public removeInputConnector(connector: Connector<boolean|number|Message|Object>): void {
+        if (!connector) return;
+        this.disconnectConnectionFromConnector(connector);
+        let index = this.inputConnectors.indexOf(connector);
+        if (index > -1) {
+            this.inputConnectors.splice(index, 1);
+        }
+    }
+
+    protected addExternalInputConnector(targetId:string, name:string, type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
+        if (type == Types.ConnectorType.DigitalInput) {
+            let connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
         }
@@ -170,9 +212,9 @@ export class Block {
         return null;
     }
 
-    protected addExternalOutputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes: Types.Type[] = null): ExternalConnector<any> {
-        if (type === Types.ConnectorType.DigitalOutput) {
-            let connector: ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Output);
+    protected addExternalOutputConnector(targetId:string, name:string, type:Types.ConnectorType, argTypes:Types.Type[] = null):ExternalConnector<any> {
+        if (type == Types.ConnectorType.DigitalOutput) {
+            let connector:ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
         }
@@ -231,11 +273,11 @@ export class Block {
 
     // getters for connectors
 
-    public getInputConnectors(): Array<Connector> {
+    public getInputConnectors(): Array<Connector<boolean|number|Message|Object>> {
         return this.inputConnectors;
     }
 
-    public getOutputConnectors(): Array<Connector> {
+    public getOutputConnectors(): Array<Connector<boolean|number|Message|Object>> {
         return this.outputConnectors;
     }
 
@@ -263,8 +305,8 @@ export class Block {
 
     // inputs/outputs
 
-    private outputEventCallbacks: Array<(connector: Connector, eventType: ConnectorEventType, value: boolean|number|MessageJson) => void> = [];
-    public registerOutputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean|number|MessageJson) => void): void {
+    private outputEventCallbacks:Array<(connector:Connector<boolean|number|Message|Object>, eventType:ConnectorEventType, value:boolean|number|MessageJson|Object) => void> = [];
+    public registerOutputEventCallback(callback:(connector:Connector<boolean|number|Message|Object>, eventType:ConnectorEventType, value:boolean|number|MessageJson|Object) => void):void {
         this.outputEventCallbacks.push(callback);
     }
 
@@ -282,13 +324,13 @@ export class Block {
 
     protected outputChanged(event: ConnectorEvent): void {
         event.connector.connections.forEach(connection => {
-            let cOther: Connector = connection.getOtherConnector(event.connector);
+            let cOther:Connector<boolean|number|Message|Object> = connection.getOtherConnector(event.connector);
             cOther._inputSetValue(event.value, event.interfaceId);
         });
     }
 
-    private inputEventCallbacks: Array<(connector: Connector, eventType: ConnectorEventType, value: boolean|number|MessageJson) => void> = [];
-    public registerInputEventCallback(callback: (connector: Connector, eventType: ConnectorEventType, value: boolean|number|MessageJson) => void): void {
+    private inputEventCallbacks:Array<(connector:Connector<boolean|number|Message|Object>, eventType:ConnectorEventType, value:boolean|number|MessageJson|Object) => void> = [];
+    public registerInputEventCallback(callback:(connector:Connector<boolean|number|Message|Object>, eventType:ConnectorEventType, value:boolean|number|MessageJson|Object) => void):void {
         this.inputEventCallbacks.push(callback);
     }
 
@@ -388,19 +430,19 @@ export class Block {
 
     }
 
-    private disconnectConnectionFromConnector(connector: Connector): void {
-        let toDisconnect: Array<Connection> = connector.connections.splice(0);
-        toDisconnect.forEach((connection: Connection) => {
+    private disconnectConnectionFromConnector(connector:Connector<boolean|number|Message|Object>):void {
+        let toDisconnect:Array<Connection> = connector.connections.splice(0);
+        toDisconnect.forEach((connection:Connection) => {
             connection.disconnect();
         });
     }
 
     public remove(): void {
 
-        this.inputConnectors.forEach((connector: Connector) => {
+        this.inputConnectors.forEach((connector:Connector<boolean|number|Message|Object>) => {
             this.disconnectConnectionFromConnector(connector);
         });
-        this.outputConnectors.forEach((connector: Connector) => {
+        this.outputConnectors.forEach((connector:Connector<boolean|number|Message|Object>) => {
             this.disconnectConnectionFromConnector(connector);
         });
 
@@ -413,20 +455,20 @@ export class Block {
         }
     }
 
-    public getOutputConnectorByName(name: string): Connector {
-        let connector: Connector = null;
-        this.outputConnectors.forEach((c: Connector) => {
-            if (c.name === name) {
+    public getOutputConnectorById(id:string):Connector<boolean|number|Message|Object> {
+        let connector:Connector<boolean|number|Message|Object> = null;
+        this.outputConnectors.forEach((c:Connector<boolean|number|Message|Object>) => {
+            if (c.id == id) {
                 connector = c;
             }
         });
         return connector;
     }
 
-    public getInputConnectorByName(name: string): Connector {
-        let connector: Connector = null;
-        this.inputConnectors.forEach((c: Connector) => {
-            if (c.name === name) {
+    public getInputConnectorById(id:string):Connector<boolean|number|Message|Object> {
+        let connector:Connector<boolean|number|Message|Object> = null;
+        this.inputConnectors.forEach((c:Connector<boolean|number|Message|Object>) => {
+            if (c.id == id) {
                 connector = c;
             }
         });

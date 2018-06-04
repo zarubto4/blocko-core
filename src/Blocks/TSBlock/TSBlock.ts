@@ -6,8 +6,9 @@ import { ServiceLib } from '../Libraries/ServiceLib';
 import { FetchLib } from '../Libraries/FetchLib';
 
 import { Libs } from 'common-lib';
-import { ConnectorEvent } from '../../Core';
+import { ConnectorEvent, MessageConnector } from '../../Core';
 import { DatabaseLib } from '../Libraries/DatabaseLib';
+import { Message } from '../../Core/Message';
 
 declare let ts;
 declare const require;
@@ -178,8 +179,8 @@ export class TSBlock extends Core.Block {
         }
     };
 
-    private storedInputs: { name: string, type: number, otherConnector: Connector, argTypes: string }[] = [];
-    private storedOutputs: { name: string, type: number, otherConnector: Connector, argTypes: string }[] = [];
+    private storedInputs:{ name: string, type: number, otherConnector: Connector<boolean|number|Message|Object>, argTypes: string }[] = [];
+    private storedOutputs:{ name: string, type: number, otherConnector: Connector<boolean|number|Message|Object>, argTypes: string }[] = [];
 
     private storeConnections() {
 
@@ -188,10 +189,10 @@ export class TSBlock extends Core.Block {
             c.connections.forEach((cc) => {
                 let otherC = cc.getOtherConnector(c);
                 let out = {
-                    name: c.name,
+                    name: c.id,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(',')
+                    argTypes: c.isMessage() ? (<MessageConnector>c).stringArgTypes.join(',') : ''
                 };
                 this.storedInputs.push(out);
             });
@@ -202,10 +203,10 @@ export class TSBlock extends Core.Block {
             c.connections.forEach((cc) => {
                 let otherC = cc.getOtherConnector(c);
                 let out = {
-                    name: c.name,
+                    name: c.id,
                     type: c.type,
                     otherConnector: otherC,
-                    argTypes: c.stringArgTypes.join(',')
+                    argTypes: c.isMessage() ? (<MessageConnector>c).stringArgTypes.join(',') : ''
                 };
                 this.storedOutputs.push(out);
             });
@@ -216,18 +217,18 @@ export class TSBlock extends Core.Block {
     private restoreConnections() {
 
         this.storedInputs.forEach((si) => {
-            let c = this.getInputConnectorByName(si.name);
+            let c = this.getInputConnectorById(si.name);
             if (c) {
-                if (si.type === c.type && si.argTypes === c.stringArgTypes.join(',')) {
+                if (si.type === c.type && si.argTypes === (c.isMessage() ? (<MessageConnector>c).stringArgTypes.join(',') : '')) {
                     c.connect(si.otherConnector);
                 }
             }
         });
 
         this.storedOutputs.forEach((si) => {
-            let c = this.getOutputConnectorByName(si.name);
+            let c = this.getOutputConnectorById(si.name);
             if (c) {
-                if (si.type === c.type && si.argTypes === c.stringArgTypes.join(',')) {
+                if (si.type === c.type && si.argTypes === (c.isMessage() ? (<MessageConnector>c).stringArgTypes.join(',') : '')) {
                     c.connect(si.otherConnector);
                 }
             }

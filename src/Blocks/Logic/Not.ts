@@ -2,11 +2,12 @@ import * as Core from '../../Core/index';
 import { Types } from 'common-lib';
 import { ConnectorEvent } from '../../Core';
 import { ConnectorEventType } from '../../Core/Connector';
+import { Message } from '../../Core/Message';
 
 export class Not extends Core.Block {
 
-    public connectorInput: Core.Connector;
-    public connectorOutput: Core.Connector;
+    public connectorInput: Core.Connector<boolean|number|Message|Object>;
+    public connectorOutput: Core.Connector<boolean|number|Message|Object>;
 
     public constructor(id: string) {
         super(id, 'not', 'not');

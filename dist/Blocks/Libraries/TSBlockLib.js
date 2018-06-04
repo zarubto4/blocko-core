@@ -58,10 +58,10 @@ class BaseConnector extends common_lib_1.Events.Emitter {
         this.tsBlockLib = tsBlockLib;
     }
     get name() {
-        return this.connector.name;
+        return this.connector.id;
     }
     get displayName() {
-        return this.connector.displayName;
+        return this.connector.name;
     }
     get type() {
         return common_lib_1.Types.getStringsFromConnectorType(this.connector.type).type;
@@ -70,7 +70,7 @@ class BaseConnector extends common_lib_1.Events.Emitter {
         return common_lib_1.Types.getStringsFromConnectorType(this.connector.type).direction;
     }
     get lastMessage() {
-        if (this.connector.lastMessage) {
+        if (this.connector.isMessage() && this.connector.lastMessage) {
             return {
                 types: this.connector.lastMessage.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                 values: this.connector.lastMessage.values
@@ -79,7 +79,7 @@ class BaseConnector extends common_lib_1.Events.Emitter {
         return null;
     }
     get messageTypes() {
-        if (this.connector.argTypes) {
+        if (this.connector.isMessage() && this.connector.argTypes) {
             return this.connector.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]);
         }
         return null;
@@ -237,14 +237,14 @@ class TSBlockLib {
             tsEvent = new ValueChangedEvent(value);
         }
         if (strings.direction === 'input') {
-            let connectorWrapper = this.inputConnectors[connector.name];
+            let connectorWrapper = this.inputConnectors[connector.id];
             if (connectorWrapper && tsEvent) {
                 this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                 connectorWrapper.emit(connectorWrapper, tsEvent);
             }
         }
         else if (strings.direction === 'output') {
-            let connectorWrapper = this.outputConnectors[connector.name];
+            let connectorWrapper = this.outputConnectors[connector.id];
             if (connectorWrapper && tsEvent) {
                 this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                 connectorWrapper.emit(connectorWrapper, tsEvent);
@@ -273,14 +273,14 @@ class TSBlockLib {
                     }, event.interfaceId);
                 }
                 if (strings.direction === 'input') {
-                    let connectorWrapper = this.inputConnectors[event.connector.name];
+                    let connectorWrapper = this.inputConnectors[event.connector.id];
                     if (connectorWrapper && tsEvent) {
                         this.inputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                         connectorWrapper.emit(connectorWrapper, tsEvent);
                     }
                 }
                 else if (strings.direction === 'output') {
-                    let connectorWrapper = this.outputConnectors[event.connector.name];
+                    let connectorWrapper = this.outputConnectors[event.connector.id];
                     if (connectorWrapper && tsEvent) {
                         this.outputConnectorsEmitter.emit(connectorWrapper, tsEvent);
                         connectorWrapper.emit(connectorWrapper, tsEvent);

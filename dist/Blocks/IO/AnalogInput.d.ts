@@ -1,6 +1,7 @@
 import { Block, ConfigProperty, Connector } from '../../Core';
+import { Message } from '../../Core/Message';
 export declare class AnalogInput extends Block {
-    connectorOutput: Connector;
+    connectorOutput: Connector<boolean | number | Message | Object>;
     protected currentValue: number;
     protected analogValue: ConfigProperty;
     constructor(id: string);

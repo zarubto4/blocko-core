@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Connection_1 = require("./Connection");
 const Message_1 = require("./Message");
+const Connection_1 = require("./Connection");
 const common_lib_1 = require("common-lib");
 const Renderer_1 = require("./Renderer");
 var ConnectorEventType;
@@ -11,48 +11,39 @@ var ConnectorEventType;
     ConnectorEventType[ConnectorEventType["GroupInput"] = 2] = "GroupInput";
 })(ConnectorEventType = exports.ConnectorEventType || (exports.ConnectorEventType = {}));
 class Connector {
-    constructor(block, name, displayName, type, argTypes) {
-        this._numValue = 0;
-        this._boolValue = false;
-        this._msgValue = null;
-        this.argTypes = null;
+    constructor(block, id, name, type) {
         this.connections = [];
         this.block = block;
+        this.id = id;
         this.name = name;
-        this.displayName = displayName;
         this.type = type;
-        this.argTypes = argTypes;
     }
     get value() {
-        if (this.isDigital()) {
-            return this._boolValue;
-        }
-        if (this.isAnalog()) {
-            return this._numValue;
-        }
-        return null;
-    }
-    get lastMessage() {
-        return this._msgValue;
+        return this._value;
     }
     set value(value) {
-        if (this.isDigital()) {
-            if (typeof value == 'boolean') {
-                this._boolValue = value;
-            }
-            else if (typeof value == 'number') {
-                this._boolValue = !!value;
-            }
+        this._value = value;
+    }
+    isOutput() {
+        return this.type == common_lib_1.Types.ConnectorType.DigitalOutput || this.type == common_lib_1.Types.ConnectorType.AnalogOutput || this.type == common_lib_1.Types.ConnectorType.MessageOutput || this.type == common_lib_1.Types.ConnectorType.JsonOutput;
+    }
+    isInput() {
+        return this.type == common_lib_1.Types.ConnectorType.DigitalInput || this.type == common_lib_1.Types.ConnectorType.AnalogInput || this.type == common_lib_1.Types.ConnectorType.MessageInput || this.type == common_lib_1.Types.ConnectorType.JsonInput;
+    }
+    isAnalog() {
+        return this.type == common_lib_1.Types.ConnectorType.AnalogOutput || this.type == common_lib_1.Types.ConnectorType.AnalogInput;
+    }
+    isDigital() {
+        return this.type == common_lib_1.Types.ConnectorType.DigitalOutput || this.type == common_lib_1.Types.ConnectorType.DigitalInput;
+    }
+    isMessage() {
+        return this.type == common_lib_1.Types.ConnectorType.MessageInput || this.type == common_lib_1.Types.ConnectorType.MessageOutput || this.type == common_lib_1.Types.ConnectorType.JsonInput || this.type == common_lib_1.Types.ConnectorType.JsonOutput;
+    }
+    haveFreeSpace() {
+        if (this.type == common_lib_1.Types.ConnectorType.DigitalInput || this.type == common_lib_1.Types.ConnectorType.AnalogInput) {
+            return (this.connections.length == 0);
         }
-        if (this.isAnalog()) {
-            if (typeof value == 'boolean') {
-                this._numValue = value ? 1 : 0;
-            }
-            else if (typeof value == 'number') {
-                this._numValue = value;
-            }
-        }
-        return;
+        return true;
     }
     connect(target) {
         if (this.canConnect(target)) {
@@ -88,31 +79,111 @@ class Connector {
         if (!((this.isAnalog() && target.isAnalog()) || (this.isDigital() && target.isDigital()) || (this.isMessage() && target.isMessage()))) {
             return false;
         }
-        if (this.isMessage()) {
-            return Message_1.MessageHelpers.isArgTypesEqual(this.argTypes, target.argTypes);
-        }
         return true;
     }
-    isOutput() {
-        return (this.type == common_lib_1.Types.ConnectorType.DigitalOutput) || (this.type == common_lib_1.Types.ConnectorType.AnalogOutput) || (this.type == common_lib_1.Types.ConnectorType.MessageOutput);
-    }
-    isInput() {
-        return (this.type == common_lib_1.Types.ConnectorType.DigitalInput) || (this.type == common_lib_1.Types.ConnectorType.AnalogInput) || (this.type == common_lib_1.Types.ConnectorType.MessageInput);
-    }
-    isAnalog() {
-        return (this.type == common_lib_1.Types.ConnectorType.AnalogOutput) || (this.type == common_lib_1.Types.ConnectorType.AnalogInput);
-    }
-    isDigital() {
-        return (this.type == common_lib_1.Types.ConnectorType.DigitalOutput) || (this.type == common_lib_1.Types.ConnectorType.DigitalInput);
-    }
-    isMessage() {
-        return (this.type == common_lib_1.Types.ConnectorType.MessageInput) || (this.type == common_lib_1.Types.ConnectorType.MessageOutput);
-    }
-    haveFreeSpace() {
-        if (this.type == common_lib_1.Types.ConnectorType.DigitalInput || this.type == common_lib_1.Types.ConnectorType.AnalogInput) {
-            return (this.connections.length == 0);
+    _outputSetValue(value, interfaceId) {
+        if (this.isOutput()) {
+            let type = ConnectorEventType.ValueChange;
+            if (this.type === common_lib_1.Types.ConnectorType.MessageInput || this.type === common_lib_1.Types.ConnectorType.MessageOutput || this.type === common_lib_1.Types.ConnectorType.JsonInput || this.type === common_lib_1.Types.ConnectorType.JsonOutput) {
+                type = ConnectorEventType.NewMessage;
+            }
+            if (interfaceId) {
+                type = ConnectorEventType.GroupInput;
+            }
+            this.block._outputEvent({
+                connector: this,
+                eventType: type,
+                value: value,
+                interfaceId: interfaceId
+            });
         }
-        return true;
+        else {
+            console.error('Connector::_outputSetValue - attempt to set input value on output connector');
+        }
+    }
+    _inputSetValue(value, interfaceId) {
+        if (this.isInput()) {
+            let type = ConnectorEventType.ValueChange;
+            if (this.type === common_lib_1.Types.ConnectorType.MessageInput || this.type === common_lib_1.Types.ConnectorType.MessageOutput || this.type === common_lib_1.Types.ConnectorType.JsonInput || this.type === common_lib_1.Types.ConnectorType.JsonOutput) {
+                type = ConnectorEventType.NewMessage;
+            }
+            if (interfaceId) {
+                type = ConnectorEventType.GroupInput;
+            }
+            this.block._inputEvent({
+                connector: this,
+                eventType: type,
+                value: value,
+                interfaceId: interfaceId
+            });
+        }
+        else {
+            console.error('Connector::_inputSetValue - attempt to set output value on input connector');
+        }
+    }
+}
+exports.Connector = Connector;
+class DigitalConnector extends Connector {
+    constructor(block, id, name, type) {
+        super(block, id, name, type);
+    }
+    _outputSetValue(value, interfaceId) {
+        if (typeof value === 'boolean') {
+            super._outputSetValue(value, interfaceId);
+        }
+    }
+    _inputSetValue(value, interfaceId) {
+        if (typeof value === 'boolean') {
+            super._inputSetValue(value, interfaceId);
+        }
+    }
+}
+exports.DigitalConnector = DigitalConnector;
+class AnalogConnector extends Connector {
+    constructor(block, id, name, type) {
+        super(block, id, name, type);
+    }
+    _outputSetValue(value, interfaceId) {
+        if (typeof value === 'number') {
+            super._outputSetValue(value, interfaceId);
+        }
+    }
+    _inputSetValue(value, interfaceId) {
+        if (typeof value === 'number') {
+            super._inputSetValue(value, interfaceId);
+        }
+    }
+}
+exports.AnalogConnector = AnalogConnector;
+class MessageConnector extends Connector {
+    constructor(block, id, name, type, argTypes) {
+        super(block, id, name, type);
+        this.argTypes = null;
+        this.argTypes = argTypes;
+    }
+    _outputSetValue(value, interfaceId) {
+        if (value instanceof Message_1.Message && value.isArgTypesEqual(this.argTypes)) {
+            if (this.renderer) {
+                this.renderer.highlight(Renderer_1.HighlightType.Message);
+            }
+            this.connections.forEach(connection => {
+                if (connection.renderer) {
+                    connection.renderer.highlight(Renderer_1.HighlightType.Message);
+                }
+            });
+            super._outputSetValue(value, interfaceId);
+        }
+    }
+    _inputSetValue(value, interfaceId) {
+        if (value instanceof Message_1.Message && value.isArgTypesEqual(this.argTypes)) {
+            super._inputSetValue(value, interfaceId);
+        }
+    }
+    canConnect(target) {
+        return super.canConnect(target) && Message_1.MessageHelpers.isArgTypesEqual(this.argTypes, target.argTypes);
+    }
+    get lastMessage() {
+        return this.value;
     }
     get stringArgTypes() {
         let out = [];
@@ -123,136 +194,21 @@ class Connector {
         }
         return out;
     }
+}
+exports.MessageConnector = MessageConnector;
+class JsonConnector extends Connector {
+    constructor(block, id, name, type) {
+        super(block, id, name, type);
+    }
     _outputSetValue(value, interfaceId) {
-        let boolVal = null;
-        let numVal = null;
-        let msgVal = null;
-        let type = ConnectorEventType.ValueChange;
-        if (typeof value == 'boolean') {
-            boolVal = value;
-            numVal = boolVal ? 1 : 0;
+        if (typeof value === 'object') {
+            super._outputSetValue(value, interfaceId);
         }
-        if (typeof value == 'number') {
-            numVal = value;
-            boolVal = !!numVal;
-        }
-        if (Array.isArray(value)) {
-            msgVal = new Message_1.Message(this.argTypes.slice(0), value);
-            type = ConnectorEventType.NewMessage;
-        }
-        if (value instanceof Message_1.Message) {
-            msgVal = value;
-            type = ConnectorEventType.NewMessage;
-        }
-        if (interfaceId) {
-            type = ConnectorEventType.GroupInput;
-        }
-        let event = {
-            connector: this,
-            eventType: type,
-            value: null,
-            interfaceId: interfaceId
-        };
-        if (this.type == common_lib_1.Types.ConnectorType.DigitalOutput) {
-            if (boolVal == null)
-                return;
-            if (this._boolValue == boolVal)
-                return;
-            this._boolValue = boolVal;
-            event.value = boolVal;
-            this.block._outputEvent(event);
-            return;
-        }
-        else if (this.type == common_lib_1.Types.ConnectorType.AnalogOutput) {
-            if (numVal == null)
-                return;
-            if (this._numValue == numVal)
-                return;
-            this._numValue = numVal;
-            event.value = numVal;
-            this.block._outputEvent(event);
-            return;
-        }
-        else if (this.type == common_lib_1.Types.ConnectorType.MessageOutput) {
-            if (msgVal == null)
-                return;
-            if (!msgVal.isArgTypesEqual(this.argTypes))
-                return;
-            if (this.renderer) {
-                this.renderer.highlight(Renderer_1.HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(Renderer_1.HighlightType.Message);
-                }
-            });
-            this._msgValue = msgVal;
-            event.value = msgVal;
-            this.block._outputEvent(event);
-            return;
-        }
-        console.log('Cannot call setValue on not-output connectors!');
     }
     _inputSetValue(value, interfaceId) {
-        let boolVal = null;
-        let numVal = null;
-        let msgVal = null;
-        let type = ConnectorEventType.ValueChange;
-        if (typeof value == 'boolean') {
-            boolVal = value;
-            numVal = boolVal ? 1 : 0;
+        if (typeof value === 'object') {
+            super._inputSetValue(value, interfaceId);
         }
-        if (typeof value == 'number') {
-            numVal = value;
-            boolVal = !!numVal;
-        }
-        if (value instanceof Message_1.Message) {
-            msgVal = value;
-            type = ConnectorEventType.NewMessage;
-        }
-        if (interfaceId) {
-            type = ConnectorEventType.GroupInput;
-        }
-        let event = {
-            connector: this,
-            eventType: type,
-            value: null,
-            interfaceId: interfaceId
-        };
-        if (this.type == common_lib_1.Types.ConnectorType.DigitalInput) {
-            if (boolVal == null)
-                return;
-            if (this._boolValue == boolVal)
-                return;
-            this._boolValue = boolVal;
-            event.value = boolVal;
-            this.block._inputEvent(event);
-            return;
-        }
-        else if (this.type == common_lib_1.Types.ConnectorType.AnalogInput) {
-            if (numVal == null)
-                return;
-            if (this._numValue == numVal)
-                return;
-            this._numValue = numVal;
-            event.value = numVal;
-            this.block._inputEvent(event);
-            return;
-        }
-        else if (this.type == common_lib_1.Types.ConnectorType.MessageInput) {
-            if (!msgVal)
-                return;
-            if (msgVal.isArgTypesEqual(this.argTypes)) {
-                if (this.renderer) {
-                    this.renderer.highlight(Renderer_1.HighlightType.Message);
-                }
-                this._msgValue = msgVal;
-                event.value = msgVal;
-                this.block._inputEvent(event);
-            }
-            return;
-        }
-        console.log('Cannot call _inputSetValue on not-inputs connectors!');
     }
 }
-exports.Connector = Connector;
+exports.JsonConnector = JsonConnector;

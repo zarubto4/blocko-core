@@ -32,11 +32,11 @@ class BaseInterfaceBlock extends Core_1.Block {
             this._interfaceId = iface.code.versionId;
             if (this._interfaceType === InterfaceBlockType.Inputs) {
                 this._deviceInputsCount++;
-                let n = 'd_byzance_device_restart';
-                wantedInputsOrder.push(n);
+                let connectorId = 'd_byzance_device_restart';
+                wantedInputsOrder.push(connectorId);
                 let c = null;
                 inputsToDelete.forEach((con) => {
-                    if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.DigitalInput)) {
+                    if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.DigitalInput)) {
                         c = con;
                     }
                 });
@@ -44,15 +44,15 @@ class BaseInterfaceBlock extends Core_1.Block {
                     inputsToDelete.splice(inputsToDelete.indexOf(c), 1);
                 }
                 else {
-                    this.restartDeviceInput = this.addInputConnector(n, common_lib_1.Types.ConnectorType.DigitalInput, 'Restart');
+                    this.restartDeviceInput = this.addInputConnector(connectorId, common_lib_1.Types.ConnectorType.DigitalInput, 'Restart');
                 }
             }
             if (this._interfaceType === InterfaceBlockType.Outputs) {
-                let n = 'd_byzance_device_online';
-                wantedOutputsOrder.push(n);
+                let connectorId = 'd_byzance_device_online';
+                wantedOutputsOrder.push(connectorId);
                 let c = null;
                 outputsToDelete.forEach((con) => {
-                    if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.DigitalOutput)) {
+                    if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.DigitalOutput)) {
                         c = con;
                     }
                 });
@@ -60,7 +60,7 @@ class BaseInterfaceBlock extends Core_1.Block {
                     outputsToDelete.splice(outputsToDelete.indexOf(c), 1);
                 }
                 else {
-                    this.networkStatusOutput = this.addOutputConnector(n, common_lib_1.Types.ConnectorType.DigitalOutput, 'Online');
+                    this.networkStatusOutput = this.addOutputConnector(connectorId, common_lib_1.Types.ConnectorType.DigitalOutput, 'Online');
                 }
             }
         }
@@ -82,11 +82,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                 }
                 this._deviceInputsCount++;
                 if (this._interfaceType === InterfaceBlockType.Inputs) {
-                    let n = 'd_' + name;
-                    wantedInputsOrder.push(n);
+                    let connectorId = 'd_' + name;
+                    wantedInputsOrder.push(connectorId);
                     let c = null;
                     inputsToDelete.forEach((con) => {
-                        if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.DigitalInput)) {
+                        if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.DigitalInput)) {
                             c = con;
                         }
                     });
@@ -94,7 +94,7 @@ class BaseInterfaceBlock extends Core_1.Block {
                         inputsToDelete.splice(inputsToDelete.indexOf(c), 1);
                     }
                     else {
-                        this.addInputConnector(n, common_lib_1.Types.ConnectorType.DigitalInput, name);
+                        this.addInputConnector(connectorId, common_lib_1.Types.ConnectorType.DigitalInput, name);
                     }
                     this.addExternalOutputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.DigitalOutput);
                 }
@@ -108,11 +108,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                 }
                 this._deviceInputsCount++;
                 if (this._interfaceType === InterfaceBlockType.Inputs) {
-                    let n = 'a_' + name;
-                    wantedInputsOrder.push(n);
+                    let connectorId = 'a_' + name;
+                    wantedInputsOrder.push(connectorId);
                     let c = null;
                     inputsToDelete.forEach((con) => {
-                        if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.AnalogInput)) {
+                        if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.AnalogInput)) {
                             c = con;
                         }
                     });
@@ -120,7 +120,7 @@ class BaseInterfaceBlock extends Core_1.Block {
                         inputsToDelete.splice(inputsToDelete.indexOf(c), 1);
                     }
                     else {
-                        this.addInputConnector(n, common_lib_1.Types.ConnectorType.AnalogInput, name);
+                        this.addInputConnector(connectorId, common_lib_1.Types.ConnectorType.AnalogInput, name);
                     }
                     this.addExternalOutputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.AnalogOutput);
                 }
@@ -135,11 +135,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                 this._deviceInputsCount++;
                 if (this._interfaceType === InterfaceBlockType.Inputs) {
                     let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(messageInputs[name].messageTypes);
-                    let n = 'm_' + name;
-                    wantedInputsOrder.push(n);
+                    let connectorId = 'm_' + name;
+                    wantedInputsOrder.push(connectorId);
                     let c = null;
                     inputsToDelete.forEach((con) => {
-                        if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.MessageInput)) {
+                        if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.MessageInput)) {
                             c = con;
                         }
                     });
@@ -147,11 +147,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                         inputsToDelete.splice(inputsToDelete.indexOf(c), 1);
                         if (!Message_1.MessageHelpers.isArgTypesEqual(argTypes, c.argTypes)) {
                             this.removeInputConnector(c);
-                            this.addInputConnector(n, common_lib_1.Types.ConnectorType.MessageInput, name, argTypes);
+                            this.addInputConnector(connectorId, common_lib_1.Types.ConnectorType.MessageInput, name, argTypes);
                         }
                     }
                     else {
-                        this.addInputConnector(n, common_lib_1.Types.ConnectorType.MessageInput, name, argTypes);
+                        this.addInputConnector(connectorId, common_lib_1.Types.ConnectorType.MessageInput, name, argTypes);
                     }
                     this.addExternalOutputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.MessageOutput, argTypes);
                 }
@@ -165,11 +165,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                 }
                 this._deviceOutputsCount++;
                 if (this._interfaceType === InterfaceBlockType.Outputs) {
-                    let n = 'd_' + name;
-                    wantedOutputsOrder.push(n);
+                    let connectorId = 'd_' + name;
+                    wantedOutputsOrder.push(connectorId);
                     let c = null;
                     outputsToDelete.forEach((con) => {
-                        if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.DigitalOutput)) {
+                        if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.DigitalOutput)) {
                             c = con;
                         }
                     });
@@ -177,7 +177,7 @@ class BaseInterfaceBlock extends Core_1.Block {
                         outputsToDelete.splice(outputsToDelete.indexOf(c), 1);
                     }
                     else {
-                        this.addOutputConnector(n, common_lib_1.Types.ConnectorType.DigitalOutput, name);
+                        this.addOutputConnector(connectorId, common_lib_1.Types.ConnectorType.DigitalOutput, name);
                     }
                     this.addExternalInputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.DigitalInput);
                 }
@@ -191,11 +191,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                 }
                 this._deviceOutputsCount++;
                 if (this._interfaceType === InterfaceBlockType.Outputs) {
-                    let n = 'a_' + name;
-                    wantedOutputsOrder.push(n);
+                    let connectorId = 'a_' + name;
+                    wantedOutputsOrder.push(connectorId);
                     let c = null;
                     outputsToDelete.forEach((con) => {
-                        if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.AnalogOutput)) {
+                        if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.AnalogOutput)) {
                             c = con;
                         }
                     });
@@ -203,7 +203,7 @@ class BaseInterfaceBlock extends Core_1.Block {
                         outputsToDelete.splice(outputsToDelete.indexOf(c), 1);
                     }
                     else {
-                        this.addOutputConnector(n, common_lib_1.Types.ConnectorType.AnalogOutput, name);
+                        this.addOutputConnector(connectorId, common_lib_1.Types.ConnectorType.AnalogOutput, name);
                     }
                     this.addExternalInputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.AnalogInput);
                 }
@@ -218,11 +218,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                 this._deviceOutputsCount++;
                 if (this._interfaceType === InterfaceBlockType.Outputs) {
                     let argTypes = Message_1.MessageHelpers.argTypesFromStringArgTypes(messageOutputs[name].messageTypes);
-                    let n = 'm_' + name;
-                    wantedOutputsOrder.push(n);
+                    let connectorId = 'm_' + name;
+                    wantedOutputsOrder.push(connectorId);
                     let c = null;
                     outputsToDelete.forEach((con) => {
-                        if ((con.name === n) && (con.type === common_lib_1.Types.ConnectorType.MessageOutput)) {
+                        if ((con.id === connectorId) && (con.type === common_lib_1.Types.ConnectorType.MessageOutput)) {
                             c = con;
                         }
                     });
@@ -230,11 +230,11 @@ class BaseInterfaceBlock extends Core_1.Block {
                         outputsToDelete.splice(outputsToDelete.indexOf(c), 1);
                         if (!Message_1.MessageHelpers.isArgTypesEqual(argTypes, c.argTypes)) {
                             this.removeOutputConnector(c);
-                            this.addOutputConnector(n, common_lib_1.Types.ConnectorType.MessageOutput, name, argTypes);
+                            this.addOutputConnector(connectorId, common_lib_1.Types.ConnectorType.MessageOutput, name, argTypes);
                         }
                     }
                     else {
-                        this.addOutputConnector(n, common_lib_1.Types.ConnectorType.MessageOutput, name, argTypes);
+                        this.addOutputConnector(connectorId, common_lib_1.Types.ConnectorType.MessageOutput, name, argTypes);
                     }
                     this.addExternalInputConnector(this._targetId, name, common_lib_1.Types.ConnectorType.MessageInput, argTypes);
                 }
@@ -247,10 +247,10 @@ class BaseInterfaceBlock extends Core_1.Block {
             this.removeOutputConnector(con);
         });
         this.inputConnectors.sort((ca, cb) => {
-            return wantedInputsOrder.indexOf(ca.name) - wantedInputsOrder.indexOf(cb.name);
+            return wantedInputsOrder.indexOf(ca.id) - wantedInputsOrder.indexOf(cb.id);
         });
         this.outputConnectors.sort((ca, cb) => {
-            return wantedOutputsOrder.indexOf(ca.name) - wantedOutputsOrder.indexOf(cb.name);
+            return wantedOutputsOrder.indexOf(ca.id) - wantedOutputsOrder.indexOf(cb.id);
         });
         if (this.renderer) {
             this.renderer.refresh();
@@ -308,7 +308,7 @@ class BaseInterfaceBlock extends Core_1.Block {
             if (event.connector instanceof ExternalConnector_1.ExternalMessageConnector) {
                 name = 'm_' + event.connector.name;
             }
-            let con = this.getOutputConnectorByName(name);
+            let con = this.getOutputConnectorById(name);
             if (con) {
                 con._outputSetValue(event.value, event.interfaceId);
             }
@@ -316,9 +316,9 @@ class BaseInterfaceBlock extends Core_1.Block {
     }
     inputChanged(event) {
         if (event.connector) {
-            let type = event.connector.name.substr(0, 1);
-            let name = event.connector.name.substr(2);
-            if (this.restartDeviceInput && this.restartDeviceInput.name === event.connector.name && event.value) {
+            let type = event.connector.id.substr(0, 1);
+            let name = event.connector.id.substr(2);
+            if (this.restartDeviceInput.id === event.connector.id && event.value) {
                 this.controller.callHardwareRestartCallback(event.interfaceId ? event.interfaceId : this._targetId);
             }
             this.getExternalOutputConnectors().forEach((con) => {

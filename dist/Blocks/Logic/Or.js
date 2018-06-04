@@ -32,7 +32,7 @@ class Or extends Core.Block {
         }
         else {
             for (i = wantedCount; i < currentCount; i++) {
-                let c = this.getInputConnectorByName('in' + i);
+                let c = this.getInputConnectorById('in' + i);
                 if (c) {
                     this.removeInputConnector(c);
                 }
@@ -46,9 +46,8 @@ class Or extends Core.Block {
     inputsChanged() {
         let out = false;
         this.inputConnectors.forEach((con) => {
-            if (con.value) {
+            if (con.value)
                 out = true;
-            }
         });
         if (this.confNegate.value) {
             out = !out;
