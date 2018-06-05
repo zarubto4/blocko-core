@@ -13,10 +13,10 @@ class FetchService extends Service_1.Service {
         return FetchService.serviceName;
     }
     fetch(request) {
-        return Fetch_1.FetchExecutor.fetch(this["_machine_"], request, this.configuration["fetchParameters"], this.configuration["proxyServerUrl"]);
+        return Fetch_1.FetchExecutor.fetch(this['_machine_'], request, this.configuration['fetchParameters'], this.configuration['proxyServerUrl']);
     }
 }
-FetchService.serviceName = "fetchService";
+FetchService.serviceName = 'fetchService';
 FetchService.libTypings = `
     declare class FetchService {
         /**
@@ -30,4 +30,3 @@ FetchService.libTypings = `
     };
     `;
 exports.FetchService = FetchService;
-;

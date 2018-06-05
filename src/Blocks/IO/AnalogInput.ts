@@ -1,17 +1,16 @@
-import { Block, ConfigProperty, Connector, ConnectorEvent, ConnectorEventType } from '../../Core';
+import { AnalogConnector, Block, ConfigProperty, ConnectorEvent, ConnectorEventType } from '../../Core';
 import { Types } from 'common-lib';
-import { Message } from '../../Core/Message';
 
 export class AnalogInput extends Block {
 
-    public connectorOutput: Connector<boolean|number|Message|Object>;
+    public connectorOutput: AnalogConnector;
     protected currentValue: number = 0;
 
     protected analogValue: ConfigProperty;
 
     public constructor(id: string) {
         super(id, 'analogInput', 'analogInput');
-        this.connectorOutput = this.addOutputConnector('output', Types.ConnectorType.AnalogOutput, 'Output');
+        this.connectorOutput = <AnalogConnector>this.addOutputConnector('output', Types.ConnectorType.AnalogOutput, 'Output');
 
         this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1, input: true })
     }

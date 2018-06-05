@@ -13,14 +13,14 @@ class RestApiService extends FetchService_1.FetchService {
         let originalResponse;
         let requestCopy = Fetch_1.FetchExecutor.copyRequestDef(request, RestApiService.defaultHeaders);
         if (requestCopy.body) {
-            if (typeof requestCopy.body == 'object') {
+            if (typeof requestCopy.body === 'object') {
                 requestCopy.body = JSON.stringify(requestCopy.body);
             }
-            else if (typeof requestCopy.body == 'string') {
+            else if (typeof requestCopy.body === 'string') {
                 requestCopy.body = requestCopy.body;
             }
             else {
-                throw 'Body of request is not valid for us with rest api service';
+                throw new Error('Body of request is not valid for us with rest api service');
             }
         }
         return super.fetch(requestCopy)
@@ -32,7 +32,7 @@ class RestApiService extends FetchService_1.FetchService {
         });
     }
 }
-RestApiService.serviceName = "restApiService";
+RestApiService.serviceName = 'restApiService';
 RestApiService.libTypings = `
     declare class RestApiService {
         /**

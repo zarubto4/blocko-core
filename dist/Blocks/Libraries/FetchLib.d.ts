@@ -1,4 +1,4 @@
-import { Library, Machine } from "script-engine";
+import { Library, Machine } from 'script-engine';
 export declare class FetchLib implements Library {
     static libName: string;
     static libTypings: string;

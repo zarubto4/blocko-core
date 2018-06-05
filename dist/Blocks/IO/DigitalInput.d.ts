@@ -1,6 +1,5 @@
-import * as Core from '../../Core/index';
-import { Message } from '../../Core/Message';
-export declare class DigitalInput extends Core.Block {
-    connectorOutput: Core.Connector<boolean | number | Message | Object>;
+import { Block, DigitalConnector } from '../../Core';
+export declare class DigitalInput extends Block {
+    connectorOutput: DigitalConnector;
     constructor(id: string, visibleType: string);
 }

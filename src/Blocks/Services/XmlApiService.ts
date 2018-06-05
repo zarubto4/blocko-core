@@ -1,17 +1,15 @@
-
-
 import { FetchService } from './FetchService';
 import { FetchResponse, RequestDef, FetchExecutor, PromiseWraper } from '../../Core/Fetch';
 
 declare const require;
-/*
+/**
  *
  * Base api service
- * 
+ *
  */
 export class XmlApiService extends FetchService {
-    public static serviceName:string = "xmlApiService";
-    public static libTypings:string = `
+    public static serviceName: string = 'xmlApiService';
+    public static libTypings: string = `
     declare class XmlApiService {
         /**
          * Fetch request with converting body to json
@@ -39,66 +37,66 @@ export class XmlApiService extends FetchService {
     }
 
     /**
-     * 
+     *
      * Utility for decode XML
-     * 
+     *
      */
     public static decodeXml(xmlStr): Object {
         let DOMParser = null;
-        
-         if (typeof window['DOMParser'] != 'undefined') {
-             return ( new window['DOMParser']() ).parseFromString(xmlStr, 'text/xml');
-         } else if (typeof window['ActiveXObject'] != 'undefined' && new window['ActiveXObject']('Microsoft.XMLDOM')) {
-            var xmlDoc = new window['ActiveXObject']('Microsoft.XMLDOM');
+
+        if (typeof window['DOMParser'] !== 'undefined') {
+            return ( new window['DOMParser']() ).parseFromString(xmlStr, 'text/xml');
+        } else if (typeof window['ActiveXObject'] !== 'undefined' && new window['ActiveXObject']('Microsoft.XMLDOM')) {
+            let xmlDoc = new window['ActiveXObject']('Microsoft.XMLDOM');
             xmlDoc.async = 'false';
             xmlDoc.loadXML(xmlStr);
             return xmlDoc;
-        } else if (typeof require === "function") {
+        } else if (typeof require === 'function') {
             const xmlDomPackageName = 'xmldom';
-            DOMParser = eval("require(xmlDomPackageName).DOMParser");
+            DOMParser = eval('require(xmlDomPackageName).DOMParser');
             return DOMParser.parseFromString(xmlStr, 'text/xml');
-        } else {
+        } else {
             throw new Error('No XML parser found');
         }
     }
 
     /**
-     * 
+     *
      * Utility for encode XML
-     * 
+     *
      */
     public static encodeXml(xml) {
         let DOMParser = null;
 
-        if (typeof window['XMLSerializer'] != 'undefined') {
+        if (typeof window['XMLSerializer'] !== 'undefined') {
             return new XMLSerializer().serializeToString(xml);
-        } else if (window['ActiveXObject'] != 'undefined') { 
-            return xml.xml; 
-        } else if (typeof require === "function") {
+        } else if (window['ActiveXObject'] !== 'undefined') {
+            return xml.xml;
+        } else if (typeof require === 'function') {
             const xmlDomPackageName = 'xmldom';
-            DOMParser = eval("require(xmlDomPackageName).DOMParser");
+            DOMParser = eval('require(xmlDomPackageName).DOMParser');
             return DOMParser.serializeToString(xml);
-        } else {
+        } else {
             throw new Error('No XML parser found');
         }
     }
 
     /**
-     * 
+     *
      * Fetch with converting to xml and from xml...
-     * 
+     *
      */
     public fetch(request: RequestDef): PromiseWraper<FetchResponse> {
         let originalResponse: FetchResponse;
         let requestCopy = FetchExecutor.copyRequestDef(request, XmlApiService.defaultHeaders);
 
         if (requestCopy.body) {
-            if (typeof requestCopy.body == 'object') {
+            if (typeof requestCopy.body === 'object') {
                 requestCopy.body = XmlApiService.encodeXml(requestCopy.body);
-            } else if (typeof requestCopy.body == 'string') {
+            } else if (typeof requestCopy.body === 'string') {
                 requestCopy.body = requestCopy.body;
             } else {
-                throw 'Body of request is not valid for us with xml api service';
+                throw new Error('Body of request is not valid for us with xml api service');
             }
         }
 

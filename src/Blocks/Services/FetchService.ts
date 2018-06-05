@@ -1,16 +1,14 @@
-
-
 import { Service } from './Service';
 import { FetchResponse, RequestDef, FetchExecutor, PromiseWraper } from '../../Core/Fetch';
 
-/*
+/**
  *
  * Base fetch service
- * 
+ *
  */
 export class FetchService extends Service {
-    public static serviceName:string = "fetchService";
-    public static libTypings:string = `
+    public static serviceName: string = 'fetchService';
+    public static libTypings: string = `
     declare class FetchService {
         /**
          * Fetch request
@@ -23,7 +21,7 @@ export class FetchService extends Service {
     };
     `;
 
-    public constructor(configuration: {fetchParameters: {[key:string]: string}, proxyServerUrl: string} = <any>{}) {
+    public constructor(configuration: {fetchParameters: {[key: string]: string}, proxyServerUrl: string} = <any>{}) {
         super(configuration);
     }
 
@@ -36,7 +34,7 @@ export class FetchService extends Service {
     }
 
     public fetch(request: RequestDef): PromiseWraper<FetchResponse> {
-        //add url and token from configuration
-        return FetchExecutor.fetch(this["_machine_"], request, this.configuration["fetchParameters"], this.configuration["proxyServerUrl"]);
+        // add url and token from configuration
+        return FetchExecutor.fetch(this['_machine_'], request, this.configuration['fetchParameters'], this.configuration['proxyServerUrl']);
     }
-};
+}

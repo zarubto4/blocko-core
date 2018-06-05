@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Core = require("../../Core/index");
 const common_lib_1 = require("common-lib");
+const Core_1 = require("../../Core");
 const Connector_1 = require("../../Core/Connector");
-class Xor extends Core.Block {
+class Xor extends Core_1.Block {
     constructor(id) {
         super(id, 'xor', 'xor');
         this.confInputsCount = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {
@@ -57,7 +57,7 @@ class Xor extends Core.Block {
         let event = {
             connector: this.connectorOutput,
             eventType: Connector_1.ConnectorEventType.ValueChange,
-            value: out ? 1 : 0
+            value: out
         };
         this.sendValueToOutputConnector(event);
     }

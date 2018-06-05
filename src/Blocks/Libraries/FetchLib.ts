@@ -17,7 +17,7 @@
  * Be careful, you must have included ServiceLib in your machine and added FetchService into this instance of ServiceLib.
  *
  */
-import { Library, Machine } from "script-engine";
+import { Library, Machine } from 'script-engine';
 import { RequestMethod, ResponseStatus, FetchResponse, FetchRequest, GetRequest, PostRequest, PutRequest, DeleteRequest, HeadRequest, OptionsRequest, ProxyCommunicationError, FetchError } from '../../Core/Fetch';
 
 export class FetchLib implements Library {

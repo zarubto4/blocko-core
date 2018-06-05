@@ -1,14 +1,14 @@
 import { Service } from './Service';
 import { CronScheduler } from '../../Core/CronScheduler'
 
-/*
+/**
  *
  * Base fetch service
- * 
+ *
  */
 export class CronService extends Service {
-    public static serviceName:string = "cronService";
-    public static libTypings:string = `
+    public static serviceName: string = 'cronService';
+    public static libTypings: string = `
     declare class CronService {
         /**
          * Schedule job, provide valid Cron expression.
@@ -36,4 +36,4 @@ export class CronService extends Service {
     public schedule(cron: string, job: <T>() => T): any {
         return CronScheduler.schedule(cron, job);
     }
-};
+}

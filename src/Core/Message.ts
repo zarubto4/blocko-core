@@ -14,11 +14,11 @@ export class MessageHelpers {
         return false;
     }
 
-    public static argTypesFromStringArgTypes(value: string[]): Types.Type[] {
+    public static argTypesFromStringArgTypes(value: Array<string>): Array<Types.Type> {
         if (!Array.isArray(value)) {
             return null;
         }
-        let outArgTypes: Types.Type[] = [];
+        let outArgTypes: Array<Types.Type> = [];
         for (let type of value) {
             if (typeof Types.StringToTypeTable[type] === 'undefined') {
                 return null;
@@ -28,11 +28,11 @@ export class MessageHelpers {
         return outArgTypes;
     }
 
-    public static stringArgTypesFromArgTypes(value: Types.Type[]): string[] {
+    public static stringArgTypesFromArgTypes(value: Array<Types.Type>): Array<string> {
         if (!Array.isArray(value)) {
             return null;
         }
-        let outArgTypes: string[] = [];
+        let outArgTypes: Array<string> = [];
         for (let type of value) {
             if (typeof Types.TypeToStringTable[type] === 'undefined') {
                 return null;
@@ -45,25 +45,25 @@ export class MessageHelpers {
 }
 
 export type MessageJson = {
-    argTypes: string[];
-    values: any[];
+    argTypes: Array<string>;
+    values: Array<boolean|number|string>;
 }
 
 export class Message {
-    private _argTypes: Types.Type[] = null;
-    private _values: any[] = [];
+    private _argTypes: Array<Types.Type> = null;
+    private _values: Array<boolean|number|string> = [];
 
-    public constructor(argTypesOrJson?: Types.Type[]|string[]|MessageJson, values?: any[]) {
+    public constructor(argTypesOrJson?: Array<Types.Type>|Array<string>|MessageJson, values?: Array<boolean|number|string>) {
         if (argTypesOrJson) {
             if (Array.isArray(argTypesOrJson) && argTypesOrJson.length > 0) {
                 if (typeof argTypesOrJson[0] === 'string') {
-                    this.setStringArgTypes(<string[]>argTypesOrJson);
+                    this.setStringArgTypes(<Array<string>>argTypesOrJson);
                 } else {
-                    this.setArgTypes(<Types.Type[]>argTypesOrJson);
+                    this.setArgTypes(<Array<Types.Type>>argTypesOrJson);
                 }
             } else if (typeof argTypesOrJson === 'object' && argTypesOrJson['argTypes'] && argTypesOrJson['values']) {
                 this.setStringArgTypes(argTypesOrJson['argTypes']);
-                this.setValues(<any[]>argTypesOrJson['values']);
+                this.setValues(<Array<boolean|number|string>>argTypesOrJson['values']);
             }
         }
 
@@ -72,11 +72,11 @@ export class Message {
         }
     }
 
-    get argTypes(): Types.Type[] {
+    get argTypes(): Array<Types.Type> {
         return this._argTypes;
     }
 
-    public setArgTypes(value: Types.Type[]): boolean {
+    public setArgTypes(value: Array<Types.Type>): boolean {
         // ArgTypes validation
         if (!Array.isArray(value)) {
             return false;
@@ -91,15 +91,15 @@ export class Message {
         return true;
     }
 
-    public setStringArgTypes(value: string[]): boolean {
+    public setStringArgTypes(value: Array<string>): boolean {
         return this.setArgTypes(MessageHelpers.argTypesFromStringArgTypes(value));
     }
 
-    get values(): any[] {
+    get values(): Array<boolean|number|string> {
         return this._values;
     }
 
-    public setValues(value: any[]): boolean {
+    public setValues(value: Array<boolean|number|string>): boolean {
         if (!Array.isArray(value)) {
             throw new Error('Message values is not array.');
         }
@@ -134,7 +134,7 @@ export class Message {
         return true;
     }
 
-    public isArgTypesEqual(argTypes: Types.Type[]): boolean {
+    public isArgTypesEqual(argTypes: Array<Types.Type>): boolean {
         return MessageHelpers.isArgTypesEqual(this.argTypes, argTypes);
     }
 

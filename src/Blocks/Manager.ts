@@ -1,10 +1,8 @@
-
-
 import * as Core from '../Core/index';
 import * as Blocks from './index';
 
 export class Manager {
-    static getAllBlocks():Array<Core.BlockClass> {
+    static getAllBlocks(): Array<Core.BlockClass> {
         return [
             Blocks.Switch,
             Blocks.PushButton,
@@ -17,7 +15,8 @@ export class Manager {
             Blocks.AnalogInput,
             Blocks.AnalogOutput,
             Blocks.InputsInterfaceBlock,
-            Blocks.OutputsInterfaceBlock
+            Blocks.OutputsInterfaceBlock,
+            Blocks.WebHook
         ];
     }
 }

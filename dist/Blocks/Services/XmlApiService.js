@@ -11,18 +11,18 @@ class XmlApiService extends FetchService_1.FetchService {
     }
     static decodeXml(xmlStr) {
         let DOMParser = null;
-        if (typeof window['DOMParser'] != 'undefined') {
+        if (typeof window['DOMParser'] !== 'undefined') {
             return (new window['DOMParser']()).parseFromString(xmlStr, 'text/xml');
         }
-        else if (typeof window['ActiveXObject'] != 'undefined' && new window['ActiveXObject']('Microsoft.XMLDOM')) {
-            var xmlDoc = new window['ActiveXObject']('Microsoft.XMLDOM');
+        else if (typeof window['ActiveXObject'] !== 'undefined' && new window['ActiveXObject']('Microsoft.XMLDOM')) {
+            let xmlDoc = new window['ActiveXObject']('Microsoft.XMLDOM');
             xmlDoc.async = 'false';
             xmlDoc.loadXML(xmlStr);
             return xmlDoc;
         }
-        else if (typeof require === "function") {
+        else if (typeof require === 'function') {
             const xmlDomPackageName = 'xmldom';
-            DOMParser = eval("require(xmlDomPackageName).DOMParser");
+            DOMParser = eval('require(xmlDomPackageName).DOMParser');
             return DOMParser.parseFromString(xmlStr, 'text/xml');
         }
         else {
@@ -31,15 +31,15 @@ class XmlApiService extends FetchService_1.FetchService {
     }
     static encodeXml(xml) {
         let DOMParser = null;
-        if (typeof window['XMLSerializer'] != 'undefined') {
+        if (typeof window['XMLSerializer'] !== 'undefined') {
             return new XMLSerializer().serializeToString(xml);
         }
-        else if (window['ActiveXObject'] != 'undefined') {
+        else if (window['ActiveXObject'] !== 'undefined') {
             return xml.xml;
         }
-        else if (typeof require === "function") {
+        else if (typeof require === 'function') {
             const xmlDomPackageName = 'xmldom';
-            DOMParser = eval("require(xmlDomPackageName).DOMParser");
+            DOMParser = eval('require(xmlDomPackageName).DOMParser');
             return DOMParser.serializeToString(xml);
         }
         else {
@@ -50,14 +50,14 @@ class XmlApiService extends FetchService_1.FetchService {
         let originalResponse;
         let requestCopy = Fetch_1.FetchExecutor.copyRequestDef(request, XmlApiService.defaultHeaders);
         if (requestCopy.body) {
-            if (typeof requestCopy.body == 'object') {
+            if (typeof requestCopy.body === 'object') {
                 requestCopy.body = XmlApiService.encodeXml(requestCopy.body);
             }
-            else if (typeof requestCopy.body == 'string') {
+            else if (typeof requestCopy.body === 'string') {
                 requestCopy.body = requestCopy.body;
             }
             else {
-                throw 'Body of request is not valid for us with xml api service';
+                throw new Error('Body of request is not valid for us with xml api service');
             }
         }
         return super.fetch(requestCopy)
@@ -69,7 +69,7 @@ class XmlApiService extends FetchService_1.FetchService {
         });
     }
 }
-XmlApiService.serviceName = "xmlApiService";
+XmlApiService.serviceName = 'xmlApiService';
 XmlApiService.libTypings = `
     declare class XmlApiService {
         /**

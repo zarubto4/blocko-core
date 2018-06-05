@@ -1,9 +1,9 @@
-import * as Core from '../../Core/index';
-import { Message } from '../../Core/Message';
-export declare class And extends Core.Block {
-    connectorOutput: Core.Connector<boolean | number | Message | Object>;
-    protected confInputsCount: Core.ConfigProperty;
-    protected confNegate: Core.ConfigProperty;
+import { DigitalConnector } from '../../Core/Connector';
+import { Block, ConfigProperty } from '../../Core';
+export declare class And extends Block {
+    connectorOutput: DigitalConnector;
+    protected confInputsCount: ConfigProperty;
+    protected confNegate: ConfigProperty;
     constructor(id: string);
     protected afterControllerSet(): void;
     rendererGetDisplayName(): string;

@@ -1,23 +1,23 @@
 import { Types } from 'common-lib';
 export declare class MessageHelpers {
     static isArgTypesEqual(argTypes1: Types.Type[], argTypes2: Types.Type[]): boolean;
-    static argTypesFromStringArgTypes(value: string[]): Types.Type[];
-    static stringArgTypesFromArgTypes(value: Types.Type[]): string[];
+    static argTypesFromStringArgTypes(value: Array<string>): Array<Types.Type>;
+    static stringArgTypesFromArgTypes(value: Array<Types.Type>): Array<string>;
 }
 export declare type MessageJson = {
-    argTypes: string[];
-    values: any[];
+    argTypes: Array<string>;
+    values: Array<boolean | number | string>;
 };
 export declare class Message {
     private _argTypes;
     private _values;
-    constructor(argTypesOrJson?: Types.Type[] | string[] | MessageJson, values?: any[]);
-    readonly argTypes: Types.Type[];
-    setArgTypes(value: Types.Type[]): boolean;
-    setStringArgTypes(value: string[]): boolean;
-    readonly values: any[];
-    setValues(value: any[]): boolean;
-    isArgTypesEqual(argTypes: Types.Type[]): boolean;
+    constructor(argTypesOrJson?: Array<Types.Type> | Array<string> | MessageJson, values?: Array<boolean | number | string>);
+    readonly argTypes: Array<Types.Type>;
+    setArgTypes(value: Array<Types.Type>): boolean;
+    setStringArgTypes(value: Array<string>): boolean;
+    readonly values: Array<boolean | number | string>;
+    setValues(value: Array<boolean | number | string>): boolean;
+    isArgTypesEqual(argTypes: Array<Types.Type>): boolean;
     toJson(): MessageJson;
     toString(): string;
 }

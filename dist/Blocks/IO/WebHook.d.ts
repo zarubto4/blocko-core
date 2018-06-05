@@ -1,5 +1,8 @@
-import { Block } from '../../Core';
+import { Block, JsonConnector } from '../../Core';
 export declare class WebHook extends Block {
-    protected apiKey: string;
+    protected _apiKey: string;
+    protected output: JsonConnector;
     constructor(apiKey: string);
+    readonly apiKey: string;
+    getJsonOutput(): JsonConnector;
 }

@@ -14,14 +14,10 @@ class Connection {
         }
     }
     getInputConnector() {
-        if (this.connectorA.isInput())
-            return this.connectorA;
-        return this.connectorB;
+        return this.connectorA.isInput() ? this.connectorA : this.connectorB;
     }
     getOutputConnector() {
-        if (this.connectorA.isOutput())
-            return this.connectorA;
-        return this.connectorB;
+        return this.connectorA.isOutput() ? this.connectorA : this.connectorB;
     }
     disconnect() {
         this.connectorA._removeConnection(this);

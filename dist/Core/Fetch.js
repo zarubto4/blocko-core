@@ -30,8 +30,7 @@ class PromiseChainScope {
         this._machine = machine;
     }
     setTo(type) {
-        while (this.chain[0] !== type && this.chain.shift())
-            ;
+        while (this.chain[0] !== type && this.chain.shift()) { }
         return this.chain.length > 0;
     }
     callError(e) {

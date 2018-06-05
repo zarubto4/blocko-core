@@ -26,13 +26,13 @@ export class ConfigValueChangedEvent extends Events.Event {
 }
 
 export class MessageReceivedEvent extends Events.Event {
-    constructor(public readonly message: MessageValue) {
+    constructor(public readonly message: MessageValue|object) {
         super('messageReceived');
     };
 }
 
 export class GroupInputEvent extends Events.Event {
-    constructor(public readonly value: boolean|number|MessageValue, public readonly interfaceId: string) {
+    constructor(public readonly value: boolean|number|object|MessageValue, public readonly interfaceId: string) {
         super('groupInput');
     };
 }
@@ -51,7 +51,7 @@ export class DestroyEvent extends Events.Event {
 
 export abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent|MessageReceivedEvent|GroupInputEvent> {
 
-    constructor (protected connector: Connector<boolean|number|Message|Object>, protected tsBlockLib: TSBlockLib) {
+    constructor (protected connector: Connector<boolean|number|object|Message>, protected tsBlockLib: TSBlockLib) {
         super();
     }
 
@@ -71,12 +71,14 @@ export abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent|
         return Types.getStringsFromConnectorType(this.connector.type).direction;
     }
 
-    public get lastMessage(): MessageValue {
-        if (this.connector.isMessage() && (<MessageConnector>this.connector).lastMessage) {
+    public get lastMessage(): MessageValue|object {
+        if (this.connector.isMessage() && this.connector.value) {
             return {
-                types: (<MessageConnector>this.connector).lastMessage.argTypes.map((at) => Types.TypeToStringTable[at]),
-                values: (<MessageConnector>this.connector).lastMessage.values
+                types: (<Message>this.connector.value).argTypes.map((at) => Types.TypeToStringTable[at]),
+                values: (<Message>this.connector.value).values
             };
+        } else if (this.connector.isJson()) {
+            return <object>this.connector.value
         }
         return null;
     }
@@ -104,23 +106,67 @@ export class OutputConnector extends BaseConnector<boolean|number|MessageValue> 
     }
 
     public set value(value: boolean|number) {
-        if (typeof value === 'boolean' || typeof value === 'number') {
-            this.tsBlockLib.sendValueToOutputConnector(this.connector, value);
-        } else {
-            throw new TSBlockError('Attempt to set wrong value on a connector. The type of value must be \'boolean\' or \'number\', but got \'' + typeof value + '\'')
+        if (this.connector.isDigital()) {
+            if (typeof value === 'boolean') {
+                this.tsBlockLib.sendValueToOutputConnector(this.connector, value);
+            } else {
+                throw new TSBlockError('Attempt to set invalid data. Value must be a boolean, but got \'' + typeof value + '\'');
+            }
+        } else if (this.connector.isAnalog()) {
+            if (typeof value === 'number') {
+                this.tsBlockLib.sendValueToOutputConnector(this.connector, value);
+            } else {
+                throw new TSBlockError('Attempt to set invalid data. Value must be a number, but got \'' + typeof value + '\'');
+            }
         }
     }
 
-    public send(message: Array<boolean|number|string>) {
-        if (Array.isArray(message)) {
-            this.tsBlockLib.sendValueToOutputConnector(this.connector, message);
-        } else {
-            throw new TSBlockError('Attempt to send invalid data. Message must be an array, but got \'' + typeof message + '\'')
+    public send(message: Array<boolean|number|string>|object) {
+        if (this.connector.isMessage()) {
+            if (Array.isArray(message)) {
+                this.tsBlockLib.sendValueToOutputConnector(this.connector, message);
+            } else {
+                throw new TSBlockError('Attempt to send invalid data. Message must be an array, but got \'' + typeof message + '\'');
+            }
+        } else if (this.connector.isJson()) {
+            if (!Array.isArray(message) && typeof message === 'object') {
+                this.tsBlockLib.sendValueToOutputConnector(this.connector, message);
+            } else {
+                throw new TSBlockError('Attempt to send invalid data. Message must be an object, but got \'' + Array.isArray(message) ? 'array' : typeof message + '\'');
+            }
         }
     }
 
-    public groupOutput(value: boolean|number|Array<boolean|number|string>, interfaceId: string) {
-        this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
+    public groupOutput(value: boolean|number|object|Array<boolean|number|string>, interfaceId: string) {
+        if (interfaceId) {
+            if (this.connector.isDigital()) {
+                if (typeof value === 'boolean') {
+                    this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
+                } else {
+                    throw new TSBlockError('Attempt to set invalid data. Value must be a boolean, but got \'' + typeof value + '\'');
+                }
+            } else if (this.connector.isAnalog()) {
+                if (typeof value === 'number') {
+                    this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
+                } else {
+                    throw new TSBlockError('Attempt to set invalid data. Value must be a number, but got \'' + typeof value + '\'');
+                }
+            } else if (this.connector.isMessage()) {
+                if (Array.isArray(value)) {
+                    this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
+                } else {
+                    throw new TSBlockError('Attempt to send invalid data. Message must be an array, but got \'' + typeof value + '\'');
+                }
+            } else if (this.connector.isJson()) {
+                if (!Array.isArray(value) && typeof value === 'object') {
+                    this.tsBlockLib.sendValueToOutputConnector(this.connector, value, interfaceId);
+                } else {
+                    throw new TSBlockError('Attempt to send invalid data. Message must be an object, but got \'' + Array.isArray(value) ? 'array' : typeof value + '\'');
+                }
+            }
+        } else {
+            throw new TSBlockError('You must provide \'interfaceId\', when using groupOutput method.');
+        }
     }
 }
 
@@ -301,7 +347,7 @@ declare const context: BlockContext;
         throw new TSBlockError(`In <b>${method}</b>: unknown config property type <b>${type}</b>`);
     }
 
-    public sendValueToOutputConnector(connector: Connector<boolean|number|Message|Object>, value: boolean|number|any[], interfaceId?: string) {
+    public sendValueToOutputConnector(connector: Connector<boolean|number|object|Message>, value: boolean|number|object|Array<boolean|number|string>, interfaceId?: string) {
         this.tsBlock.sendValueToOutputConnector({
             connector: connector,
             eventType:  null,
@@ -313,7 +359,7 @@ declare const context: BlockContext;
 
         let tsEvent;
         if (interfaceId) {
-            tsEvent = new GroupInputEvent(strings.type !== 'message' ? <boolean|number>value : <MessageValue>{
+            tsEvent = new GroupInputEvent(strings.type !== 'message' ? <boolean|number|object>value : <MessageValue>{
                 types: (<MessageConnector>connector).argTypes.map((at) => Types.TypeToStringTable[at]),
                 values: <any[]>value
             }, interfaceId)
@@ -322,6 +368,8 @@ declare const context: BlockContext;
                 types: (<MessageConnector>connector).argTypes.map((at) => Types.TypeToStringTable[at]),
                 values: <any[]>value
             });
+        } else if (strings.type === 'json') {
+            tsEvent = new MessageReceivedEvent(<object>value);
         } else {
             tsEvent = new ValueChangedEvent(<boolean|number>value);
         }
@@ -356,13 +404,17 @@ declare const context: BlockContext;
                 if (event.eventType === ConnectorEventType.ValueChange) {
                     tsEvent = new ValueChangedEvent(<boolean|number>event.value);
                 } else if (event.eventType === ConnectorEventType.NewMessage) {
-                    let message = (<Message>event.value);
-                    tsEvent = new MessageReceivedEvent({
-                        types: message.argTypes.map((at) => Types.TypeToStringTable[at]),
-                        values: message.values
-                    });
+                    if (strings.type === 'message') {
+                        let message = (<Message>event.value);
+                        tsEvent = new MessageReceivedEvent({
+                            types: message.argTypes.map((at) => Types.TypeToStringTable[at]),
+                            values: message.values
+                        });
+                    } else if (strings.type === 'json') {
+                        tsEvent = new MessageReceivedEvent(<object>event.value);
+                    }
                 } else if (event.eventType === ConnectorEventType.GroupInput) {
-                    tsEvent = new GroupInputEvent(strings.type !== 'message' ? <boolean|number>event.value : <MessageValue>{
+                    tsEvent = new GroupInputEvent(strings.type !== 'message' ? <boolean|number|object>event.value : <MessageValue>{
                         types: (<Message>event.value).argTypes.map((at) => Types.TypeToStringTable[at]),
                         values: (<Message>event.value).values
                     }, event.interfaceId)

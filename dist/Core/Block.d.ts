@@ -9,8 +9,8 @@ export interface IBlockRenderer extends IRenderer {
     isHovered(): boolean;
 }
 export declare class Block {
-    protected inputConnectors: Array<Connector<boolean | number | Message | Object>>;
-    protected outputConnectors: Array<Connector<boolean | number | Message | Object>>;
+    protected inputConnectors: Array<Connector<boolean | number | object | Message>>;
+    protected outputConnectors: Array<Connector<boolean | number | object | Message>>;
     protected externalInputConnectors: Array<ExternalConnector<any>>;
     protected externalOutputsConnectors: Array<ExternalConnector<any>>;
     protected configProperties: Array<ConfigProperty>;
@@ -33,10 +33,10 @@ export declare class Block {
     x: number;
     y: number;
     sendValueToOutputConnector(event: ConnectorEvent): void;
-    addOutputConnector(id: string, type: Types.ConnectorType, name?: string, argTypes?: Types.Type[]): Connector<boolean | number | Message | Object>;
-    addInputConnector(id: string, type: Types.ConnectorType, name?: string, argTypes?: Types.Type[]): Connector<boolean | number | Message | Object>;
-    removeOutputConnector(connector: Connector<boolean | number | Message | Object>): void;
-    removeInputConnector(connector: Connector<boolean | number | Message | Object>): void;
+    addOutputConnector(id: string, type: Types.ConnectorType, name?: string, argTypes?: Types.Type[]): Connector<boolean | number | object | Message>;
+    addInputConnector(id: string, type: Types.ConnectorType, name?: string, argTypes?: Types.Type[]): Connector<boolean | number | object | Message>;
+    removeOutputConnector(connector: Connector<boolean | number | object | Message>): void;
+    removeInputConnector(connector: Connector<boolean | number | object | Message>): void;
     protected addExternalInputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes?: Types.Type[]): ExternalConnector<any>;
     protected addExternalOutputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes?: Types.Type[]): ExternalConnector<any>;
     protected removeExternalInputConnector(connector: ExternalConnector<any>): void;
@@ -44,19 +44,19 @@ export declare class Block {
     addConfigProperty(type: Types.ConfigPropertyType, id: string, displayName: string, defaultValue: any, config?: any): ConfigProperty;
     getConfigProperties(): Array<ConfigProperty>;
     removeConfigProperty(configProperty: ConfigProperty): void;
-    getInputConnectors(): Array<Connector<boolean | number | Message | Object>>;
-    getOutputConnectors(): Array<Connector<boolean | number | Message | Object>>;
+    getInputConnectors(): Array<Connector<boolean | number | object | Message>>;
+    getOutputConnectors(): Array<Connector<boolean | number | object | Message>>;
     getExternalInputConnectors(): Array<ExternalConnector<any>>;
     getExternalOutputConnectors(): Array<ExternalConnector<any>>;
     private initializationCallbacks;
     registerInitializationCallback(callback: () => void): void;
     initialize(): void;
     private outputEventCallbacks;
-    registerOutputEventCallback(callback: (connector: Connector<boolean | number | Message | Object>, eventType: ConnectorEventType, value: boolean | number | MessageJson | Object) => void): void;
+    registerOutputEventCallback(callback: (connector: Connector<boolean | number | object | Message>, eventType: ConnectorEventType, value: boolean | number | MessageJson | Object) => void): void;
     _outputEvent(event: ConnectorEvent): void;
     protected outputChanged(event: ConnectorEvent): void;
     private inputEventCallbacks;
-    registerInputEventCallback(callback: (connector: Connector<boolean | number | Message | Object>, eventType: ConnectorEventType, value: boolean | number | MessageJson | Object) => void): void;
+    registerInputEventCallback(callback: (connector: Connector<boolean | number | object | Message>, eventType: ConnectorEventType, value: boolean | number | MessageJson | Object) => void): void;
     _inputEvent(event: ConnectorEvent): void;
     protected inputChanged(event: ConnectorEvent): void;
     private externalOutputEventCallbacks;
@@ -75,8 +75,8 @@ export declare class Block {
     setConfigData(json: any): void;
     private disconnectConnectionFromConnector(connector);
     remove(): void;
-    getOutputConnectorById(id: string): Connector<boolean | number | Message | Object>;
-    getInputConnectorById(id: string): Connector<boolean | number | Message | Object>;
+    getOutputConnectorById(id: string): Connector<boolean | number | object | Message>;
+    getInputConnectorById(id: string): Connector<boolean | number | object | Message>;
     configChanged(): void;
     onMouseDrag(event: {
         dx: number;

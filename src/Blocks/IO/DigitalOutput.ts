@@ -1,15 +1,13 @@
-import * as Core from '../../Core/index';
 import { Types } from 'common-lib';
-import { ConnectorEvent } from '../../Core';
-import { Message } from '../../Core/Message';
+import { Block, ConnectorEvent, DigitalConnector } from '../../Core';
 
-export class DigitalOutput extends Core.Block {
+export class DigitalOutput extends Block {
 
-    public connectorInput: Core.Connector<boolean|number|Message|Object>;
+    public connectorInput: DigitalConnector;
 
     public constructor(id: string, visibleType: string) {
         super(id, 'digitalOutput', visibleType);
-        this.connectorInput = this.addInputConnector('input', Types.ConnectorType.DigitalInput);
+        this.connectorInput = <DigitalConnector>this.addInputConnector('input', Types.ConnectorType.DigitalInput);
     }
 
     protected inputChanged(event: ConnectorEvent): void {

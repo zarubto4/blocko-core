@@ -1,10 +1,8 @@
-import * as Core from '../../Core/index';
-import { ConnectorEvent } from '../../Core';
-import { Message } from '../../Core/Message';
-export declare class Xor extends Core.Block {
-    connectorOutput: Core.Connector<boolean | number | Message | Object>;
-    protected confInputsCount: Core.ConfigProperty;
-    protected confNegate: Core.ConfigProperty;
+import { Block, ConfigProperty, ConnectorEvent, DigitalConnector } from '../../Core';
+export declare class Xor extends Block {
+    connectorOutput: DigitalConnector;
+    protected confInputsCount: ConfigProperty;
+    protected confNegate: ConfigProperty;
     constructor(id: string);
     protected afterControllerSet(): void;
     rendererGetDisplayName(): string;

@@ -125,25 +125,25 @@ class Block {
         return connector;
     }
     removeOutputConnector(connector) {
-        if (!connector)
-            return;
-        this.disconnectConnectionFromConnector(connector);
-        let index = this.outputConnectors.indexOf(connector);
-        if (index > -1) {
-            this.outputConnectors.splice(index, 1);
+        if (connector) {
+            this.disconnectConnectionFromConnector(connector);
+            let index = this.outputConnectors.indexOf(connector);
+            if (index > -1) {
+                this.outputConnectors.splice(index, 1);
+            }
         }
     }
     removeInputConnector(connector) {
-        if (!connector)
-            return;
-        this.disconnectConnectionFromConnector(connector);
-        let index = this.inputConnectors.indexOf(connector);
-        if (index > -1) {
-            this.inputConnectors.splice(index, 1);
+        if (connector) {
+            this.disconnectConnectionFromConnector(connector);
+            let index = this.inputConnectors.indexOf(connector);
+            if (index > -1) {
+                this.inputConnectors.splice(index, 1);
+            }
         }
     }
     addExternalInputConnector(targetId, name, type, argTypes = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalInput) {
+        if (type === common_lib_1.Types.ConnectorType.DigitalInput) {
             let connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Input);
             this.externalInputConnectors.push(connector);
             return connector;
@@ -162,7 +162,7 @@ class Block {
         return null;
     }
     addExternalOutputConnector(targetId, name, type, argTypes = null) {
-        if (type == common_lib_1.Types.ConnectorType.DigitalOutput) {
+        if (type === common_lib_1.Types.ConnectorType.DigitalOutput) {
             let connector = new ExternalConnector_1.ExternalDigitalConnector(this, targetId, name, ExternalConnector_1.ExternalConnectorType.Output);
             this.externalOutputsConnectors.push(connector);
             return connector;
@@ -346,7 +346,7 @@ class Block {
     getOutputConnectorById(id) {
         let connector = null;
         this.outputConnectors.forEach((c) => {
-            if (c.id == id) {
+            if (c.id === id) {
                 connector = c;
             }
         });
@@ -355,7 +355,7 @@ class Block {
     getInputConnectorById(id) {
         let connector = null;
         this.inputConnectors.forEach((c) => {
-            if (c.id == id) {
+            if (c.id === id) {
                 connector = c;
             }
         });

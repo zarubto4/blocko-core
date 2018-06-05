@@ -261,6 +261,22 @@ class Controller {
             return found;
         });
     }
+    setWebHookValue(apiKey, message) {
+        if (typeof message === 'object' && !Array.isArray(message)) {
+            let webHookBlock = this.blocks.find((b) => {
+                return b instanceof Blocks_1.WebHook && b.apiKey === apiKey;
+            });
+            if (webHookBlock) {
+                webHookBlock.getJsonOutput()._outputSetValue(message);
+            }
+            else {
+                console.warn('Controller::setWebHookValue - cannot find any WebHook block with apiKey:', apiKey);
+            }
+        }
+        else {
+            console.error('Controller::setWebHookValue - attempt to set wrong value on WebHook, object is required, but got \'' + Array.isArray(message) ? 'array' : typeof message + '\'');
+        }
+    }
     setInputConnectorValue(blockId, connectorName, value) {
         this.blocks.forEach((block) => {
             if (block.id === blockId) {

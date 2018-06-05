@@ -42,7 +42,7 @@ export class PromiseChainScope {
     }
 
     public setTo(type: 'then'|'catch'): boolean {
-        while (this.chain[0] !== type && this.chain.shift());
+        while (this.chain[0] !== type && this.chain.shift()) {}
         return this.chain.length > 0;
     }
 

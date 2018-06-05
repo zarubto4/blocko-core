@@ -16,19 +16,20 @@ class DatabaseService extends Service_1.Service {
         return new Database_1.DatabaseDao(secret);
     }
 }
-DatabaseService.serviceName = "dbService";
+DatabaseService.serviceName = 'dbService';
 DatabaseService.libTypings = `
-    declare class DatabaseService {
-        
-        /**
-         * Get database data access object.
-         */
-        db(secret: string): DatabaseDao;
-    }
-    
 
-    declare module services {
-        const dbService: DatabaseService;
-    };
-    `;
+        declare class DatabaseService {
+
+            /**
+             * Get database data access object.
+             */
+            db(secret: string): DatabaseDao;
+        }
+
+
+        declare module services {
+            const dbService: DatabaseService;
+        };
+`;
 exports.DatabaseService = DatabaseService;

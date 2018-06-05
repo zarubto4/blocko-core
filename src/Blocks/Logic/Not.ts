@@ -1,18 +1,16 @@
 import * as Core from '../../Core/index';
 import { Types } from 'common-lib';
-import { ConnectorEvent } from '../../Core';
-import { ConnectorEventType } from '../../Core/Connector';
-import { Message } from '../../Core/Message';
+import { ConnectorEventType, DigitalConnector, ConnectorEvent } from '../../Core/Connector';
 
 export class Not extends Core.Block {
 
-    public connectorInput: Core.Connector<boolean|number|Message|Object>;
-    public connectorOutput: Core.Connector<boolean|number|Message|Object>;
+    public connectorInput: DigitalConnector;
+    public connectorOutput: DigitalConnector;
 
     public constructor(id: string) {
         super(id, 'not', 'not');
-        this.connectorInput = this.addInputConnector('input', Types.ConnectorType.DigitalInput);
-        this.connectorOutput = this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
+        this.connectorInput = <DigitalConnector>this.addInputConnector('input', Types.ConnectorType.DigitalInput);
+        this.connectorOutput = <DigitalConnector>this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
     }
 
     protected afterControllerSet() {
@@ -27,7 +25,7 @@ export class Not extends Core.Block {
         let event: ConnectorEvent = {
             connector: this.connectorOutput,
             eventType:  ConnectorEventType.ValueChange,
-            value: this.connectorInput.value === 0 ? 1 : 0
+            value: !this.connectorInput.value
         };
         this.sendValueToOutputConnector(event);
     }

@@ -16,7 +16,7 @@ class CronService extends Service_1.Service {
         return CronScheduler_1.CronScheduler.schedule(cron, job);
     }
 }
-CronService.serviceName = "cronService";
+CronService.serviceName = 'cronService';
 CronService.libTypings = `
     declare class CronService {
         /**
@@ -30,4 +30,3 @@ CronService.libTypings = `
     };
     `;
 exports.CronService = CronService;
-;

@@ -79,7 +79,7 @@ export abstract class BaseInterfaceBlock extends Block {
                 let connectorId = 'd_byzance_device_restart';
                 wantedInputsOrder.push(connectorId);
                 let c = null;
-                inputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                inputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                     if ((con.id === connectorId) && (con.type === Types.ConnectorType.DigitalInput)) {
                         c = con;
                     }
@@ -95,7 +95,7 @@ export abstract class BaseInterfaceBlock extends Block {
                 let connectorId = 'd_byzance_device_online';
                 wantedOutputsOrder.push(connectorId);
                 let c = null;
-                outputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                outputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                     if ((con.id === connectorId) && (con.type === Types.ConnectorType.DigitalOutput)) {
                         c = con;
                     }
@@ -132,7 +132,7 @@ export abstract class BaseInterfaceBlock extends Block {
                     let connectorId = 'd_' + name;
                     wantedInputsOrder.push(connectorId);
                     let c = null;
-                    inputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                    inputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                         if ((con.id === connectorId) && (con.type === Types.ConnectorType.DigitalInput)) {
                             c = con;
                         }
@@ -159,7 +159,7 @@ export abstract class BaseInterfaceBlock extends Block {
                     let connectorId = 'a_' + name;
                     wantedInputsOrder.push(connectorId);
                     let c = null;
-                    inputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                    inputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                         if ((con.id === connectorId) && (con.type === Types.ConnectorType.AnalogInput)) {
                             c = con;
                         }
@@ -189,7 +189,7 @@ export abstract class BaseInterfaceBlock extends Block {
                     let connectorId = 'm_' + name;
                     wantedInputsOrder.push(connectorId);
                     let c = null;
-                    inputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                    inputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                         if ((con.id === connectorId) && (con.type === Types.ConnectorType.MessageInput)) {
                             c = con;
                         }
@@ -223,7 +223,7 @@ export abstract class BaseInterfaceBlock extends Block {
                     let connectorId = 'd_' + name;
                     wantedOutputsOrder.push(connectorId);
                     let c = null;
-                    outputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                    outputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                         if ((con.id === connectorId) && (con.type === Types.ConnectorType.DigitalOutput)) {
                             c = con;
                         }
@@ -250,7 +250,7 @@ export abstract class BaseInterfaceBlock extends Block {
                     let connectorId = 'a_' + name;
                     wantedOutputsOrder.push(connectorId);
                     let c = null;
-                    outputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                    outputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                         if ((con.id === connectorId) && (con.type === Types.ConnectorType.AnalogOutput)) {
                             c = con;
                         }
@@ -280,7 +280,7 @@ export abstract class BaseInterfaceBlock extends Block {
                     let connectorId = 'm_' + name;
                     wantedOutputsOrder.push(connectorId);
                     let c = null;
-                    outputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+                    outputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
                         if ((con.id === connectorId) && (con.type === Types.ConnectorType.MessageOutput)) {
                             c = con;
                         }
@@ -300,20 +300,20 @@ export abstract class BaseInterfaceBlock extends Block {
             }
         }
 
-        inputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+        inputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
             this.removeInputConnector(con);
         });
 
-        outputsToDelete.forEach((con: Connector<boolean|number|Message|Object>) => {
+        outputsToDelete.forEach((con: Connector<boolean|number|object|Message>) => {
             this.removeOutputConnector(con);
         });
 
         // sort
 
-        this.inputConnectors.sort((ca: Core.Connector<boolean|number|Message|Object>, cb: Core.Connector<boolean|number|Message|Object>) => {
+        this.inputConnectors.sort((ca: Core.Connector<boolean|number|object|Message>, cb: Core.Connector<boolean|number|object|Message>) => {
             return wantedInputsOrder.indexOf(ca.id) - wantedInputsOrder.indexOf(cb.id);
         });
-        this.outputConnectors.sort((ca: Core.Connector<boolean|number|Message|Object>, cb: Core.Connector<boolean|number|Message|Object>) => {
+        this.outputConnectors.sort((ca: Core.Connector<boolean|number|object|Message>, cb: Core.Connector<boolean|number|object|Message>) => {
             return wantedOutputsOrder.indexOf(ca.id) - wantedOutputsOrder.indexOf(cb.id);
         });
 

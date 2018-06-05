@@ -3,17 +3,17 @@ import { IRenderer } from './Renderer';
 import { Message } from './Message';
 
 export class Connection {
-    public connectorA: Connector<boolean|number|Message|Object>;
-    public connectorB: Connector<boolean|number|Message|Object>;
+    public connectorA: Connector<boolean|number|object|Message>;
+    public connectorB: Connector<boolean|number|object|Message>;
 
     public renderer: IRenderer;
 
-    public constructor(connectorA: Connector<boolean|number|Message|Object>, connectorB: Connector<boolean|number|Message|Object>) {
+    public constructor(connectorA: Connector<boolean|number|object|Message>, connectorB: Connector<boolean|number|object|Message>) {
         this.connectorA = connectorA;
         this.connectorB = connectorB;
     }
 
-    public getOtherConnector(self: Connector<boolean|number|Message|Object>): Connector<boolean|number|Message|Object> {
+    public getOtherConnector(self: Connector<boolean|number|object|Message>): Connector<boolean|number|object|Message> {
         if (this.connectorA === self) {
             return this.connectorB;
         } else {
@@ -21,14 +21,12 @@ export class Connection {
         }
     }
 
-    public getInputConnector(): Connector<boolean|number|Message|Object> {
-        if (this.connectorA.isInput()) return this.connectorA;
-        return this.connectorB;
+    public getInputConnector(): Connector<boolean|number|object|Message> {
+        return this.connectorA.isInput() ? this.connectorA : this.connectorB;
     }
 
-    public getOutputConnector(): Connector<boolean|number|Message|Object> {
-        if (this.connectorA.isOutput()) return this.connectorA;
-        return this.connectorB;
+    public getOutputConnector(): Connector<boolean|number|object|Message> {
+        return this.connectorA.isOutput() ? this.connectorA : this.connectorB;
     }
 
     public disconnect() {

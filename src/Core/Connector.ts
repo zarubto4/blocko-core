@@ -7,13 +7,13 @@ import { HighlightType, IRenderer } from './Renderer';
 export enum ConnectorEventType { ValueChange, NewMessage, GroupInput }
 
 export interface ConnectorEvent {
-    connector: Connector<boolean|number|Message|Object>;
+    connector: Connector<boolean|number|object|Message>;
     eventType: ConnectorEventType;
-    value: boolean|number|Message|Object;
+    value: boolean|number|object|Message;
     interfaceId?: string;
 }
 
-export abstract class Connector<T extends boolean|number|Message|Object> {
+export abstract class Connector<T extends boolean|number|object|Message> {
 
     public block: Block;
     public renderer: IRenderer;
@@ -40,30 +40,34 @@ export abstract class Connector<T extends boolean|number|Message|Object> {
         this._value = value;
     }
 
-    public isOutput():boolean {
-        return this.type == Types.ConnectorType.DigitalOutput || this.type == Types.ConnectorType.AnalogOutput || this.type == Types.ConnectorType.MessageOutput || this.type == Types.ConnectorType.JsonOutput;
+    public isOutput(): boolean {
+        return this.type === Types.ConnectorType.DigitalOutput || this.type === Types.ConnectorType.AnalogOutput || this.type === Types.ConnectorType.MessageOutput || this.type === Types.ConnectorType.JsonOutput;
     }
 
-    public isInput():boolean {
-        return this.type == Types.ConnectorType.DigitalInput || this.type == Types.ConnectorType.AnalogInput || this.type == Types.ConnectorType.MessageInput || this.type == Types.ConnectorType.JsonInput;
+    public isInput(): boolean {
+        return this.type === Types.ConnectorType.DigitalInput || this.type === Types.ConnectorType.AnalogInput || this.type === Types.ConnectorType.MessageInput || this.type === Types.ConnectorType.JsonInput;
     }
 
-    public isAnalog():boolean {
-        return this.type == Types.ConnectorType.AnalogOutput || this.type == Types.ConnectorType.AnalogInput;
+    public isAnalog(): boolean {
+        return false;
     }
 
-    public isDigital():boolean {
-        return this.type == Types.ConnectorType.DigitalOutput || this.type == Types.ConnectorType.DigitalInput;
+    public isDigital(): boolean {
+        return false;
     }
 
-    public isMessage():boolean {
-        return this.type == Types.ConnectorType.MessageInput || this.type == Types.ConnectorType.MessageOutput || this.type == Types.ConnectorType.JsonInput || this.type == Types.ConnectorType.JsonOutput;
+    public isMessage(): boolean {
+        return false;
+    }
+
+    public isJson(): boolean {
+        return false;
     }
 
     // have this connector free space to connect another connection
-    public haveFreeSpace():boolean {
-        if (this.type == Types.ConnectorType.DigitalInput || this.type == Types.ConnectorType.AnalogInput) {
-            return (this.connections.length == 0);
+    public haveFreeSpace(): boolean {
+        if (this.type === Types.ConnectorType.DigitalInput || this.type === Types.ConnectorType.AnalogInput) {
+            return (this.connections.length === 0);
         }
         return true; // Other types have always free space
     }
@@ -91,7 +95,7 @@ export abstract class Connector<T extends boolean|number|Message|Object> {
     }
 
     public canConnect(target: Connector<T>): boolean {
-        if (this.block == target.block) { // cannot connect same block
+        if (this.block === target.block) { // cannot connect same block
             return false;
         }
 
@@ -107,7 +111,7 @@ export abstract class Connector<T extends boolean|number|Message|Object> {
             return false;
         }
 
-        if (!((this.isAnalog() && target.isAnalog()) || (this.isDigital() && target.isDigital()) || (this.isMessage() && target.isMessage()))) { // cannot connect incorrect types
+        if (!((this.isAnalog() && target.isAnalog()) || (this.isDigital() && target.isDigital()) || (this.isMessage() && target.isMessage()) || (this.isJson() && target.isJson()))) { // cannot connect incorrect types
             return false;
         }
 
@@ -129,6 +133,8 @@ export abstract class Connector<T extends boolean|number|Message|Object> {
             if (interfaceId) {
                 type = ConnectorEventType.GroupInput;
             }
+
+            this._value = value;
 
             this.block._outputEvent({
                 connector: this,
@@ -154,6 +160,8 @@ export abstract class Connector<T extends boolean|number|Message|Object> {
                 type = ConnectorEventType.GroupInput;
             }
 
+            this._value = value;
+
             this.block._inputEvent({
                 connector: this,
                 eventType: type,
@@ -173,6 +181,7 @@ export class DigitalConnector extends Connector<boolean> {
 
     public constructor(block: Block, id: string, name: string, type: Types.ConnectorType) {
         super(block, id, name, type);
+        this._value = false;
     }
 
     public _outputSetValue(value: boolean, interfaceId?: string): void {
@@ -186,6 +195,10 @@ export class DigitalConnector extends Connector<boolean> {
             super._inputSetValue(value, interfaceId);
         }
     }
+
+    public isDigital(): boolean {
+        return true;
+    }
 }
 
 /**
@@ -195,6 +208,7 @@ export class AnalogConnector extends Connector<number> {
 
     public constructor(block: Block, id: string, name: string, type: Types.ConnectorType) {
         super(block, id, name, type);
+        this._value = 0;
     }
 
     public _outputSetValue(value: number, interfaceId?: string): void {
@@ -208,6 +222,10 @@ export class AnalogConnector extends Connector<number> {
             super._inputSetValue(value, interfaceId);
         }
     }
+
+    public isAnalog(): boolean {
+        return true;
+    }
 }
 
 /**
@@ -220,11 +238,11 @@ export class MessageConnector extends Connector<Message> {
     public constructor(block: Block, id: string, name: string, type: Types.ConnectorType, argTypes: Types.Type[]) {
         super(block, id, name, type);
         this.argTypes = argTypes;
+        this._value = null;
     }
 
     public _outputSetValue(value: Message, interfaceId?: string): void {
         if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
-
             if (this.renderer) {
                 this.renderer.highlight(HighlightType.Message);
             }
@@ -233,15 +251,26 @@ export class MessageConnector extends Connector<Message> {
                     connection.renderer.highlight(HighlightType.Message);
                 }
             });
-
             super._outputSetValue(value, interfaceId);
         }
     }
 
     public _inputSetValue(value: Message, interfaceId?: string): void {
         if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
+            if (this.renderer) {
+                this.renderer.highlight(HighlightType.Message);
+            }
+            this.connections.forEach(connection => {
+                if (connection.renderer) {
+                    connection.renderer.highlight(HighlightType.Message);
+                }
+            });
             super._inputSetValue(value, interfaceId);
         }
+    }
+
+    public isMessage(): boolean {
+        return true;
     }
 
     public canConnect(target: Connector<Message>): boolean {
@@ -249,14 +278,10 @@ export class MessageConnector extends Connector<Message> {
         return super.canConnect(target) && MessageHelpers.isArgTypesEqual(this.argTypes, (<MessageConnector>target).argTypes)
     }
 
-    get lastMessage(): Message {
-        return this.value;
-    }
-
     get stringArgTypes(): string[] {
-        let out:string[] = [];
+        let out: string[] = [];
         if (this.argTypes) {
-            this.argTypes.forEach((argType:Types.Type) => {
+            this.argTypes.forEach((argType: Types.Type) => {
                 out.push(Types.TypeToStringTable[argType]);
             });
         }
@@ -267,21 +292,41 @@ export class MessageConnector extends Connector<Message> {
 /**
  * Json connector
  */
-export class JsonConnector extends Connector<Object> {
+export class JsonConnector extends Connector<object> {
 
     public constructor(block: Block, id: string, name: string, type: Types.ConnectorType) {
         super(block, id, name, type);
     }
 
-    public _outputSetValue(value: Object, interfaceId?: string): void {
+    public _outputSetValue(value: object, interfaceId?: string): void {
         if (typeof value === 'object') {
+            if (this.renderer) {
+                this.renderer.highlight(HighlightType.Message);
+            }
+            this.connections.forEach(connection => {
+                if (connection.renderer) {
+                    connection.renderer.highlight(HighlightType.Message);
+                }
+            });
             super._outputSetValue(value, interfaceId);
         }
     }
 
-    public _inputSetValue(value: Object, interfaceId?: string): void {
+    public _inputSetValue(value: object, interfaceId?: string): void {
         if (typeof value === 'object') {
+            if (this.renderer) {
+                this.renderer.highlight(HighlightType.Message);
+            }
+            this.connections.forEach(connection => {
+                if (connection.renderer) {
+                    connection.renderer.highlight(HighlightType.Message);
+                }
+            });
             super._inputSetValue(value, interfaceId);
         }
+    }
+
+    public isJson(): boolean {
+        return true;
     }
 }

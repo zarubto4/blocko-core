@@ -17,13 +17,13 @@ export declare class ConfigValueChangedEvent extends Events.Event {
     constructor(value: any);
 }
 export declare class MessageReceivedEvent extends Events.Event {
-    readonly message: MessageValue;
-    constructor(message: MessageValue);
+    readonly message: MessageValue | object;
+    constructor(message: MessageValue | object);
 }
 export declare class GroupInputEvent extends Events.Event {
-    readonly value: boolean | number | MessageValue;
+    readonly value: boolean | number | object | MessageValue;
     readonly interfaceId: string;
-    constructor(value: boolean | number | MessageValue, interfaceId: string);
+    constructor(value: boolean | number | object | MessageValue, interfaceId: string);
 }
 export declare class ReadyEvent extends Events.Event {
     constructor();
@@ -32,14 +32,14 @@ export declare class DestroyEvent extends Events.Event {
     constructor();
 }
 export declare abstract class BaseConnector<T> extends Events.Emitter<ValueChangedEvent | MessageReceivedEvent | GroupInputEvent> {
-    protected connector: Connector<boolean | number | Message | Object>;
+    protected connector: Connector<boolean | number | object | Message>;
     protected tsBlockLib: TSBlockLib;
-    constructor(connector: Connector<boolean | number | Message | Object>, tsBlockLib: TSBlockLib);
+    constructor(connector: Connector<boolean | number | object | Message>, tsBlockLib: TSBlockLib);
     readonly name: string;
     readonly displayName: string;
     readonly type: string;
     readonly direction: string;
-    readonly lastMessage: MessageValue;
+    readonly lastMessage: MessageValue | object;
     readonly messageTypes: string[];
 }
 export declare class InputConnector extends BaseConnector<boolean | number | MessageValue> {
@@ -47,8 +47,8 @@ export declare class InputConnector extends BaseConnector<boolean | number | Mes
 }
 export declare class OutputConnector extends BaseConnector<boolean | number | MessageValue> {
     value: boolean | number;
-    send(message: Array<boolean | number | string>): void;
-    groupOutput(value: boolean | number | Array<boolean | number | string>, interfaceId: string): void;
+    send(message: Array<boolean | number | string> | object): void;
+    groupOutput(value: boolean | number | object | Array<boolean | number | string>, interfaceId: string): void;
 }
 export declare class ConfigPropertyWrapper extends Events.Emitter<ConfigValueChangedEvent> {
     protected configProperty: ConfigProperty;
@@ -86,7 +86,7 @@ export declare class TSBlockLib implements Library {
     private argTypesValidator(argTypes, method);
     private getInputOutputType(type, direction, method);
     private getConfigPropertyType(type, method);
-    sendValueToOutputConnector(connector: Connector<boolean | number | Message | Object>, value: boolean | number | any[], interfaceId?: string): void;
+    sendValueToOutputConnector(connector: Connector<boolean | number | object | Message>, value: boolean | number | object | Array<boolean | number | string>, interfaceId?: string): void;
     inputEvent(event: ConnectorEvent): void;
     configChanged(): void;
     callReady(): void;

@@ -1,15 +1,14 @@
-import * as Core from '../../Core/index';
 import { Types } from 'common-lib';
-import { ConnectorEvent } from '../../Core';
+import { Block, ConfigProperty, Connector, ConnectorEvent, DigitalConnector } from '../../Core';
 import { ConnectorEventType } from '../../Core/Connector';
 import { Message } from '../../Core/Message';
 
-export class Xor extends Core.Block {
+export class Xor extends Block {
 
-    public connectorOutput: Core.Connector<boolean|number|Message|Object>;
+    public connectorOutput: DigitalConnector;
 
-    protected confInputsCount: Core.ConfigProperty;
-    protected confNegate: Core.ConfigProperty;
+    protected confInputsCount: ConfigProperty;
+    protected confNegate: ConfigProperty;
 
     public constructor(id: string) {
         super(id, 'xor', 'xor');
@@ -21,7 +20,7 @@ export class Xor extends Core.Block {
         });
         this.confNegate = this.addConfigProperty(Types.ConfigPropertyType.Boolean, 'negate', 'Negate', false);
 
-        this.connectorOutput = this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
+        this.connectorOutput = <DigitalConnector>this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
         this.configChanged();
     }
 
@@ -60,7 +59,7 @@ export class Xor extends Core.Block {
 
         let trueValuesCount = 0;
 
-        this.inputConnectors.forEach((con: Core.Connector<boolean|number|Message|Object>) => {
+        this.inputConnectors.forEach((con: Connector<boolean|number|object|Message>) => {
             if (con.value) {
                 trueValuesCount++;
             }
@@ -75,7 +74,7 @@ export class Xor extends Core.Block {
         let event: ConnectorEvent = {
             connector: this.connectorOutput,
             eventType:  ConnectorEventType.ValueChange,
-            value: out ? 1 : 0
+            value: out
         };
 
         this.sendValueToOutputConnector(event);

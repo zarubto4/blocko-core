@@ -19,7 +19,7 @@ class Not extends Core.Block {
         let event = {
             connector: this.connectorOutput,
             eventType: Connector_1.ConnectorEventType.ValueChange,
-            value: this.connectorInput.value === 0 ? 1 : 0
+            value: !this.connectorInput.value
         };
         this.sendValueToOutputConnector(event);
     }

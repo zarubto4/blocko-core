@@ -179,8 +179,8 @@ export class TSBlock extends Core.Block {
         }
     };
 
-    private storedInputs:{ name: string, type: number, otherConnector: Connector<boolean|number|Message|Object>, argTypes: string }[] = [];
-    private storedOutputs:{ name: string, type: number, otherConnector: Connector<boolean|number|Message|Object>, argTypes: string }[] = [];
+    private storedInputs: { name: string, type: number, otherConnector: Connector<boolean|number|object|Message>, argTypes: string }[] = [];
+    private storedOutputs: { name: string, type: number, otherConnector: Connector<boolean|number|object|Message>, argTypes: string }[] = [];
 
     private storeConnections() {
 

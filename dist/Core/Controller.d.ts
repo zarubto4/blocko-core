@@ -63,9 +63,9 @@ export declare class Controller {
     private factoryConnectionRendererCallback;
     registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IRenderer): void;
     private inputConnectorEventCallbacks;
-    registerInputConnectorEventCallback(callback: (block: Block, connector: Connector<boolean | number | Message | Object>, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
+    registerInputConnectorEventCallback(callback: (block: Block, connector: Connector<boolean | number | object | Message>, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private outputConnectorEventCallbacks;
-    registerOutputConnectorEventCallback(callback: (block: Block, connector: Connector<boolean | number | Message | Object>, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
+    registerOutputConnectorEventCallback(callback: (block: Block, connector: Connector<boolean | number | object | Message>, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private externalInputConnectorEventCallbacks;
     registerExternalInputConnectorEventCallback(callback: (block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
     private externalOutputConnectorEventCallbacks;
@@ -83,6 +83,7 @@ export declare class Controller {
     setDigitalValue(targetId: string, groupIds: string[], name: string, value: boolean): void;
     setAnalogValue(targetId: string, groupIds: string[], name: string, value: number): void;
     setMessageValue(targetId: string, groupIds: string[], name: string, message: Message): void;
+    setWebHookValue(apiKey: string, message: object): void;
     setInputConnectorValue(blockId: string, connectorName: string, value: boolean | number | Message): void;
     setOutputConnectorValue(blockId: string, connectorName: string, value: boolean | number | Message): void;
     getDigitalInputNames(): Array<any>;
