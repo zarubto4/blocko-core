@@ -390,20 +390,28 @@ export class Controller {
         });
     }
 
-    public setWebHookValue(apiKey: string, message: object) {
+    /**
+     * Sends the message to the output of the WebHook block.
+     * @param {string} blockId of the WebHook block
+     * @param {object} message to send
+     * @returns {boolean} true if the hook was dispatched, false if some error occurred
+     */
+    public setWebHookValue(blockId: string, message: object): boolean {
         if (typeof message === 'object' && !Array.isArray(message)) {
             let webHookBlock: WebHook = <WebHook>this.blocks.find((b) => {
-                return b instanceof WebHook && b.apiKey === apiKey;
+                return b instanceof WebHook && b.id === blockId;
             });
 
             if (webHookBlock) {
                 webHookBlock.getJsonOutput()._outputSetValue(message);
+                return true;
             } else {
-                console.warn('Controller::setWebHookValue - cannot find any WebHook block with apiKey:', apiKey);
+                console.warn('Controller::setWebHookValue - cannot find any WebHook block with id:', blockId);
             }
         } else {
             console.error('Controller::setWebHookValue - attempt to set wrong value on WebHook, object is required, but got \'' + Array.isArray(message) ? 'array' : typeof message + '\'');
         }
+        return false;
     }
 
 //  For remote view controlling
@@ -521,7 +529,19 @@ export class Controller {
         return ret;
     }
 
-    //  error state
+    // webHook API
+
+    public getWebHooks(): Array<string> {
+        let webHooks: Array<string> = [];
+        this.blocks.forEach((b) => {
+            if (b instanceof WebHook) {
+                webHooks.push(b.id);
+            }
+        });
+        return webHooks;
+    }
+
+    // error state
     public setError(blockId: string, enabled: boolean) {
         this.blocks.forEach(block => {
             if (block.id === blockId) {

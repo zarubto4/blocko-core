@@ -83,7 +83,7 @@ export declare class Controller {
     setDigitalValue(targetId: string, groupIds: string[], name: string, value: boolean): void;
     setAnalogValue(targetId: string, groupIds: string[], name: string, value: number): void;
     setMessageValue(targetId: string, groupIds: string[], name: string, message: Message): void;
-    setWebHookValue(apiKey: string, message: object): void;
+    setWebHookValue(blockId: string, message: object): boolean;
     setInputConnectorValue(blockId: string, connectorName: string, value: boolean | number | Message): void;
     setOutputConnectorValue(blockId: string, connectorName: string, value: boolean | number | Message): void;
     getDigitalInputNames(): Array<any>;
@@ -92,6 +92,7 @@ export declare class Controller {
     getDigitalOutputNames(): Array<string>;
     getAnalogOutputNames(): Array<string>;
     getMessageOutputNames(): Array<string>;
+    getWebHooks(): Array<string>;
     setError(blockId: string, enabled: boolean): void;
     addInterface(iface: BlockoTargetInterface): void;
     bindInterface(block: BaseInterfaceBlock, targetId: string, group?: boolean): BoundInterface;
