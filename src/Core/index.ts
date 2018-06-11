@@ -8,5 +8,5 @@ export * from './Controller';
 export * from './ExternalConnector';
 export * from './Message';
 export * from './RendererHelper';
-export * from './Renderer';
+export * from './Events';
 export * from './Fetch';

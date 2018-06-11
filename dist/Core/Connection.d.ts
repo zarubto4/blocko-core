@@ -1,10 +1,10 @@
 import { Connector } from './Connector';
-import { IRenderer } from './Renderer';
 import { Message } from './Message';
-export declare class Connection {
+import { DestroyEvent, IOEvent } from './Events';
+import { Events } from 'common-lib';
+export declare class Connection extends Events.Emitter<IOEvent | DestroyEvent> {
     connectorA: Connector<boolean | number | object | Message>;
     connectorB: Connector<boolean | number | object | Message>;
-    renderer: IRenderer;
     constructor(connectorA: Connector<boolean | number | object | Message>, connectorB: Connector<boolean | number | object | Message>);
     getOtherConnector(self: Connector<boolean | number | object | Message>): Connector<boolean | number | object | Message>;
     getInputConnector(): Connector<boolean | number | object | Message>;

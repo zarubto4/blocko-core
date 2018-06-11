@@ -11,8 +11,11 @@ export class Xor extends Block {
     protected confNegate: ConfigProperty;
 
     public constructor(id: string) {
-        super(id, 'xor', 'xor');
+        super(id, 'xor');
+        this.name = 'XOR';
+    }
 
+    public initialize(): void {
         this.confInputsCount = this.addConfigProperty(Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {
             range: true,
             min: 1,
@@ -22,14 +25,7 @@ export class Xor extends Block {
 
         this.connectorOutput = <DigitalConnector>this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
         this.configChanged();
-    }
-
-    protected afterControllerSet() {
         this.inputsChanged();
-    }
-
-    public rendererGetDisplayName(): string {
-        return 'XOR';
     }
 
     public configChanged(): void {
@@ -50,9 +46,7 @@ export class Xor extends Block {
         }
         this.inputsChanged();
 
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
     }
 
     public inputsChanged(): void {

@@ -1,14 +1,14 @@
 import { Connector } from './Connector';
-import { IRenderer } from './Renderer';
 import { Message } from './Message';
+import { DestroyEvent, IOEvent } from './Events';
+import { Events } from 'common-lib';
 
-export class Connection {
+export class Connection extends Events.Emitter<IOEvent|DestroyEvent> {
     public connectorA: Connector<boolean|number|object|Message>;
     public connectorB: Connector<boolean|number|object|Message>;
 
-    public renderer: IRenderer;
-
     public constructor(connectorA: Connector<boolean|number|object|Message>, connectorB: Connector<boolean|number|object|Message>) {
+        super();
         this.connectorA = connectorA;
         this.connectorB = connectorB;
     }
@@ -40,8 +40,6 @@ export class Connection {
             this.connectorB.block.controller._removeConnection(this);
         }
 
-        if (this.renderer) {
-            this.renderer.destroy();
-        }
+        this.emit(this, new DestroyEvent());
     }
 }

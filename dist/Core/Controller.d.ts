@@ -1,4 +1,4 @@
-import { IBlockRenderer, Block } from './Block';
+import { Block } from './Block';
 import { Connection } from './Connection';
 import { BlockClass, BlockRegistration } from './BlockRegistration';
 import { Connector, ConnectorEventType } from './Connector';
@@ -8,13 +8,9 @@ import { ExternalConnector } from './ExternalConnector';
 import { BlockoTargetInterface } from '../Blocks/InterfaceBlock';
 import { Message, MessageJson } from './Message';
 import { BaseInterfaceBlock } from '../Blocks';
-import { IRenderer } from './Renderer';
-export interface IRendererFactory {
-    factoryBlockRenderer(block: Block): IBlockRenderer;
-    factoryConnectionRenderer(connection: Connection): IRenderer;
-}
+import { Events } from 'common-lib';
+import { BlockAddedEvent, BlockRemovedEvent, ConnectionAddedEvent, ConnectionRemovedEvent } from './Events';
 export interface BlockoInstanceConfig {
-    renderController?: IRendererFactory;
     dbConnectionString?: string;
     inputEnabled?: boolean;
     outputEnabled?: boolean;
@@ -25,11 +21,10 @@ export interface BoundInterface {
     interfaceId: string;
     group?: boolean;
 }
-export declare class Controller {
+export declare class Controller extends Events.Emitter<BlockAddedEvent | BlockRemovedEvent | ConnectionAddedEvent | ConnectionRemovedEvent> {
     blocksRegister: Array<BlockRegistration>;
     blocks: Array<Block>;
     connections: Array<Connection>;
-    rendererFactory: IRendererFactory;
     safeRun: boolean;
     gui: boolean;
     configuration: BlockoInstanceConfig;
@@ -39,7 +34,7 @@ export declare class Controller {
     readonly servicesHandler: ServicesHandler;
     registerBlocks(blocksClass: Array<BlockClass>): void;
     registerBlock(blockClass: BlockClass): void;
-    getBlockClassByVisualType(visualType: string): BlockClass;
+    getBlockClassByType(type: string): BlockClass;
     private blockAddedCallbacks;
     registerBlockAddedCallback(callback: (block: Block) => void): void;
     addBlock(block: Block): void;
@@ -58,10 +53,6 @@ export declare class Controller {
     getFreeBlockId(): string;
     private interfaceIndex;
     getInterfaceBlockId(): string;
-    private factoryBlockRendererCallback;
-    registerFactoryBlockRendererCallback(callback: (block: Block) => IBlockRenderer): void;
-    private factoryConnectionRendererCallback;
-    registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IRenderer): void;
     private inputConnectorEventCallbacks;
     registerInputConnectorEventCallback(callback: (block: Block, connector: Connector<boolean | number | object | Message>, eventType: ConnectorEventType, value: boolean | number | MessageJson) => void): void;
     private outputConnectorEventCallbacks;
@@ -101,7 +92,7 @@ export declare class Controller {
     registerHardwareRestartCallback(callback: (targetId: string) => void): void;
     callHardwareRestartCallback(targetId: string): void;
     setHardwareNetworkStatus(targetId: string, groupIds: Array<string>, online: boolean): void;
-    getDataJson(): string;
-    setDataJson(jsonString: string): string;
+    getDataJson(): object;
+    setDataJson(data: object): string;
     isDeployable(): boolean;
 }

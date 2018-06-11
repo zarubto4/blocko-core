@@ -9,30 +9,13 @@ export class AnalogInput extends Block {
     protected analogValue: ConfigProperty;
 
     public constructor(id: string) {
-        super(id, 'analogInput', 'analogInput');
+        super(id, 'analogInput');
+        this.name = 'A-IN';
+    }
+
+    public initialize(): void {
         this.connectorOutput = <AnalogConnector>this.addOutputConnector('output', Types.ConnectorType.AnalogOutput, 'Output');
-
         this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1, input: true })
-    }
-
-    public rendererGetDisplayName(): string {
-        return 'A-IN';
-    }
-
-    public onMouseDrag(e: {dx: number, dy: number}): boolean {
-        if (this.controller) {
-            this.currentValue -= e.dy * 0.1;
-            let event: ConnectorEvent = {
-                connector: this.connectorOutput,
-                eventType:  ConnectorEventType.ValueChange,
-                value: this.currentValue
-            };
-            this.sendValueToOutputConnector(event);
-            if (this.renderer) {
-                // this.renderer.refreshDisplayName();
-            }
-        }
-        return true;
     }
 
     public configChanged(): void {

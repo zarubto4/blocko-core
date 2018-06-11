@@ -46,10 +46,13 @@ export declare abstract class BaseInterfaceBlock extends Block {
     private _interfaceType;
     private _deviceInputsCount;
     private _deviceOutputsCount;
-    private _interface;
+    protected _interface: BlockoTargetInterface;
     protected restartDeviceInput: DigitalConnector;
     protected networkStatusOutput: DigitalConnector;
-    constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType);
+    constructor(id: string, type: string, interfaceType: InterfaceBlockType);
+    initialize(): void;
+    getDataJson(): object;
+    setDataJson(data: object): void;
     setInterface(iface: BlockoTargetInterface): void;
     setTargetId(targetId: string): void;
     readonly interface: BlockoTargetInterface;

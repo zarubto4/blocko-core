@@ -1,8 +1,8 @@
 import { Message, MessageHelpers } from './Message';
 import { Block } from './Block';
 import { Connection } from './Connection';
-import { Types } from 'common-lib';
-import { HighlightType, IRenderer } from './Renderer';
+import { Types, Events } from 'common-lib';
+import { IOEvent } from './Events';
 
 export enum ConnectorEventType { ValueChange, NewMessage, GroupInput }
 
@@ -13,10 +13,9 @@ export interface ConnectorEvent {
     interfaceId?: string;
 }
 
-export abstract class Connector<T extends boolean|number|object|Message> {
+export abstract class Connector<T extends boolean|number|object|Message> extends Events.Emitter<IOEvent> {
 
     public block: Block;
-    public renderer: IRenderer;
     public connections: Array<Connection>;
 
     public id: string;
@@ -25,6 +24,7 @@ export abstract class Connector<T extends boolean|number|object|Message> {
     protected _value: T;
 
     public constructor(block: Block, id: string, name: string, type: Types.ConnectorType) {
+        super();
         this.connections = [];
         this.block = block;
         this.id = id;
@@ -136,6 +136,12 @@ export abstract class Connector<T extends boolean|number|object|Message> {
 
             this._value = value;
 
+            let ioEvent = new IOEvent();
+
+            this.emit(this, ioEvent);
+
+            this.connections.forEach(connection => connection.emit(connection, ioEvent));
+
             this.block._outputEvent({
                 connector: this,
                 eventType: type,
@@ -161,6 +167,8 @@ export abstract class Connector<T extends boolean|number|object|Message> {
             }
 
             this._value = value;
+
+            this.emit(this, new IOEvent());
 
             this.block._inputEvent({
                 connector: this,
@@ -243,28 +251,12 @@ export class MessageConnector extends Connector<Message> {
 
     public _outputSetValue(value: Message, interfaceId?: string): void {
         if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
-            if (this.renderer) {
-                this.renderer.highlight(HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(HighlightType.Message);
-                }
-            });
             super._outputSetValue(value, interfaceId);
         }
     }
 
     public _inputSetValue(value: Message, interfaceId?: string): void {
         if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
-            if (this.renderer) {
-                this.renderer.highlight(HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(HighlightType.Message);
-                }
-            });
             super._inputSetValue(value, interfaceId);
         }
     }
@@ -278,8 +270,8 @@ export class MessageConnector extends Connector<Message> {
         return super.canConnect(target) && MessageHelpers.isArgTypesEqual(this.argTypes, (<MessageConnector>target).argTypes)
     }
 
-    get stringArgTypes(): string[] {
-        let out: string[] = [];
+    get stringArgTypes(): Array<string> {
+        let out: Array<string> = [];
         if (this.argTypes) {
             this.argTypes.forEach((argType: Types.Type) => {
                 out.push(Types.TypeToStringTable[argType]);
@@ -300,28 +292,12 @@ export class JsonConnector extends Connector<object> {
 
     public _outputSetValue(value: object, interfaceId?: string): void {
         if (typeof value === 'object') {
-            if (this.renderer) {
-                this.renderer.highlight(HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(HighlightType.Message);
-                }
-            });
             super._outputSetValue(value, interfaceId);
         }
     }
 
     public _inputSetValue(value: object, interfaceId?: string): void {
         if (typeof value === 'object') {
-            if (this.renderer) {
-                this.renderer.highlight(HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(HighlightType.Message);
-                }
-            });
             super._inputSetValue(value, interfaceId);
         }
     }

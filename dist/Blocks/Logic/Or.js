@@ -5,7 +5,10 @@ const Core_1 = require("../../Core");
 const Connector_1 = require("../../Core/Connector");
 class Or extends Core_1.Block {
     constructor(id) {
-        super(id, 'or', 'or');
+        super(id, 'or');
+        this.name = 'OR';
+    }
+    initialize() {
         this.confInputsCount = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {
             range: true,
             min: 1,
@@ -14,12 +17,7 @@ class Or extends Core_1.Block {
         this.confNegate = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Boolean, 'negate', 'Negate', false);
         this.connectorOutput = this.addOutputConnector('output', common_lib_1.Types.ConnectorType.DigitalOutput);
         this.configChanged();
-    }
-    afterControllerSet() {
         this.inputsChanged();
-    }
-    rendererGetDisplayName() {
-        return 'OR';
     }
     configChanged() {
         let wantedCount = this.confInputsCount.value;
@@ -39,9 +37,6 @@ class Or extends Core_1.Block {
             }
         }
         this.inputsChanged();
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
     }
     inputsChanged() {
         let out = false;

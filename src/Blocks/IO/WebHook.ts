@@ -6,8 +6,11 @@ export class WebHook extends Block {
     protected output: JsonConnector;
 
     constructor() {
-        super(null, 'webHook', 'webHook');
+        super(null, 'webHook');
+        this.name = 'WebHook';
+    }
 
+    public initialize(): void {
         this.output = <JsonConnector>this.addOutputConnector('output', Types.ConnectorType.JsonOutput, 'JSON Output');
     }
 

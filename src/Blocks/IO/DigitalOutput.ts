@@ -5,14 +5,7 @@ export class DigitalOutput extends Block {
 
     public connectorInput: DigitalConnector;
 
-    public constructor(id: string, visibleType: string) {
-        super(id, 'digitalOutput', visibleType);
+    public initialize(): void {
         this.connectorInput = <DigitalConnector>this.addInputConnector('input', Types.ConnectorType.DigitalInput);
-    }
-
-    protected inputChanged(event: ConnectorEvent): void {
-        if (this.renderer) {
-            // this.renderer.refreshDisplayName();
-        }
     }
 }

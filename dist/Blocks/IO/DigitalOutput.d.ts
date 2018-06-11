@@ -1,6 +1,5 @@
-import { Block, ConnectorEvent, DigitalConnector } from '../../Core';
+import { Block, DigitalConnector } from '../../Core';
 export declare class DigitalOutput extends Block {
     connectorInput: DigitalConnector;
-    constructor(id: string, visibleType: string);
-    protected inputChanged(event: ConnectorEvent): void;
+    initialize(): void;
 }

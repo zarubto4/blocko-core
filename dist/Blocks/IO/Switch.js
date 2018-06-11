@@ -6,25 +6,11 @@ const common_lib_1 = require("common-lib");
 class Switch extends DigitalInput_1.DigitalInput {
     constructor(id) {
         super(id, 'switch');
+        this.name = 'Switch';
+    }
+    initialize() {
+        super.initialize();
         this.switchValue = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Boolean, 'switchValue', 'Switch value', false, { controlPanel: true });
-    }
-    rendererGetDisplayName() {
-        return 'Switch';
-    }
-    onMouseClick() {
-        if (this.controller) {
-            let event = {
-                connector: this.connectorOutput,
-                eventType: Core_1.ConnectorEventType.ValueChange,
-                value: !this.connectorOutput.value
-            };
-            this.sendValueToOutputConnector(event);
-            if (this.renderer) {
-            }
-        }
-    }
-    onMouseDrag(event) {
-        return true;
     }
     configChanged() {
         if (this.controller) {

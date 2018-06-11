@@ -10,13 +10,35 @@ var InterfaceBlockType;
     InterfaceBlockType[InterfaceBlockType["Outputs"] = 1] = "Outputs";
 })(InterfaceBlockType = exports.InterfaceBlockType || (exports.InterfaceBlockType = {}));
 class BaseInterfaceBlock extends Core_1.Block {
-    constructor(id, type, visualType, interfaceType) {
-        super(id, type, visualType);
+    constructor(id, type, interfaceType) {
+        super(id, type);
         this._displayName = '';
         this._group = false;
         this._deviceInputsCount = 0;
         this._deviceOutputsCount = 0;
         this._interfaceType = interfaceType;
+    }
+    initialize() {
+        this.setInterface(this._interface);
+    }
+    getDataJson() {
+        let data = super.getDataJson();
+        data['interface'] = this.interface;
+        data['targetId'] = this.targetId;
+        data['group'] = this.group;
+        return data;
+    }
+    setDataJson(data) {
+        super.setDataJson(data);
+        if (data['interface']) {
+            this._interface = data['interface'];
+            if (data['targetId']) {
+                this._targetId = data['targetId'];
+            }
+            if (data['group']) {
+                this._group = data['group'];
+            }
+        }
     }
     setInterface(iface) {
         let wantedInputsOrder = [];
@@ -252,9 +274,6 @@ class BaseInterfaceBlock extends Core_1.Block {
         this.outputConnectors.sort((ca, cb) => {
             return wantedOutputsOrder.indexOf(ca.id) - wantedOutputsOrder.indexOf(cb.id);
         });
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
     }
     setTargetId(targetId) {
         this._targetId = targetId;
@@ -365,18 +384,18 @@ class BaseInterfaceBlock extends Core_1.Block {
 exports.BaseInterfaceBlock = BaseInterfaceBlock;
 class InputsInterfaceBlock extends BaseInterfaceBlock {
     constructor(id, iface = null) {
-        super(id, 'inputsInterfaceBlock', 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
+        super(id, 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }
 exports.InputsInterfaceBlock = InputsInterfaceBlock;
 class OutputsInterfaceBlock extends BaseInterfaceBlock {
     constructor(id, iface = null) {
-        super(id, 'outputsInterfaceBlock', 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
+        super(id, 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }

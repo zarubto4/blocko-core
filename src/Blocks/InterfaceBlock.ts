@@ -45,14 +45,39 @@ export abstract class BaseInterfaceBlock extends Block {
     private _deviceInputsCount: number = 0;
     private _deviceOutputsCount: number = 0;
 
-    private _interface: BlockoTargetInterface;
+    protected _interface: BlockoTargetInterface;
 
     protected restartDeviceInput: DigitalConnector;
     protected networkStatusOutput: DigitalConnector;
 
-    public constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType) {
-        super(id, type, visualType);
+    public constructor(id: string, type: string, interfaceType: InterfaceBlockType) {
+        super(id, type);
         this._interfaceType = interfaceType;
+    }
+
+    public initialize(): void {
+        this.setInterface(this._interface);
+    }
+
+    public getDataJson(): object {
+        let data: object = super.getDataJson();
+        data['interface'] = this.interface;
+        data['targetId'] = this.targetId;
+        data['group'] = this.group;
+        return data;
+    }
+
+    public setDataJson(data: object): void {
+        super.setDataJson(data);
+        if (data['interface']) {
+            this._interface = data['interface'];
+            if (data['targetId']) {
+                this._targetId = data['targetId'];
+            }
+            if (data['group']) {
+                this._group = data['group'];
+            }
+        }
     }
 
     public setInterface(iface: BlockoTargetInterface): void {
@@ -317,9 +342,7 @@ export abstract class BaseInterfaceBlock extends Block {
             return wantedOutputsOrder.indexOf(ca.id) - wantedOutputsOrder.indexOf(cb.id);
         });
 
-        if (this.renderer) {
-            this.renderer.refresh()
-        }
+        // TODO render refresh?
     }
 
     public setTargetId(targetId: string): void {
@@ -460,18 +483,18 @@ export abstract class BaseInterfaceBlock extends Block {
 
 export class InputsInterfaceBlock extends BaseInterfaceBlock {
     public constructor(id: string, iface: any = null) {
-        super(id, 'inputsInterfaceBlock', 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
+        super(id, 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }
 
 export class OutputsInterfaceBlock extends BaseInterfaceBlock {
     public constructor(id: string, iface: any = null) {
-        super(id, 'outputsInterfaceBlock', 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
+        super(id, 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }

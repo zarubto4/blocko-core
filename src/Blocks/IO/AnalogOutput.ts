@@ -7,13 +7,13 @@ export class AnalogOutput extends Block {
     protected analogValue: ConfigProperty;
 
     public constructor(id: string) {
-        super(id, 'analogOutput', 'analogOutput');
-        this.connectorInput = <AnalogConnector>this.addInputConnector('input', Types.ConnectorType.AnalogInput, 'Input');
-        this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1 })
+        super(id, 'analogOutput');
+        this.name = 'A-OUT'
     }
 
-    public rendererGetDisplayName(): string {
-        return 'A-OUT'
+    public initialize(): void {
+        this.connectorInput = <AnalogConnector>this.addInputConnector('input', Types.ConnectorType.AnalogInput, 'Input');
+        this.analogValue = this.addConfigProperty(Types.ConfigPropertyType.Float, 'analogValue', 'Analog value', 0.0, { controlPanel: true, precision: 1 })
     }
 
     protected inputChanged(event: ConnectorEvent): void {

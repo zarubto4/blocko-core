@@ -8,17 +8,14 @@ export class Not extends Core.Block {
     public connectorOutput: DigitalConnector;
 
     public constructor(id: string) {
-        super(id, 'not', 'not');
+        super(id, 'not');
+        this.name = 'NOT';
+    }
+
+    public initialize(): void {
         this.connectorInput = <DigitalConnector>this.addInputConnector('input', Types.ConnectorType.DigitalInput);
         this.connectorOutput = <DigitalConnector>this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
-    }
-
-    protected afterControllerSet() {
         this.inputsChanged();
-    }
-
-    public rendererGetDisplayName(): string {
-        return 'NOT';
     }
 
     public inputsChanged(): void {

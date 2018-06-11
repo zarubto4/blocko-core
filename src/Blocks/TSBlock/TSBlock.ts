@@ -4,11 +4,11 @@ import { Machine, TypeScriptCodeLayer, SafeCodeLayer } from 'script-engine';
 import { TSBlockLib } from '../Libraries/TSBlockLib';
 import { ServiceLib } from '../Libraries/ServiceLib';
 import { FetchLib } from '../Libraries/FetchLib';
-
 import { Libs } from 'common-lib';
 import { ConnectorEvent, MessageConnector } from '../../Core';
 import { DatabaseLib } from '../Libraries/DatabaseLib';
 import { Message } from '../../Core/Message';
+import { RuntimeErrorEvent } from '../../Core/Events';
 
 declare let ts;
 declare const require;
@@ -26,28 +26,77 @@ export class TSBlock extends Core.Block {
     private _fetchLib: FetchLib = null;
     private _dbLib: DatabaseLib = null;
 
-    protected _displayName: string = '';
-    protected _backgroundColor: string = '';
-    protected _description: string = null;
+    protected _blockId: string = null; // Id assigned from tyrion
+    protected _versionId: string = null; // Id assigned from tyrion
 
     public canAddsIO = false;
 
-    protected _designJson: string;
-
-    public constructor(id: string, tsCode?: string, designJson?: string) {
-        super(id, 'tsBlock', 'tsBlock');
+    public constructor(id: string, tsCode?: string) {
+        super(id, 'tsBlock');
         this._codeBlock = true;
 
         if (!tsCode) {
             tsCode = '';
             this._tsCodeError = true;
         }
-        if (!designJson) {
-            designJson = '{}';
-        }
 
         this._tsCode = tsCode;
-        this.setDesignJson(designJson);
+    }
+
+    public initialize(): void {
+        if (this._tsCode) {
+            this.setCode(this._tsCode);
+        }
+    }
+
+    public getDataJson(): object {
+        let data: object = super.getDataJson();
+        data['code'] = this._tsCode;
+        data['block_id'] = this._blockId;
+        data['version_id'] = this._versionId;
+        return data;
+    }
+
+    public setDataJson(data: object): void {
+        super.setDataJson(data);
+
+        // For backwards compatibility
+        if (data['designJson']) {
+            let old: object = data['designJson'];
+
+            if (old['displayName']) {
+                this.name = old['displayName'];
+            } else {
+                this.name = 'Unknown';
+            }
+
+            if (old['description']) {
+                this.description = old['description'];
+            }
+
+            if (old['block_id']) {
+                this._blockId = old['block_id'];
+            }
+
+            if (old['version_id']) {
+                this._versionId = old['version_id'];
+            } else if (old['block_version']) {
+                this._versionId = old['block_version'];
+            }
+
+        } else {
+            if (data['code']) {
+                this._tsCode = data['code'];
+            }
+
+            if (data['block_id']) {
+                this._blockId = data['block_id'];
+            }
+
+            if (data['version_id']) {
+                this._versionId = data['version_id'];
+            }
+        }
     }
 
     protected afterControllerSet() {
@@ -66,10 +115,6 @@ export class TSBlock extends Core.Block {
         this._machine.include(this._fetchLib);
         this._machine.include(this._dbLib);
         this._machine.include(this._serviceLib);
-
-        if (this._tsCode) {
-            this.setCode(this._tsCode); // TODO:
-        }
     }
 
     protected onLog = (type: string, message: string) => {
@@ -86,57 +131,16 @@ export class TSBlock extends Core.Block {
         return this._tsCodeError;
     }
 
-    get designJson(): string {
-        return JSON.stringify({
-            displayName: this._displayName,
-            backgroundColor: this._backgroundColor,
-            description: this._description,
-            version_id: this._versionId,
-            block_id: this._blockId
-        });
+    public get blockId(): string {
+        return this._blockId;
     }
 
-    public setDesignJson(designJson: string) {
-        let dj = null;
-        try {
-            dj = JSON.parse(designJson);
-        } catch (e) {
-            // TODO: maybe do something
-        }
+    public get versionId(): string {
+        return this._versionId;
+    }
 
-        if (dj) {
-            if (dj['backgroundColor']) {
-                this._backgroundColor = dj['backgroundColor']
-            } else {
-                this._backgroundColor = '#36c6d3';
-            }
-            if (dj['displayName']) {
-                this._displayName = dj['displayName'];
-            } else {
-                this._displayName = 'fa-question-circle-o';
-            }
-            if (dj['description']) {
-                this._description = dj['description'];
-            } else {
-                this._description = null;
-            }
-            if (dj['version_id']) {
-                this._versionId = dj['version_id'];
-            } else if (dj['block_version']) {
-                this._versionId = dj['block_version'];
-            } else {
-                this._versionId = null;
-            }
-            if (dj['block_id']) {
-                this._blockId = dj['block_id'];
-            } else {
-                this._blockId = null;
-            }
-        }
-
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+    public set versionId(version: string) {
+        this._versionId = version;
     }
 
     public remove(): void {
@@ -171,9 +175,7 @@ export class TSBlock extends Core.Block {
 
     protected runError = (e) => {
         this._tsCodeError = true;
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        this.emit(this, new RuntimeErrorEvent());
         if (this.controller) {
             this.controller._emitError(this, e);
         }
@@ -249,9 +251,7 @@ export class TSBlock extends Core.Block {
         this.cleanBlock();
 
         this._tsCodeError = false;
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
 
         let transpileModule = null;
 
@@ -285,17 +285,12 @@ export class TSBlock extends Core.Block {
         } else {
             this._tsBlockLib.callReady();
 
-            if (this.renderer) {
-                this.renderer.refresh();
-            }
+            // TODO render refresh?
 
             this.restoreConnections();
         }
 
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
-
+        // TODO render refresh?
     }
 
     public configChanged() {
@@ -322,21 +317,12 @@ export class TSBlock extends Core.Block {
         }
     }
 
-    public rendererGetDisplayName(): string {
-        if (this._tsCodeError) {
-            return 'ERROR!';
-        }
-        return this._displayName;
-    }
-
     public rendererGetCodeName(): string {
         return 'TS';
     }
 
     public setError(enabled: boolean) {
         this._tsCodeError = enabled;
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
     }
 }
