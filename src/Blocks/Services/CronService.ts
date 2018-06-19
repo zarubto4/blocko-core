@@ -13,7 +13,14 @@ export class CronService extends Service {
         /**
          * Schedule job, provide valid Cron expression.
          */
-        schedule(cron: string, job: <T>() => T): any;
+        schedule(cron: string, job: () => void): CronRef;
+    }
+
+    declare interface CronRef {
+        /**
+         * Clears the timer. Should be called on context destroy event to cleanup the timer.
+         */
+        clear(): void;
     }
 
     declare module services {
@@ -33,7 +40,7 @@ export class CronService extends Service {
         return CronService.serviceName
     }
 
-    public schedule(cron: string, job: <T>() => T): any {
+    public schedule(cron: string, job: () => void): any {
         return CronScheduler.schedule(cron, job);
     }
 }

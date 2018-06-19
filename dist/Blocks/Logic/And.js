@@ -7,6 +7,7 @@ class And extends Core_1.Block {
     constructor(id) {
         super(id, 'and');
         this.name = 'AND';
+        this.description = 'Logical operator AND sets the output value to \'true\' if all inputs are also \'true\'.';
     }
     initialize() {
         this.confInputsCount = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {

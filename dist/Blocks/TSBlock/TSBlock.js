@@ -38,6 +38,8 @@ class TSBlock extends Core.Block {
         this.storedInputs = [];
         this.storedOutputs = [];
         this._codeBlock = true;
+        this.name = 'Unknown';
+        this.description = 'Please write some description for the block.';
         if (!tsCode) {
             tsCode = '';
             this._tsCodeError = true;
@@ -59,12 +61,9 @@ class TSBlock extends Core.Block {
     setDataJson(data) {
         super.setDataJson(data);
         if (data['designJson']) {
-            let old = data['designJson'];
+            let old = JSON.parse(data['designJson']);
             if (old['displayName']) {
                 this.name = old['displayName'];
-            }
-            else {
-                this.name = 'Unknown';
             }
             if (old['description']) {
                 this.description = old['description'];
@@ -80,15 +79,15 @@ class TSBlock extends Core.Block {
             }
         }
         else {
-            if (data['code']) {
-                this._tsCode = data['code'];
-            }
             if (data['block_id']) {
                 this._blockId = data['block_id'];
             }
             if (data['version_id']) {
                 this._versionId = data['version_id'];
             }
+        }
+        if (data['code']) {
+            this._tsCode = data['code'];
         }
     }
     afterControllerSet() {

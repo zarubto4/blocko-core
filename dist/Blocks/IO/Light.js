@@ -5,6 +5,7 @@ class Light extends DigitalOutput_1.DigitalOutput {
     constructor(id) {
         super(id, 'light');
         this.name = 'D-OUT';
+        this.description = 'TODO';
     }
 }
 exports.Light = Light;

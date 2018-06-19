@@ -1,4 +1,5 @@
 import { Block, ConnectorEvent, DigitalConnector, ExternalConnectorEvent } from '../Core';
+import { BoundInterface } from '../Core/Controller';
 export declare enum InterfaceBlockType {
     Inputs = 0,
     Outputs = 1,
@@ -6,17 +7,21 @@ export declare enum InterfaceBlockType {
 export interface BlockoTargetInterface {
     code?: {
         programId: string;
+        programName: string;
         versionId: string;
+        versionName: string;
+        versionDescription: string;
     };
     grid?: {
         projectId: string;
+        projectName: string;
         programs: Array<{
             programId: string;
+            programName: string;
             versionId: string;
+            versionName: string;
         }>;
     };
-    displayName: string;
-    color: string;
     interface: {
         digitalInputs?: {
             [name: string]: any;
@@ -66,11 +71,9 @@ export declare abstract class BaseInterfaceBlock extends Block {
     inputChanged(event: ConnectorEvent): void;
     getRestartDeviceInput(): DigitalConnector;
     getNetworkStatusOutput(): DigitalConnector;
+    bindInterface(targetId: string, group?: boolean): BoundInterface;
     remove(): void;
     isInterface(): boolean;
-    rendererShowBlockName(): boolean;
-    rendererGetDisplayName(): string;
-    rendererIsHwAttached(): boolean;
 }
 export declare class InputsInterfaceBlock extends BaseInterfaceBlock {
     constructor(id: string, iface?: any);

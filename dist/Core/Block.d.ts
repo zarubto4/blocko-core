@@ -4,8 +4,8 @@ import { ConfigProperty } from './ConfigProperty';
 import { Controller } from './Controller';
 import { Message, MessageJson } from './Message';
 import { Types, Events } from 'common-lib';
-import { BindInterfaceEvent, ConfigPropertyAddedEvent, ConfigPropertyRemovedEvent, ConnectorAddedEvent, ConnectorRemovedEvent, DestroyEvent, RuntimeErrorEvent } from './Events';
-export declare abstract class Block extends Events.Emitter<ConnectorAddedEvent | ConnectorRemovedEvent | ConfigPropertyAddedEvent | ConfigPropertyRemovedEvent | DestroyEvent | RuntimeErrorEvent | BindInterfaceEvent> {
+import { BindInterfaceEvent, ConfigPropertyAddedEvent, ConfigPropertyRemovedEvent, ConnectorAddedEvent, ConnectorRemovedEvent, DataChangedEvent, DestroyEvent, RuntimeErrorEvent } from './Events';
+export declare abstract class Block extends Events.Emitter<ConnectorAddedEvent | ConnectorRemovedEvent | ConfigPropertyAddedEvent | ConfigPropertyRemovedEvent | DestroyEvent | RuntimeErrorEvent | BindInterfaceEvent | DataChangedEvent> {
     protected _controller: Controller;
     protected inputConnectors: Array<Connector<boolean | number | object | Message>>;
     protected outputConnectors: Array<Connector<boolean | number | object | Message>>;

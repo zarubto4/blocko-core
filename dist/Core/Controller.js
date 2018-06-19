@@ -393,28 +393,6 @@ class Controller extends common_lib_1.Events.Emitter {
         this.addBlock(new InterfaceBlock_1.InputsInterfaceBlock(id + '-IN', iface));
         this.addBlock(new InterfaceBlock_1.OutputsInterfaceBlock(id + '-OUT', iface));
     }
-    bindInterface(block, targetId, group) {
-        if (block.interfaceId !== block.targetId) {
-            let other = block.getOther();
-            block.setTargetId(targetId);
-            other.setTargetId(targetId);
-            if (group) {
-                block.group = group;
-                other.group = group;
-            }
-            block.emit(this, new Events_1.BindInterfaceEvent());
-            other.emit(this, new Events_1.BindInterfaceEvent());
-            return {
-                targetId: targetId,
-                interfaceId: block.interfaceId,
-                group: block.group
-            };
-        }
-        else {
-            console.warn('Controller::bindInterface - not found block');
-            return null;
-        }
-    }
     getBindings() {
         let bindings = [];
         this.blocks.filter((block) => {

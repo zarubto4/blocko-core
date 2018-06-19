@@ -109,3 +109,9 @@ export class ConfigPropertyRemovedEvent extends Events.Event {
         this.configProperty = configProperty;
     }
 }
+
+export class DataChangedEvent extends Events.Event {
+    constructor() {
+        super('dataChanged');
+    }
+}

@@ -7,6 +7,7 @@ export class PushButton extends DigitalInput {
     public constructor(id: string) {
         super(id, 'pushButton');
         this.name = 'Button';
+        this.description = 'TODO';
     }
 
     // TODO

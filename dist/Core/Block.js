@@ -40,7 +40,10 @@ class Block extends common_lib_1.Events.Emitter {
         let data = {
             id: this.id,
             type: this.type,
-            config: this.getConfigData()
+            name: this.name,
+            description: this.description,
+            config: this.getConfigData(),
+            outputs: {}
         };
         this.outputConnectors.forEach((connector) => {
             let connectionsJson = [];
@@ -223,8 +226,11 @@ class Block extends common_lib_1.Events.Emitter {
         }
     }
     addConfigProperty(type, id, displayName, defaultValue, config) {
-        let configProperty = new ConfigProperty_1.ConfigProperty(type, id, displayName, defaultValue, this.emitConfigChanged.bind(this), config);
+        let configProperty = new ConfigProperty_1.ConfigProperty(type, id, displayName, defaultValue, config);
         this.configProperties.push(configProperty);
+        configProperty.listenEvent('dataChanged', (e) => {
+            this.emitConfigChanged();
+        });
         this.emit(this, new Events_1.ConfigPropertyAddedEvent(configProperty));
         return configProperty;
     }

@@ -7,7 +7,6 @@ import { Service } from '../Blocks/Services/Service';
 import { ExternalConnector } from './ExternalConnector';
 import { BlockoTargetInterface } from '../Blocks/InterfaceBlock';
 import { Message, MessageJson } from './Message';
-import { BaseInterfaceBlock } from '../Blocks';
 import { Events } from 'common-lib';
 import { BlockAddedEvent, BlockRemovedEvent, ConnectionAddedEvent, ConnectionRemovedEvent } from './Events';
 export interface BlockoInstanceConfig {
@@ -86,7 +85,6 @@ export declare class Controller extends Events.Emitter<BlockAddedEvent | BlockRe
     getWebHooks(): Array<string>;
     setError(blockId: string, enabled: boolean): void;
     addInterface(iface: BlockoTargetInterface): void;
-    bindInterface(block: BaseInterfaceBlock, targetId: string, group?: boolean): BoundInterface;
     getBindings(): Array<BoundInterface>;
     protected hardwareRestartCallback: (targetId: string) => void;
     registerHardwareRestartCallback(callback: (targetId: string) => void): void;

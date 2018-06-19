@@ -10,6 +10,7 @@ export class Not extends Core.Block {
     public constructor(id: string) {
         super(id, 'not');
         this.name = 'NOT';
+        this.description = 'Logical operator NOT is an inverter. It outputs \'true\' if input value is \'false\' and vice versa.';
     }
 
     public initialize(): void {

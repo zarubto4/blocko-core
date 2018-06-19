@@ -6,6 +6,7 @@ class AnalogOutput extends Core_1.Block {
     constructor(id) {
         super(id, 'analogOutput');
         this.name = 'A-OUT';
+        this.description = 'TODO';
     }
     initialize() {
         this.connectorInput = this.addInputConnector('input', common_lib_1.Types.ConnectorType.AnalogInput, 'Input');

@@ -13,6 +13,7 @@ export class Xor extends Block {
     public constructor(id: string) {
         super(id, 'xor');
         this.name = 'XOR';
+        this.description = 'Logical operator XOR sets the output to \'true\' if inputs are not alike, when two inputs are used. When using with more than two inputs, it acts as an addition modulo 2.';
     }
 
     public initialize(): void {

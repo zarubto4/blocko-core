@@ -35,6 +35,9 @@ export class TSBlock extends Core.Block {
         super(id, 'tsBlock');
         this._codeBlock = true;
 
+        this.name = 'Unknown';
+        this.description = 'Please write some description for the block.';
+
         if (!tsCode) {
             tsCode = '';
             this._tsCodeError = true;
@@ -62,12 +65,10 @@ export class TSBlock extends Core.Block {
 
         // For backwards compatibility
         if (data['designJson']) {
-            let old: object = data['designJson'];
+            let old: object = JSON.parse(data['designJson']);
 
             if (old['displayName']) {
                 this.name = old['displayName'];
-            } else {
-                this.name = 'Unknown';
             }
 
             if (old['description']) {
@@ -85,9 +86,6 @@ export class TSBlock extends Core.Block {
             }
 
         } else {
-            if (data['code']) {
-                this._tsCode = data['code'];
-            }
 
             if (data['block_id']) {
                 this._blockId = data['block_id'];
@@ -96,6 +94,10 @@ export class TSBlock extends Core.Block {
             if (data['version_id']) {
                 this._versionId = data['version_id'];
             }
+        }
+
+        if (data['code']) {
+            this._tsCode = data['code'];
         }
     }
 

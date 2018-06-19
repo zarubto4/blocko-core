@@ -8,7 +8,8 @@ export class Switch extends DigitalInput {
 
     public constructor(id: string) {
         super(id, 'switch');
-        this.name = 'Switch'
+        this.name = 'Switch';
+        this.description = 'Switch block is a digital input into blocko, which holds the value until it is switched again.';
     }
 
     public initialize(): void {

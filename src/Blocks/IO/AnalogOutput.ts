@@ -9,6 +9,7 @@ export class AnalogOutput extends Block {
     public constructor(id: string) {
         super(id, 'analogOutput');
         this.name = 'A-OUT'
+        this.description = 'TODO';
     }
 
     public initialize(): void {

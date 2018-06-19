@@ -7,6 +7,7 @@ class Or extends Core_1.Block {
     constructor(id) {
         super(id, 'or');
         this.name = 'OR';
+        this.description = 'Logical operator OR sets the output value to \'true\' if at least one of its inputs is \'true\'.';
     }
     initialize() {
         this.confInputsCount = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {

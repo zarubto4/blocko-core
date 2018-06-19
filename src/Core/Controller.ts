@@ -545,40 +545,6 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
     }
 
     /**
-     * Binds specific HW or HW group to the given interface block.
-     * @param {BaseInterfaceBlock} block to bind to
-     * @param {string} targetId of WH
-     * @param {boolean} group
-     */
-    public bindInterface(block: BaseInterfaceBlock, targetId: string, group?: boolean): BoundInterface {
-        if (block.interfaceId !== block.targetId) {
-            let other = block.getOther();
-
-            block.setTargetId(targetId);
-            other.setTargetId(targetId);
-
-            if (group) {
-                block.group = group;
-                other.group = group;
-            }
-
-            block.emit(this, new BindInterfaceEvent());
-            other.emit(this, new BindInterfaceEvent());
-
-            return {
-                targetId: targetId,
-                interfaceId: block.interfaceId,
-                group: block.group
-            }
-
-        } else {
-            console.warn('Controller::bindInterface - not found block');
-            // TODO throw some error or tell why is not added
-            return null;
-        }
-    }
-
-    /**
      * Gets all interfaces that were bound to hardware or grid
      * @returns {Array<BoundInterface>}
      */

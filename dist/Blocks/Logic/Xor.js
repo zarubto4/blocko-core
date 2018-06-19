@@ -7,6 +7,7 @@ class Xor extends Core_1.Block {
     constructor(id) {
         super(id, 'xor');
         this.name = 'XOR';
+        this.description = 'Logical operator XOR sets the output to \'true\' if inputs are not alike, when two inputs are used. When using with more than two inputs, it acts as an addition modulo 2.';
     }
     initialize() {
         this.confInputsCount = this.addConfigProperty(common_lib_1.Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {

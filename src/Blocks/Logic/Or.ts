@@ -13,6 +13,7 @@ export class Or extends Block {
     public constructor(id: string) {
         super(id, 'or');
         this.name = 'OR';
+        this.description = 'Logical operator OR sets the output value to \'true\' if at least one of its inputs is \'true\'.';
     }
 
     public initialize(): void {

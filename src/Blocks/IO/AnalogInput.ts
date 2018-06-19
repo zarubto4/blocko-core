@@ -11,6 +11,7 @@ export class AnalogInput extends Block {
     public constructor(id: string) {
         super(id, 'analogInput');
         this.name = 'A-IN';
+        this.description = 'TODO';
     }
 
     public initialize(): void {

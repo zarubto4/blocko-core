@@ -81,3 +81,9 @@ class ConfigPropertyRemovedEvent extends common_lib_1.Events.Event {
     }
 }
 exports.ConfigPropertyRemovedEvent = ConfigPropertyRemovedEvent;
+class DataChangedEvent extends common_lib_1.Events.Event {
+    constructor() {
+        super('dataChanged');
+    }
+}
+exports.DataChangedEvent = DataChangedEvent;

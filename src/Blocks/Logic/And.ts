@@ -13,6 +13,7 @@ export class And extends Block {
     public constructor(id: string) {
         super(id, 'and');
         this.name = 'AND';
+        this.description = 'Logical operator AND sets the output value to \'true\' if all inputs are also \'true\'.';
     }
 
     public initialize(): void {

@@ -48,3 +48,6 @@ export declare class ConfigPropertyRemovedEvent extends Events.Event {
     configProperty: ConfigProperty;
     constructor(configProperty: ConfigProperty);
 }
+export declare class DataChangedEvent extends Events.Event {
+    constructor();
+}

@@ -7,6 +7,7 @@ class Switch extends DigitalInput_1.DigitalInput {
     constructor(id) {
         super(id, 'switch');
         this.name = 'Switch';
+        this.description = 'Switch block is a digital input into blocko, which holds the value until it is switched again.';
     }
     initialize() {
         super.initialize();

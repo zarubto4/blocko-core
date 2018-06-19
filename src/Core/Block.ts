@@ -15,10 +15,10 @@ import { Types, Events } from 'common-lib';
 import {
     BindInterfaceEvent,
     ConfigPropertyAddedEvent, ConfigPropertyRemovedEvent, ConnectorAddedEvent,
-    ConnectorRemovedEvent, DestroyEvent, RuntimeErrorEvent
+    ConnectorRemovedEvent, DataChangedEvent, DestroyEvent, RuntimeErrorEvent
 } from './Events';
 
-export abstract class Block extends Events.Emitter<ConnectorAddedEvent|ConnectorRemovedEvent|ConfigPropertyAddedEvent|ConfigPropertyRemovedEvent|DestroyEvent|RuntimeErrorEvent|BindInterfaceEvent> {
+export abstract class Block extends Events.Emitter<ConnectorAddedEvent|ConnectorRemovedEvent|ConfigPropertyAddedEvent|ConfigPropertyRemovedEvent|DestroyEvent|RuntimeErrorEvent|BindInterfaceEvent|DataChangedEvent> {
 
     protected _controller: Controller = null;
 
@@ -77,7 +77,10 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
         let data = {
             id: this.id,
             type: this.type,
-            config: this.getConfigData()
+            name: this.name,
+            description: this.description,
+            config: this.getConfigData(),
+            outputs: {}
         };
 
         this.outputConnectors.forEach((connector: Connector<boolean|number|object|Message>) => {
@@ -102,6 +105,7 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
         if (data['id']) {
             this.id = data['id'];
         }
+
         if (data['name']) {
             this.name = data['name'];
         }
@@ -308,8 +312,11 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
      *******************************************/
 
     public addConfigProperty(type: Types.ConfigPropertyType, id: string, displayName: string, defaultValue: any, config?: any) {
-        let configProperty: ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, this.emitConfigChanged.bind(this), config);
+        let configProperty: ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, config);
         this.configProperties.push(configProperty);
+        configProperty.listenEvent('dataChanged', (e) => {
+            this.emitConfigChanged();
+        });
         this.emit(this, new ConfigPropertyAddedEvent(configProperty));
         return configProperty;
     }

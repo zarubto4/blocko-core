@@ -5,6 +5,7 @@ class PushButton extends DigitalInput_1.DigitalInput {
     constructor(id) {
         super(id, 'pushButton');
         this.name = 'Button';
+        this.description = 'TODO';
     }
 }
 exports.PushButton = PushButton;
