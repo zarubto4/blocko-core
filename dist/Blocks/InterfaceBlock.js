@@ -4,19 +4,42 @@ const ExternalConnector_1 = require("../Core/ExternalConnector");
 const Message_1 = require("../Core/Message");
 const common_lib_1 = require("common-lib");
 const Core_1 = require("../Core");
+const Events_1 = require("../Core/Events");
 var InterfaceBlockType;
 (function (InterfaceBlockType) {
     InterfaceBlockType[InterfaceBlockType["Inputs"] = 0] = "Inputs";
     InterfaceBlockType[InterfaceBlockType["Outputs"] = 1] = "Outputs";
 })(InterfaceBlockType = exports.InterfaceBlockType || (exports.InterfaceBlockType = {}));
 class BaseInterfaceBlock extends Core_1.Block {
-    constructor(id, type, visualType, interfaceType) {
-        super(id, type, visualType);
+    constructor(id, type, interfaceType) {
+        super(id, type);
         this._displayName = '';
         this._group = false;
         this._deviceInputsCount = 0;
         this._deviceOutputsCount = 0;
         this._interfaceType = interfaceType;
+    }
+    initialize() {
+        this.setInterface(this._interface);
+    }
+    getDataJson() {
+        let data = super.getDataJson();
+        data['interface'] = this.interface;
+        data['targetId'] = this.targetId;
+        data['group'] = this.group;
+        return data;
+    }
+    setDataJson(data) {
+        super.setDataJson(data);
+        if (data['interface']) {
+            this._interface = data['interface'];
+            if (data['targetId']) {
+                this._targetId = data['targetId'];
+            }
+            if (data['group']) {
+                this._group = data['group'];
+            }
+        }
     }
     setInterface(iface) {
         let wantedInputsOrder = [];
@@ -29,6 +52,7 @@ class BaseInterfaceBlock extends Core_1.Block {
         this._deviceOutputsCount = 0;
         this._interface = iface;
         if (iface.code) {
+            this.name = iface.code.programName ? iface.code.programName : iface.code.versionId;
             this._interfaceId = iface.code.versionId;
             if (this._interfaceType === InterfaceBlockType.Inputs) {
                 this._deviceInputsCount++;
@@ -65,14 +89,13 @@ class BaseInterfaceBlock extends Core_1.Block {
             }
         }
         else if (iface.grid && typeof iface.grid === 'object') {
+            this.name = iface.grid.projectName ? iface.grid.projectName : iface.grid.projectId;
             this._interfaceId = iface.grid.projectId;
             this._targetId = iface.grid.projectId;
         }
         else if (iface['interfaceId']) {
             this._interfaceId = iface['interfaceId'];
         }
-        this._color = iface['color'];
-        this._displayName = iface['displayName'] || this._interfaceId;
         let inOutInterfaces = iface['interface'];
         let digitalInputs = inOutInterfaces['digitalInputs'];
         if (digitalInputs) {
@@ -252,9 +275,6 @@ class BaseInterfaceBlock extends Core_1.Block {
         this.outputConnectors.sort((ca, cb) => {
             return wantedOutputsOrder.indexOf(ca.id) - wantedOutputsOrder.indexOf(cb.id);
         });
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
     }
     setTargetId(targetId) {
         this._targetId = targetId;
@@ -342,6 +362,28 @@ class BaseInterfaceBlock extends Core_1.Block {
     getNetworkStatusOutput() {
         return this.networkStatusOutput;
     }
+    bindInterface(targetId, group) {
+        if (this.interfaceId !== this.targetId) {
+            let other = this.getOther();
+            this.setTargetId(targetId);
+            other.setTargetId(targetId);
+            if (group) {
+                this.group = group;
+                other.group = group;
+            }
+            this.emit(this, new Events_1.BindInterfaceEvent());
+            other.emit(other, new Events_1.BindInterfaceEvent());
+            return {
+                targetId: targetId,
+                interfaceId: this.interfaceId,
+                group: this.group
+            };
+        }
+        else {
+            console.warn('BaseInterfaceBlock::bindInterface - same interfaceId as targetId, grid?');
+            return null;
+        }
+    }
     remove() {
         super.remove();
         let other = this.getOther();
@@ -352,31 +394,22 @@ class BaseInterfaceBlock extends Core_1.Block {
     isInterface() {
         return true;
     }
-    rendererShowBlockName() {
-        return false;
-    }
-    rendererGetDisplayName() {
-        return this._displayName;
-    }
-    rendererIsHwAttached() {
-        return !!this._targetId;
-    }
 }
 exports.BaseInterfaceBlock = BaseInterfaceBlock;
 class InputsInterfaceBlock extends BaseInterfaceBlock {
     constructor(id, iface = null) {
-        super(id, 'inputsInterfaceBlock', 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
+        super(id, 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }
 exports.InputsInterfaceBlock = InputsInterfaceBlock;
 class OutputsInterfaceBlock extends BaseInterfaceBlock {
     constructor(id, iface = null) {
-        super(id, 'outputsInterfaceBlock', 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
+        super(id, 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }

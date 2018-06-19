@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class Connection {
+const Events_1 = require("./Events");
+const common_lib_1 = require("common-lib");
+class Connection extends common_lib_1.Events.Emitter {
     constructor(connectorA, connectorB) {
+        super();
         this.connectorA = connectorA;
         this.connectorB = connectorB;
     }
@@ -28,9 +31,7 @@ class Connection {
         else if (this.connectorB && this.connectorB.block && this.connectorB.block.controller) {
             this.connectorB.block.controller._removeConnection(this);
         }
-        if (this.renderer) {
-            this.renderer.destroy();
-        }
+        this.emit(this, new Events_1.DestroyEvent());
     }
 }
 exports.Connection = Connection;

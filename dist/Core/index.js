@@ -12,5 +12,5 @@ __export(require("./Controller"));
 __export(require("./ExternalConnector"));
 __export(require("./Message"));
 __export(require("./RendererHelper"));
-__export(require("./Renderer"));
+__export(require("./Events"));
 __export(require("./Fetch"));

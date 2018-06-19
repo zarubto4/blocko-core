@@ -9,20 +9,29 @@ import {
 import { Message, MessageHelpers } from '../Core/Message';
 import { Types } from 'common-lib';
 import { Block, ConnectorEvent, DigitalConnector, ExternalConnectorEvent } from '../Core';
+import { BoundInterface } from '../Core/Controller';
+import { BindInterfaceEvent } from '../Core/Events';
 
 export enum InterfaceBlockType { Inputs, Outputs }
 
 export interface BlockoTargetInterface {
     code?: {
         programId: string;
+        programName: string;
         versionId: string;
+        versionName: string;
+        versionDescription: string;
     };
     grid?: {
         projectId: string;
-        programs: Array<{ programId: string; versionId: string; }>;
+        projectName: string;
+        programs: Array<{
+            programId: string;
+            programName: string;
+            versionId: string;
+            versionName: string;
+        }>;
     };
-    displayName: string;
-    color: string;
     interface: {
         digitalInputs?: {[name: string]: any};
         digitalOutputs?: {[name: string]: any};
@@ -45,14 +54,39 @@ export abstract class BaseInterfaceBlock extends Block {
     private _deviceInputsCount: number = 0;
     private _deviceOutputsCount: number = 0;
 
-    private _interface: BlockoTargetInterface;
+    protected _interface: BlockoTargetInterface;
 
     protected restartDeviceInput: DigitalConnector;
     protected networkStatusOutput: DigitalConnector;
 
-    public constructor(id: string, type: string, visualType: string, interfaceType: InterfaceBlockType) {
-        super(id, type, visualType);
+    public constructor(id: string, type: string, interfaceType: InterfaceBlockType) {
+        super(id, type);
         this._interfaceType = interfaceType;
+    }
+
+    public initialize(): void {
+        this.setInterface(this._interface);
+    }
+
+    public getDataJson(): object {
+        let data: object = super.getDataJson();
+        data['interface'] = this.interface;
+        data['targetId'] = this.targetId;
+        data['group'] = this.group;
+        return data;
+    }
+
+    public setDataJson(data: object): void {
+        super.setDataJson(data);
+        if (data['interface']) {
+            this._interface = data['interface'];
+            if (data['targetId']) {
+                this._targetId = data['targetId'];
+            }
+            if (data['group']) {
+                this._group = data['group'];
+            }
+        }
     }
 
     public setInterface(iface: BlockoTargetInterface): void {
@@ -72,6 +106,7 @@ export abstract class BaseInterfaceBlock extends Block {
         this._interface = iface;
 
         if (iface.code) {
+            this.name = iface.code.programName ? iface.code.programName : iface.code.versionId;
             this._interfaceId = iface.code.versionId;
 
             if (this._interfaceType === InterfaceBlockType.Inputs) {
@@ -109,14 +144,12 @@ export abstract class BaseInterfaceBlock extends Block {
 
 
         } else if (iface.grid && typeof iface.grid === 'object') {
+            this.name = iface.grid.projectName ? iface.grid.projectName : iface.grid.projectId;
             this._interfaceId = iface.grid.projectId;
             this._targetId = iface.grid.projectId;
         } else if (iface['interfaceId']) {
             this._interfaceId = iface['interfaceId']
         }
-
-        this._color = iface['color'];
-        this._displayName = iface['displayName'] || this._interfaceId;
 
         let inOutInterfaces = iface['interface'];
 
@@ -317,9 +350,7 @@ export abstract class BaseInterfaceBlock extends Block {
             return wantedOutputsOrder.indexOf(ca.id) - wantedOutputsOrder.indexOf(cb.id);
         });
 
-        if (this.renderer) {
-            this.renderer.refresh()
-        }
+        // TODO render refresh?
     }
 
     public setTargetId(targetId: string): void {
@@ -429,6 +460,39 @@ export abstract class BaseInterfaceBlock extends Block {
     }
 
     /**
+     * Binds specific HW or HW group to this interface block.
+     * @param {string} targetId of WH
+     * @param {boolean} group flag
+     */
+    public bindInterface(targetId: string, group?: boolean): BoundInterface {
+        if (this.interfaceId !== this.targetId) {
+            let other = this.getOther();
+
+            this.setTargetId(targetId);
+            other.setTargetId(targetId);
+
+            if (group) {
+                this.group = group;
+                other.group = group;
+            }
+
+            this.emit(this, new BindInterfaceEvent());
+            other.emit(other, new BindInterfaceEvent());
+
+            return {
+                targetId: targetId,
+                interfaceId: this.interfaceId,
+                group: this.group
+            }
+
+        } else {
+            console.warn('BaseInterfaceBlock::bindInterface - same interfaceId as targetId, grid?');
+            // TODO throw some error or tell why is not bound
+            return null;
+        }
+    }
+
+    /**
      * Also removes the second half of the interface block group.
      */
     public remove(): void {
@@ -444,34 +508,22 @@ export abstract class BaseInterfaceBlock extends Block {
     public isInterface(): boolean {
         return true;
     }
-
-    public rendererShowBlockName(): boolean {
-        return false;
-    }
-
-    public rendererGetDisplayName(): string {
-        return this._displayName;
-    }
-
-    public rendererIsHwAttached(): boolean {
-        return !!this._targetId;
-    }
 }
 
 export class InputsInterfaceBlock extends BaseInterfaceBlock {
     public constructor(id: string, iface: any = null) {
-        super(id, 'inputsInterfaceBlock', 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
+        super(id, 'inputsInterfaceBlock', InterfaceBlockType.Inputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }
 
 export class OutputsInterfaceBlock extends BaseInterfaceBlock {
     public constructor(id: string, iface: any = null) {
-        super(id, 'outputsInterfaceBlock', 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
+        super(id, 'outputsInterfaceBlock', InterfaceBlockType.Outputs);
         if (iface) {
-            this.setInterface(iface);
+            this._interface = iface;
         }
     }
 }

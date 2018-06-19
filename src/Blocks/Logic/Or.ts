@@ -11,8 +11,12 @@ export class Or extends Block {
     protected confNegate: ConfigProperty;
 
     public constructor(id: string) {
-        super(id, 'or', 'or');
+        super(id, 'or');
+        this.name = 'OR';
+        this.description = 'Logical operator OR sets the output value to \'true\' if at least one of its inputs is \'true\'.';
+    }
 
+    public initialize(): void {
         this.confInputsCount = this.addConfigProperty(Types.ConfigPropertyType.Integer, 'inputsCount', 'Inputs count', 2, {
             range: true,
             min: 1,
@@ -22,14 +26,7 @@ export class Or extends Block {
 
         this.connectorOutput = <DigitalConnector>this.addOutputConnector('output', Types.ConnectorType.DigitalOutput);
         this.configChanged();
-    }
-
-    protected afterControllerSet() {
         this.inputsChanged();
-    }
-
-    public rendererGetDisplayName(): string {
-        return 'OR';
     }
 
     public configChanged(): void {
@@ -50,9 +47,7 @@ export class Or extends Block {
         }
         this.inputsChanged();
 
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
     }
 
     public inputsChanged(): void {

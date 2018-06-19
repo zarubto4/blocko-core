@@ -3,15 +3,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Message_1 = require("./Message");
 const Connection_1 = require("./Connection");
 const common_lib_1 = require("common-lib");
-const Renderer_1 = require("./Renderer");
+const Events_1 = require("./Events");
 var ConnectorEventType;
 (function (ConnectorEventType) {
     ConnectorEventType[ConnectorEventType["ValueChange"] = 0] = "ValueChange";
     ConnectorEventType[ConnectorEventType["NewMessage"] = 1] = "NewMessage";
     ConnectorEventType[ConnectorEventType["GroupInput"] = 2] = "GroupInput";
 })(ConnectorEventType = exports.ConnectorEventType || (exports.ConnectorEventType = {}));
-class Connector {
+class Connector extends common_lib_1.Events.Emitter {
     constructor(block, id, name, type) {
+        super();
         this.connections = [];
         this.block = block;
         this.id = id;
@@ -94,6 +95,9 @@ class Connector {
                 type = ConnectorEventType.GroupInput;
             }
             this._value = value;
+            let ioEvent = new Events_1.IOEvent();
+            this.emit(this, ioEvent);
+            this.connections.forEach(connection => connection.emit(connection, ioEvent));
             this.block._outputEvent({
                 connector: this,
                 eventType: type,
@@ -115,6 +119,7 @@ class Connector {
                 type = ConnectorEventType.GroupInput;
             }
             this._value = value;
+            this.emit(this, new Events_1.IOEvent());
             this.block._inputEvent({
                 connector: this,
                 eventType: type,
@@ -177,27 +182,11 @@ class MessageConnector extends Connector {
     }
     _outputSetValue(value, interfaceId) {
         if (value instanceof Message_1.Message && value.isArgTypesEqual(this.argTypes)) {
-            if (this.renderer) {
-                this.renderer.highlight(Renderer_1.HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(Renderer_1.HighlightType.Message);
-                }
-            });
             super._outputSetValue(value, interfaceId);
         }
     }
     _inputSetValue(value, interfaceId) {
         if (value instanceof Message_1.Message && value.isArgTypesEqual(this.argTypes)) {
-            if (this.renderer) {
-                this.renderer.highlight(Renderer_1.HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(Renderer_1.HighlightType.Message);
-                }
-            });
             super._inputSetValue(value, interfaceId);
         }
     }
@@ -224,27 +213,11 @@ class JsonConnector extends Connector {
     }
     _outputSetValue(value, interfaceId) {
         if (typeof value === 'object') {
-            if (this.renderer) {
-                this.renderer.highlight(Renderer_1.HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(Renderer_1.HighlightType.Message);
-                }
-            });
             super._outputSetValue(value, interfaceId);
         }
     }
     _inputSetValue(value, interfaceId) {
         if (typeof value === 'object') {
-            if (this.renderer) {
-                this.renderer.highlight(Renderer_1.HighlightType.Message);
-            }
-            this.connections.forEach(connection => {
-                if (connection.renderer) {
-                    connection.renderer.highlight(Renderer_1.HighlightType.Message);
-                }
-            });
             super._inputSetValue(value, interfaceId);
         }
     }

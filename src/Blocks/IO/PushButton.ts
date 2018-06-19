@@ -6,13 +6,12 @@ export class PushButton extends DigitalInput {
 
     public constructor(id: string) {
         super(id, 'pushButton');
+        this.name = 'Button';
+        this.description = 'TODO';
     }
 
-    public rendererGetDisplayName(): string {
-        return 'Button';
-    }
-
-    public onMouseDown(): void {
+    // TODO
+    /*public onMouseDown(): void {
         if (this.controller) {
             let event: ConnectorEvent = {
                 connector: this.connectorOutput,
@@ -42,5 +41,5 @@ export class PushButton extends DigitalInput {
 
     public onMouseDrag(event: {dx: number, dy: number}): boolean {
         return true;
-    }
+    }*/
 }

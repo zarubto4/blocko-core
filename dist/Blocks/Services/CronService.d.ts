@@ -7,5 +7,5 @@ export declare class CronService extends Service {
     });
     readonly libTypings: string;
     readonly name: string;
-    schedule(cron: string, job: <T>() => T): any;
+    schedule(cron: string, job: () => void): any;
 }

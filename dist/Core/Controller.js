@@ -4,11 +4,13 @@ const BlockRegistration_1 = require("./BlockRegistration");
 const ServiceLib_1 = require("../Blocks/Libraries/ServiceLib");
 const ExternalConnector_1 = require("./ExternalConnector");
 const InterfaceBlock_1 = require("../Blocks/InterfaceBlock");
-const TSBlock_1 = require("../Blocks/TSBlock/TSBlock");
 const Blocks_1 = require("../Blocks");
 const Database_1 = require("./Database");
-class Controller {
+const common_lib_1 = require("common-lib");
+const Events_1 = require("./Events");
+class Controller extends common_lib_1.Events.Emitter {
     constructor(configuration) {
+        super();
         this.safeRun = false;
         this.gui = false;
         this.configuration = {
@@ -22,8 +24,6 @@ class Controller {
         this.blockRemovedCallbacks = [];
         this.blockIndex = 0;
         this.interfaceIndex = 0;
-        this.factoryBlockRendererCallback = null;
-        this.factoryConnectionRendererCallback = null;
         this.inputConnectorEventCallbacks = [];
         this.outputConnectorEventCallbacks = [];
         this.externalInputConnectorEventCallbacks = [];
@@ -34,13 +34,8 @@ class Controller {
         this.connections = [];
         this.blocksRegister = [];
         this._servicesHandler = new ServiceLib_1.ServicesHandler('BlockoServiceHandler');
-        if (configuration) {
-            if (configuration.renderController) {
-                this.rendererFactory = configuration.renderController;
-            }
-            if (configuration.dbConnectionString) {
-                Database_1.Database.connectionString = configuration.dbConnectionString;
-            }
+        if (configuration && configuration.dbConnectionString) {
+            Database_1.Database.connectionString = configuration.dbConnectionString;
         }
     }
     registerService(service) {
@@ -56,13 +51,13 @@ class Controller {
     }
     registerBlock(blockClass) {
         let b = new blockClass('register');
-        let blockRegistration = new BlockRegistration_1.BlockRegistration(blockClass, b.type, b.visualType, b.rendererGetDisplayName());
+        let blockRegistration = new BlockRegistration_1.BlockRegistration(blockClass, b.type, b.name);
         this.blocksRegister.push(blockRegistration);
     }
-    getBlockClassByVisualType(visualType) {
+    getBlockClassByType(type) {
         let blockClass = null;
         this.blocksRegister.forEach((blockRegistration) => {
-            if (blockRegistration.visualType === visualType) {
+            if (blockRegistration.type === type) {
                 blockClass = blockRegistration.blockClass;
             }
         });
@@ -79,28 +74,18 @@ class Controller {
         block.registerOutputEventCallback((connector, eventType, value) => this.outputConnectorEvent(connector, eventType, value));
         block.registerExternalInputEventCallback((connector, eventType, value) => this.externalInputConnectorEvent(connector, eventType, value));
         block.registerExternalOutputEventCallback((connector, eventType, value) => this.externalOutputConnectorEvent(connector, eventType, value));
-        if (this.factoryBlockRendererCallback) {
-            block.renderer = this.factoryBlockRendererCallback(block);
-        }
-        else if (this.rendererFactory) {
-            block.renderer = this.rendererFactory.factoryBlockRenderer(block);
-        }
         block.controller = this;
         this.blocks.push(block);
         this.blockAddedCallbacks.forEach(callback => callback(block));
+        this.emit(null, new Events_1.BlockAddedEvent(block));
         block.initialize();
     }
     registerConnectionAddedCallback(callback) {
         this.connectionAddedCallbacks.push(callback);
     }
     _addConnection(connection) {
-        if (this.factoryConnectionRendererCallback) {
-            connection.renderer = this.factoryConnectionRendererCallback(connection);
-        }
-        else if (this.rendererFactory) {
-            connection.renderer = this.rendererFactory.factoryConnectionRenderer(connection);
-        }
         this.connections.push(connection);
+        this.emit(this, new Events_1.ConnectionAddedEvent(connection));
         if (connection.getInputConnector().isDigital() || connection.getInputConnector().isAnalog()) {
             connection.getInputConnector()._inputSetValue(connection.getOutputConnector().value);
         }
@@ -119,6 +104,7 @@ class Controller {
             if (connection.getInputConnector().isAnalog()) {
                 connection.getInputConnector()._inputSetValue(0);
             }
+            this.emit(this, new Events_1.ConnectionRemovedEvent(connection));
             this.connectionRemovedCallbacks.forEach(callback => callback(connection));
         }
     }
@@ -129,6 +115,7 @@ class Controller {
         let index = this.blocks.indexOf(block);
         if (index > -1) {
             this.blocks.splice(index, 1);
+            this.emit(this, new Events_1.BlockRemovedEvent(block));
             this.blockRemovedCallbacks.forEach(callback => callback(block));
         }
     }
@@ -164,12 +151,6 @@ class Controller {
             id = 'I-' + this.interfaceIndex;
         } while (this.getBlockById(id + '-IN') != null);
         return id;
-    }
-    registerFactoryBlockRendererCallback(callback) {
-        this.factoryBlockRendererCallback = callback;
-    }
-    registerFactoryConnectionRendererCallback(callback) {
-        this.factoryConnectionRendererCallback = callback;
     }
     registerInputConnectorEventCallback(callback) {
         this.inputConnectorEventCallbacks.push(callback);
@@ -412,28 +393,6 @@ class Controller {
         this.addBlock(new InterfaceBlock_1.InputsInterfaceBlock(id + '-IN', iface));
         this.addBlock(new InterfaceBlock_1.OutputsInterfaceBlock(id + '-OUT', iface));
     }
-    bindInterface(block, targetId, group) {
-        if (block.interfaceId !== block.targetId) {
-            let other = block.getOther();
-            block.setTargetId(targetId);
-            other.setTargetId(targetId);
-            if (group) {
-                block.group = group;
-                other.group = group;
-            }
-            block.renderer.refresh();
-            other.renderer.refresh();
-            return {
-                targetId: targetId,
-                interfaceId: block.interfaceId,
-                group: block.group
-            };
-        }
-        else {
-            console.warn('Controller::bindInterface - not found block');
-            return null;
-        }
-    }
     getBindings() {
         let bindings = [];
         this.blocks.filter((block) => {
@@ -472,76 +431,26 @@ class Controller {
         }
     }
     getDataJson() {
-        let json = {
+        let data = {
             blocks: {}
         };
         this.blocks.forEach((block) => {
-            let blockJson = {
-                editor: {},
-                outputs: {}
-            };
-            blockJson['type'] = block.type;
-            blockJson['visualType'] = block.visualType;
-            blockJson['config'] = block.getConfigData();
-            blockJson['editor']['x'] = block.x;
-            blockJson['editor']['y'] = block.y;
-            let outputs = block.getOutputConnectors();
-            outputs.forEach((connector) => {
-                let connectionsJson = [];
-                connector.connections.forEach((connection) => {
-                    let otherConnector = connection.getOtherConnector(connector);
-                    connectionsJson.push({
-                        'block': otherConnector.block.id,
-                        'connector': otherConnector.id
-                    });
-                });
-                blockJson['outputs'][connector.id] = connectionsJson;
-            });
-            if (block instanceof Blocks_1.BaseInterfaceBlock) {
-                blockJson['interface'] = block.interface;
-                blockJson['targetId'] = block.targetId;
-                blockJson['group'] = block.group;
-            }
-            if (block instanceof TSBlock_1.TSBlock) {
-                blockJson['code'] = block.code;
-                blockJson['designJson'] = block.designJson;
-            }
-            json['blocks'][block.id] = blockJson;
+            data['blocks'][block.id] = block.getDataJson();
         });
-        return JSON.stringify(json);
+        return data;
     }
-    setDataJson(jsonString) {
+    setDataJson(data) {
         try {
-            let json = JSON.parse(jsonString);
-            if (json && json['blocks']) {
+            if (data && data['blocks']) {
                 this.removeAllBlocks();
-                let blocks = json['blocks'];
+                let blocks = data['blocks'];
                 for (let id in blocks) {
                     if (blocks.hasOwnProperty(id)) {
                         let block = blocks[id];
-                        let bc = this.getBlockClassByVisualType(block['visualType']);
-                        let blockObj = null;
-                        if (bc === TSBlock_1.TSBlock) {
-                            blockObj = new TSBlock_1.TSBlock(id, '', block['designJson']);
-                        }
-                        else {
-                            blockObj = new bc(id);
-                        }
-                        if (block['interface'] && blockObj instanceof Blocks_1.BaseInterfaceBlock) {
-                            blockObj.setInterface(block['interface']);
-                            if (block['targetId']) {
-                                blockObj.setTargetId(block['targetId']);
-                            }
-                            if (block['group']) {
-                                blockObj.group = block['group'];
-                            }
-                        }
-                        blockObj.x = block['editor']['x'];
-                        blockObj.y = block['editor']['y'];
+                        let bc = this.getBlockClassByType(block['visualType'] ? block['visualType'] : block['type']);
+                        let blockObj = new bc(id);
+                        blockObj.setDataJson(block);
                         this.addBlock(blockObj);
-                        if (blockObj instanceof TSBlock_1.TSBlock) {
-                            blockObj.setCode(block['code']);
-                        }
                         blockObj.setConfigData(block['config']);
                     }
                 }

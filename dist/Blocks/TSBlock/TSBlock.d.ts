@@ -10,18 +10,19 @@ export declare class TSBlock extends Core.Block {
     private _serviceLib;
     private _fetchLib;
     private _dbLib;
-    protected _displayName: string;
-    protected _backgroundColor: string;
-    protected _description: string;
+    protected _blockId: string;
+    protected _versionId: string;
     canAddsIO: boolean;
-    protected _designJson: string;
-    constructor(id: string, tsCode?: string, designJson?: string);
+    constructor(id: string, tsCode?: string);
+    initialize(): void;
+    getDataJson(): object;
+    setDataJson(data: object): void;
     protected afterControllerSet(): void;
     protected onLog: (type: string, message: string) => void;
     readonly code: string;
     readonly codeError: boolean;
-    readonly designJson: string;
-    setDesignJson(designJson: string): void;
+    readonly blockId: string;
+    versionId: string;
     remove(): void;
     setCode(tsCode: string): void;
     protected cleanBlock(): void;
@@ -34,7 +35,6 @@ export declare class TSBlock extends Core.Block {
     configChanged(): void;
     protected inputChanged(event: ConnectorEvent): void;
     callReady(): void;
-    rendererGetDisplayName(): string;
     rendererGetCodeName(): string;
     setError(enabled: boolean): void;
 }

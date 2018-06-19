@@ -11,15 +11,16 @@ import { ConfigProperty } from './ConfigProperty';
 import { Controller } from './Controller';
 import { Connection } from './Connection';
 import { Message, MessageJson } from './Message';
-import { Types } from 'common-lib';
-import { IRenderer } from './Renderer';
+import { Types, Events } from 'common-lib';
+import {
+    BindInterfaceEvent,
+    ConfigPropertyAddedEvent, ConfigPropertyRemovedEvent, ConnectorAddedEvent,
+    ConnectorRemovedEvent, DataChangedEvent, DestroyEvent, RuntimeErrorEvent
+} from './Events';
 
-// Interface for block renderer
-export interface IBlockRenderer extends IRenderer {
-    isHovered(): boolean;
-}
+export abstract class Block extends Events.Emitter<ConnectorAddedEvent|ConnectorRemovedEvent|ConfigPropertyAddedEvent|ConfigPropertyRemovedEvent|DestroyEvent|RuntimeErrorEvent|BindInterfaceEvent|DataChangedEvent> {
 
-export class Block {
+    protected _controller: Controller = null;
 
     protected inputConnectors: Array<Connector<boolean|number|object|Message>>;
     protected outputConnectors: Array<Connector<boolean|number|object|Message>>;
@@ -27,31 +28,23 @@ export class Block {
     protected externalOutputsConnectors: Array<ExternalConnector<any>>;
     protected configProperties: Array<ConfigProperty>;
 
-    protected _blockId: string = null; // Id assigned from tyrion
-    protected _versionId: string = null; // Id assigned from tyrion
     protected _color: string = null;
 
     public id: string; // Id in blocko program (assigned from blocko)
+    public name: string;
+    public description: string;
 
     public type: string;
     public visualType: string;
 
     public configPropertiesDescription: string = null;
 
-    public renderer: IBlockRenderer;
-
-    protected _controller: Controller = null;
-
-    // positions
-    private _x: number = 0;
-    private _y: number = 0;
-
     protected _codeBlock: boolean = false;
 
-    public constructor(id: string, type: string, visualType: string) {
+    public constructor(id: string, type: string) {
+        super();
         this.id = id;
         this.type = type;
-        this.visualType = visualType;
 
         this.inputConnectors = [];
         this.outputConnectors = [];
@@ -61,6 +54,11 @@ export class Block {
 
         this.configProperties = [];
     }
+
+    /**
+     * The setup of the block (e.g. adding IO or configProperties) should happen in this method
+     */
+    public abstract initialize(): void;
 
     public get controller(): Controller {
         return this._controller;
@@ -75,30 +73,50 @@ export class Block {
 
     protected afterControllerSet() {}
 
+    public getDataJson(): object {
+        let data = {
+            id: this.id,
+            type: this.type,
+            name: this.name,
+            description: this.description,
+            config: this.getConfigData(),
+            outputs: {}
+        };
+
+        this.outputConnectors.forEach((connector: Connector<boolean|number|object|Message>) => {
+            let connectionsJson: Array<any> = [];
+
+            connector.connections.forEach((connection: Connection) => {
+                let otherConnector: Connector<boolean|number|object|Message> = connection.getOtherConnector(connector);
+                connectionsJson.push({
+                    'block': otherConnector.block.id,
+                    'connector': otherConnector.id
+                })
+            });
+
+            data['outputs'][connector.id] = connectionsJson;
+        });
+
+        return data;
+    }
+
+    public setDataJson(data: object): void {
+
+        if (data['id']) {
+            this.id = data['id'];
+        }
+
+        if (data['name']) {
+            this.name = data['name'];
+        }
+
+        if (data['description']) {
+            this.description = data['description'];
+        }
+    }
+
     get codeBlock(): boolean {
         return this._codeBlock;
-    }
-
-    get x(): number {
-        return this._x;
-    }
-
-    set x(value: number) {
-        if (value !== this._x) {
-            this._x = value;
-        }
-        // if (this.controller) this.controller._emitDataChanged();
-    }
-
-    get y(): number {
-        return this._y;
-    }
-
-    set y(value: number) {
-        if (value !== this._y) {
-            this._y = value;
-        }
-        // if (this.controller) this.controller._emitDataChanged();
     }
 
     public sendValueToOutputConnector(event: ConnectorEvent) {
@@ -113,36 +131,13 @@ export class Block {
         }
     }
 
-    public addOutputConnector(id: string, type: Types.ConnectorType, name: string = null, argTypes: Types.Type[] = null): Connector<boolean|number|object|Message> {
-        let connector: Connector<boolean|number|object|Message>;
+    /*******************************************
+     *                                         *
+     *    CONNECTOR API                        *
+     *                                         *
+     *******************************************/
 
-        switch (type) {
-            case Types.ConnectorType.DigitalOutput: {
-                connector = new DigitalConnector(this, id, name, type);
-                break;
-            }
-            case Types.ConnectorType.AnalogOutput: {
-                connector = new AnalogConnector(this, id, name, type);
-                break;
-            }
-            case Types.ConnectorType.MessageOutput: {
-                connector = new MessageConnector(this, id, name, type, argTypes);
-                break;
-            }
-            case Types.ConnectorType.JsonOutput: {
-                connector = new JsonConnector(this, id, name, type);
-                break;
-            }
-            default: {
-                console.error('Block::addOutputConnector - cannot add connector with type ' + type + ' as output connector.');
-                return null;
-            }
-        }
-
-        this.outputConnectors.push(connector);
-
-        return connector;
-    }
+    // INPUT
 
     public addInputConnector(id: string, type: Types.ConnectorType, name: string = null, argTypes: Types.Type[] = null): Connector<boolean|number|object|Message> {
         let connector: Connector<boolean|number|object|Message>;
@@ -171,17 +166,13 @@ export class Block {
         }
 
         this.inputConnectors.push(connector);
+        this.emit(this, new ConnectorAddedEvent(connector));
+
         return connector;
     }
 
-    public removeOutputConnector(connector: Connector<boolean|number|object|Message>): void {
-        if (connector) {
-            this.disconnectConnectionFromConnector(connector);
-            let index = this.outputConnectors.indexOf(connector);
-            if (index > -1) {
-                this.outputConnectors.splice(index, 1);
-            }
-        }
+    public getInputConnectors(): Array<Connector<boolean|number|object|Message>> {
+        return this.inputConnectors;
     }
 
     public removeInputConnector(connector: Connector<boolean|number|object|Message>): void {
@@ -190,9 +181,61 @@ export class Block {
             let index = this.inputConnectors.indexOf(connector);
             if (index > -1) {
                 this.inputConnectors.splice(index, 1);
+                this.emit(this, new ConnectorRemovedEvent(connector));
             }
         }
     }
+
+    // OUTPUT
+
+    public addOutputConnector(id: string, type: Types.ConnectorType, name: string = null, argTypes: Types.Type[] = null): Connector<boolean|number|object|Message> {
+        let connector: Connector<boolean|number|object|Message>;
+
+        switch (type) {
+            case Types.ConnectorType.DigitalOutput: {
+                connector = new DigitalConnector(this, id, name, type);
+                break;
+            }
+            case Types.ConnectorType.AnalogOutput: {
+                connector = new AnalogConnector(this, id, name, type);
+                break;
+            }
+            case Types.ConnectorType.MessageOutput: {
+                connector = new MessageConnector(this, id, name, type, argTypes);
+                break;
+            }
+            case Types.ConnectorType.JsonOutput: {
+                connector = new JsonConnector(this, id, name, type);
+                break;
+            }
+            default: {
+                console.error('Block::addOutputConnector - cannot add connector with type ' + type + ' as output connector.');
+                return null;
+            }
+        }
+
+        this.outputConnectors.push(connector);
+        this.emit(this, new ConnectorAddedEvent(connector));
+
+        return connector;
+    }
+
+    public getOutputConnectors(): Array<Connector<boolean|number|object|Message>> {
+        return this.outputConnectors;
+    }
+
+    public removeOutputConnector(connector: Connector<boolean|number|object|Message>): void {
+        if (connector) {
+            this.disconnectConnectionFromConnector(connector);
+            let index = this.outputConnectors.indexOf(connector);
+            if (index > -1) {
+                this.outputConnectors.splice(index, 1);
+                this.emit(this, new ConnectorRemovedEvent(connector));
+            }
+        }
+    }
+
+    // EXTERNAL INPUT
 
     protected addExternalInputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes: Types.Type[] = null): ExternalConnector<any> {
         if (type === Types.ConnectorType.DigitalInput) {
@@ -214,6 +257,21 @@ export class Block {
         return null;
     }
 
+    public getExternalInputConnectors(): Array<ExternalConnector<any>> {
+        return this.externalInputConnectors;
+    }
+
+    protected removeExternalInputConnector(connector: ExternalConnector<any>): void {
+        if (connector) {
+            let index = this.externalInputConnectors.indexOf(connector);
+            if (index > -1) {
+                this.externalInputConnectors.splice(index, 1);
+            }
+        }
+    }
+
+    // EXTERNAL OUTPUT
+
     protected addExternalOutputConnector(targetId: string, name: string, type: Types.ConnectorType, argTypes: Types.Type[] = null): ExternalConnector<any> {
         if (type === Types.ConnectorType.DigitalOutput) {
             let connector: ExternalConnector<any> = new ExternalDigitalConnector(this, targetId, name, ExternalConnectorType.Output);
@@ -234,13 +292,8 @@ export class Block {
         return null;
     }
 
-    protected removeExternalInputConnector(connector: ExternalConnector<any>): void {
-        if (connector) {
-            let index = this.externalInputConnectors.indexOf(connector);
-            if (index > -1) {
-                this.externalInputConnectors.splice(index, 1);
-            }
-        }
+    public getExternalOutputConnectors(): Array<ExternalConnector<any>> {
+        return this.externalOutputsConnectors;
     }
 
     protected removeExternalOutputConnector(connector: ExternalConnector<any>): void {
@@ -252,11 +305,19 @@ export class Block {
         }
     }
 
-    // config properties
+    /*******************************************
+     *                                         *
+     *    CONFIG PROPERTY API                  *
+     *                                         *
+     *******************************************/
 
     public addConfigProperty(type: Types.ConfigPropertyType, id: string, displayName: string, defaultValue: any, config?: any) {
-        let configProperty: ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, this.emitConfigChanged.bind(this), config);
+        let configProperty: ConfigProperty = new ConfigProperty(type, id, displayName, defaultValue, config);
         this.configProperties.push(configProperty);
+        configProperty.listenEvent('dataChanged', (e) => {
+            this.emitConfigChanged();
+        });
+        this.emit(this, new ConfigPropertyAddedEvent(configProperty));
         return configProperty;
     }
 
@@ -269,39 +330,8 @@ export class Block {
             let index = this.configProperties.indexOf(configProperty);
             if (index > -1) {
                 this.configProperties.splice(index, 1);
+                this.emit(this, new ConfigPropertyRemovedEvent(configProperty));
             }
-        }
-    }
-
-    // getters for connectors
-
-    public getInputConnectors(): Array<Connector<boolean|number|object|Message>> {
-        return this.inputConnectors;
-    }
-
-    public getOutputConnectors(): Array<Connector<boolean|number|object|Message>> {
-        return this.outputConnectors;
-    }
-
-    public getExternalInputConnectors(): Array<ExternalConnector<any>> {
-        return this.externalInputConnectors;
-    }
-
-    public getExternalOutputConnectors(): Array<ExternalConnector<any>> {
-        return this.externalOutputsConnectors;
-    }
-
-
-    private initializationCallbacks: Array<() => void> = [];
-
-    public registerInitializationCallback(callback: () => void): void {
-        this.initializationCallbacks.push(callback);
-    }
-
-    public initialize(): void {
-        this.initializationCallbacks.forEach(callback => callback());
-        if (this.renderer) {
-            this.renderer.refresh();
         }
     }
 
@@ -319,9 +349,7 @@ export class Block {
             this.outputChanged(event);
         }
 
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
     }
 
     protected outputChanged(event: ConnectorEvent): void {
@@ -343,9 +371,7 @@ export class Block {
             this.inputChanged(event);
         }
 
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
     }
 
     protected inputChanged(event: ConnectorEvent): void {
@@ -360,9 +386,7 @@ export class Block {
     public _externalOutputEvent(event: ExternalConnectorEvent) {
         this.externalOutputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
         this.externalOutputEvent(event);
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
     }
 
     public externalOutputEvent(event: ExternalConnectorEvent): void {
@@ -377,9 +401,7 @@ export class Block {
     public _externalInputEvent(event: ExternalConnectorEvent) {
         this.externalInputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
         this.externalInputEvent(event);
-        if (this.renderer) {
-            this.renderer.refresh();
-        }
+        // TODO render refresh?
     }
 
     public externalInputEvent(event: ExternalConnectorEvent): void {
@@ -448,9 +470,7 @@ export class Block {
             this.disconnectConnectionFromConnector(connector);
         });
 
-        if (this.renderer) {
-            this.renderer.destroy();
-        }
+        this.emit(this, new DestroyEvent());
 
         if (this.controller) {
             this.controller._removeBlock(this);
@@ -482,19 +502,10 @@ export class Block {
     public configChanged(): void {
     }
 
-    public onMouseDrag(event: {dx: number, dy: number}): boolean { return false; }
-    public onMouseClick(): void {}
-    public onMouseDown(): void {}
-    public onMouseUp(): void {}
-
     // renderer methods
 
     public isInterface(): boolean {
         return false;
-    }
-
-    public rendererGetDisplayName(): string {
-        return this.visualType;
     }
 
     public rendererGetBlockName(): string {
@@ -507,17 +518,5 @@ export class Block {
 
     public rendererIsHwAttached(): boolean {
         return false;
-    }
-
-    public get blockId(): string {
-        return this._blockId;
-    }
-
-    public get versionId(): string {
-        return this._versionId;
-    }
-
-    public set versionId(version: string) {
-        this._versionId = version;
     }
 }

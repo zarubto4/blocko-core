@@ -1,6 +1,7 @@
-import { Types } from 'common-lib';
+import { Types, Events } from 'common-lib';
+import { DataChangedEvent } from './Events';
 
-export class ConfigProperty {
+export class ConfigProperty extends Events.Emitter<DataChangedEvent> {
 
     private _name: string;
     private _displayName: string;
@@ -8,21 +9,16 @@ export class ConfigProperty {
     private _type: Types.ConfigPropertyType;
 
     private _value: any;
-    private _changeCallbacks: Array<() => void> = [];
 
-    public constructor(type: Types.ConfigPropertyType, name: string, displayName: string, defaultValue: any, changeCallback: () => void, config?: any) {
+    public constructor(type: Types.ConfigPropertyType, name: string, displayName: string, defaultValue: any, config?: any) {
+        super();
         this._type = type;
         this._name = name;
         this._displayName = displayName;
         this._config = config || {};
         this._value = defaultValue;
-        this._changeCallbacks.push(changeCallback);
 
         this.validateOptions();
-    }
-
-    public registerChangeCallback(callback: () => void): void {
-        this._changeCallbacks.push(callback);
     }
 
     protected validateOptions(): boolean {
@@ -93,8 +89,6 @@ export class ConfigProperty {
 
     set value(value: any) {
         this._value = value;
-        this._changeCallbacks.forEach(callback => {
-            callback();
-        });
+        this.emit(this, new DataChangedEvent());
     }
 }

@@ -3,11 +3,6 @@ import { ConfigProperty } from '../../Core';
 export declare class Switch extends DigitalInput {
     protected switchValue: ConfigProperty;
     constructor(id: string);
-    rendererGetDisplayName(): string;
-    onMouseClick(): void;
-    onMouseDrag(event: {
-        dx: number;
-        dy: number;
-    }): boolean;
+    initialize(): void;
     configChanged(): void;
 }

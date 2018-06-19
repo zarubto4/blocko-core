@@ -4,10 +4,6 @@ export declare class AnalogInput extends Block {
     protected currentValue: number;
     protected analogValue: ConfigProperty;
     constructor(id: string);
-    rendererGetDisplayName(): string;
-    onMouseDrag(e: {
-        dx: number;
-        dy: number;
-    }): boolean;
+    initialize(): void;
     configChanged(): void;
 }

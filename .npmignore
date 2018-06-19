@@ -5,3 +5,4 @@ tests
 CHANGELOG.txt
 README.md
 tsconfig.json
+tslint.json

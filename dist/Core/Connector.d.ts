@@ -1,8 +1,8 @@
 import { Message } from './Message';
 import { Block } from './Block';
 import { Connection } from './Connection';
-import { Types } from 'common-lib';
-import { IRenderer } from './Renderer';
+import { Types, Events } from 'common-lib';
+import { IOEvent } from './Events';
 export declare enum ConnectorEventType {
     ValueChange = 0,
     NewMessage = 1,
@@ -14,9 +14,8 @@ export interface ConnectorEvent {
     value: boolean | number | object | Message;
     interfaceId?: string;
 }
-export declare abstract class Connector<T extends boolean | number | object | Message> {
+export declare abstract class Connector<T extends boolean | number | object | Message> extends Events.Emitter<IOEvent> {
     block: Block;
-    renderer: IRenderer;
     connections: Array<Connection>;
     id: string;
     name: string;
@@ -56,7 +55,7 @@ export declare class MessageConnector extends Connector<Message> {
     _inputSetValue(value: Message, interfaceId?: string): void;
     isMessage(): boolean;
     canConnect(target: Connector<Message>): boolean;
-    readonly stringArgTypes: string[];
+    readonly stringArgTypes: Array<string>;
 }
 export declare class JsonConnector extends Connector<object> {
     constructor(block: Block, id: string, name: string, type: Types.ConnectorType);

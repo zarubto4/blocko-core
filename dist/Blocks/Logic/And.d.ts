@@ -5,8 +5,7 @@ export declare class And extends Block {
     protected confInputsCount: ConfigProperty;
     protected confNegate: ConfigProperty;
     constructor(id: string);
-    protected afterControllerSet(): void;
-    rendererGetDisplayName(): string;
+    initialize(): void;
     configChanged(): void;
     inputsChanged(): void;
     protected inputChanged(event: any): void;

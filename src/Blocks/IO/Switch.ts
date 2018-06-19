@@ -8,30 +8,13 @@ export class Switch extends DigitalInput {
 
     public constructor(id: string) {
         super(id, 'switch');
+        this.name = 'Switch';
+        this.description = 'Switch block is a digital input into blocko, which holds the value until it is switched again.';
+    }
 
+    public initialize(): void {
+        super.initialize();
         this.switchValue = this.addConfigProperty(Types.ConfigPropertyType.Boolean, 'switchValue', 'Switch value', false, { controlPanel: true });
-    }
-
-    public rendererGetDisplayName(): string {
-        return 'Switch';
-    }
-
-    public onMouseClick(): void {
-        if (this.controller) {
-            let event: ConnectorEvent = {
-                connector: this.connectorOutput,
-                eventType:  ConnectorEventType.ValueChange,
-                value: !this.connectorOutput.value
-            };
-            this.sendValueToOutputConnector(event);
-            if (this.renderer) {
-                // this.renderer.refreshDisplayName();
-            }
-        }
-    }
-
-    public onMouseDrag(event: {dx: number, dy: number}): boolean {
-        return true;
     }
 
     public configChanged(): void {

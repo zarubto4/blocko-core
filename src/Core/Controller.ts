@@ -1,4 +1,4 @@
-import { IBlockRenderer, Block } from './Block';
+import { Block } from './Block';
 import { Connection } from './Connection';
 import { BlockClass, BlockRegistration } from './BlockRegistration';
 import { Connector, ConnectorEventType } from './Connector';
@@ -10,16 +10,14 @@ import { InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface } fr
 import { TSBlock } from '../Blocks/TSBlock/TSBlock';
 import { Message, MessageJson } from './Message';
 import { BaseInterfaceBlock, WebHook } from '../Blocks';
-import { IRenderer } from './Renderer';
 import { Database } from './Database';
-
-export interface IRendererFactory {
-    factoryBlockRenderer(block: Block): IBlockRenderer;
-    factoryConnectionRenderer(connection: Connection): IRenderer;
-}
+import { Events } from 'common-lib';
+import {
+    BindInterfaceEvent, BlockAddedEvent, BlockRemovedEvent, ConnectionAddedEvent,
+    ConnectionRemovedEvent
+} from './Events';
 
 export interface BlockoInstanceConfig {
-    renderController?: IRendererFactory;
     dbConnectionString?: string;
     inputEnabled?: boolean;
     outputEnabled?: boolean;
@@ -32,15 +30,13 @@ export interface BoundInterface {
     group?: boolean;
 }
 
-export class Controller {
+export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent|ConnectionAddedEvent|ConnectionRemovedEvent> {
 
     blocksRegister: Array<BlockRegistration>;
 
     // Blocks storage
     blocks: Array<Block>;
     connections: Array<Connection>;
-
-    public rendererFactory: IRendererFactory;
 
     public safeRun: boolean = false;
 
@@ -55,19 +51,14 @@ export class Controller {
     protected _servicesHandler: ServicesHandler;
 
     public constructor(configuration?: BlockoInstanceConfig) {
+        super();
         this.blocks = [];
         this.connections = [];
         this.blocksRegister = [];
         this._servicesHandler = new ServicesHandler('BlockoServiceHandler');
 
-        if (configuration) {
-            if (configuration.renderController) {
-                this.rendererFactory = configuration.renderController
-            }
-
-            if (configuration.dbConnectionString) {
-                Database.connectionString = configuration.dbConnectionString;
-            }
+        if (configuration && configuration.dbConnectionString) {
+            Database.connectionString = configuration.dbConnectionString;
         }
     }
 
@@ -87,14 +78,14 @@ export class Controller {
 
     public registerBlock(blockClass: BlockClass): void {
         let b: Block = new blockClass('register');
-        let blockRegistration: BlockRegistration = new BlockRegistration(blockClass, b.type, b.visualType, b.rendererGetDisplayName());
+        let blockRegistration: BlockRegistration = new BlockRegistration(blockClass, b.type, b.name);
         this.blocksRegister.push(blockRegistration);
     }
 
-    public getBlockClassByVisualType(visualType: string): BlockClass {
+    public getBlockClassByType(type: string): BlockClass {
         let blockClass: BlockClass = null;
         this.blocksRegister.forEach((blockRegistration: BlockRegistration) => {
-            if (blockRegistration.visualType === visualType) {
+            if (blockRegistration.type === type) {
                 blockClass = blockRegistration.blockClass;
             }
         });
@@ -119,16 +110,12 @@ export class Controller {
         block.registerExternalInputEventCallback((connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => this.externalInputConnectorEvent(connector, eventType, value));
         block.registerExternalOutputEventCallback((connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => this.externalOutputConnectorEvent(connector, eventType, value));
 
-        if (this.factoryBlockRendererCallback) {
-            block.renderer = this.factoryBlockRendererCallback(block);
-        } else if (this.rendererFactory) {
-            block.renderer = this.rendererFactory.factoryBlockRenderer(block);
-        }
-
         block.controller = this;
 
         this.blocks.push(block);
+
         this.blockAddedCallbacks.forEach(callback => callback(block));
+        this.emit(null, new BlockAddedEvent(block)); // Must be emitted before initialization
 
         block.initialize(); // TODO: only test for defaults!
 
@@ -142,13 +129,10 @@ export class Controller {
     }
 
     public _addConnection(connection: Connection) {
-        if (this.factoryConnectionRendererCallback) {
-            connection.renderer = this.factoryConnectionRendererCallback(connection);
-        } else if (this.rendererFactory) {
-            connection.renderer = this.rendererFactory.factoryConnectionRenderer(connection);
-        }
 
         this.connections.push(connection);
+
+        this.emit(this, new ConnectionAddedEvent(connection));
 
         if (connection.getInputConnector().isDigital() || connection.getInputConnector().isAnalog()) {
             connection.getInputConnector()._inputSetValue(connection.getOutputConnector().value);
@@ -177,6 +161,8 @@ export class Controller {
                 connection.getInputConnector()._inputSetValue(0);
             }
 
+            this.emit(this, new ConnectionRemovedEvent(connection));
+
             this.connectionRemovedCallbacks.forEach(callback => callback(connection));
         }
 
@@ -193,6 +179,7 @@ export class Controller {
         let index = this.blocks.indexOf(block);
         if (index > -1) {
             this.blocks.splice(index, 1);
+            this.emit(this, new BlockRemovedEvent(block));
             this.blockRemovedCallbacks.forEach(callback => callback(block));
         }
 
@@ -242,18 +229,6 @@ export class Controller {
             id = 'I-' + this.interfaceIndex;
         } while (this.getBlockById(id + '-IN') != null);
         return id;
-    }
-
-    private factoryBlockRendererCallback: (block: Block) => IBlockRenderer = null;
-
-    public registerFactoryBlockRendererCallback(callback: (block: Block) => IBlockRenderer): void {
-        this.factoryBlockRendererCallback = callback;
-    }
-
-    private factoryConnectionRendererCallback: (connection: Connection) => IRenderer = null;
-
-    public registerFactoryConnectionRendererCallback(callback: (connection: Connection) => IRenderer): void {
-        this.factoryConnectionRendererCallback = callback;
     }
 
     // Internal connectors
@@ -570,40 +545,6 @@ export class Controller {
     }
 
     /**
-     * Binds specific HW or HW group to the given interface block.
-     * @param {BaseInterfaceBlock} block to bind to
-     * @param {string} targetId of WH
-     * @param {boolean} group
-     */
-    public bindInterface(block: BaseInterfaceBlock, targetId: string, group?: boolean): BoundInterface {
-        if (block.interfaceId !== block.targetId) {
-            let other = block.getOther();
-
-            block.setTargetId(targetId);
-            other.setTargetId(targetId);
-
-            if (group) {
-                block.group = group;
-                other.group = group;
-            }
-
-            block.renderer.refresh();
-            other.renderer.refresh();
-
-            return {
-                targetId: targetId,
-                interfaceId: block.interfaceId,
-                group: block.group
-            }
-
-        } else {
-            console.warn('Controller::bindInterface - not found block');
-            // TODO throw some error or tell why is not added
-            return null;
-        }
-    }
-
-    /**
      * Gets all interfaces that were bound to hardware or grid
      * @returns {Array<BoundInterface>}
      */
@@ -653,101 +594,38 @@ export class Controller {
     }
 
     // Saving and loading
-    public getDataJson(): string {
-        let json: any = {
+    public getDataJson(): object {
+        let data: object = {
             blocks: {}
         };
 
         this.blocks.forEach((block: Block) => {
-            let blockJson: any = {
-                editor: {},
-                outputs: {}
-            };
-            blockJson['type'] = block.type;
-            blockJson['visualType'] = block.visualType;
-
-            blockJson['config'] = block.getConfigData();
-
-            blockJson['editor']['x'] = block.x;
-            blockJson['editor']['y'] = block.y;
-
-            let outputs: Array<Connector<boolean|number|object|Message>> = block.getOutputConnectors();
-            outputs.forEach((connector: Connector<boolean|number|object|Message>) => {
-                let connectionsJson: Array<any> = [];
-
-                connector.connections.forEach((connection: Connection) => {
-                    let otherConnector: Connector<boolean|number|object|Message> = connection.getOtherConnector(connector);
-                    connectionsJson.push({
-                        'block': otherConnector.block.id,
-                        'connector': otherConnector.id
-                    })
-                });
-
-                blockJson['outputs'][connector.id] = connectionsJson;
-            });
-
-            if (block instanceof BaseInterfaceBlock) {
-                blockJson['interface'] = block.interface;
-                blockJson['targetId'] = block.targetId;
-                blockJson['group'] = block.group;
-            }
-
-            if (block instanceof TSBlock) {
-                blockJson['code'] = block.code;
-                blockJson['designJson'] = block.designJson;
-            }
-
-            json['blocks'][block.id] = blockJson;
+            data['blocks'][block.id] = block.getDataJson();
         });
 
-        return JSON.stringify(json);
+        return data;
     }
 
-    public setDataJson(jsonString: string): string {
-
+    public setDataJson(data: object): string {
         try {
-            // Begin of load
-            let json: any = JSON.parse(jsonString);
-
-            // TODO: make it better!
-
-            if (json && json['blocks']) {
+            if (data && data['blocks']) {
                 this.removeAllBlocks();
 
-                let blocks: any = json['blocks'];
+                let blocks: any = data['blocks'];
 
                 // first pass - init blocks
                 for (let id in blocks) {
                     if (blocks.hasOwnProperty(id)) {
                         let block: any = blocks[id];
 
-                        let bc: BlockClass = this.getBlockClassByVisualType(block['visualType']);
+                        let bc: BlockClass = this.getBlockClassByType(block['visualType'] ? block['visualType'] : block['type']); // support visualType for backwards compatibility
 
-                        let blockObj: Block = null;
-                        if (bc === TSBlock) {
-                            blockObj = new TSBlock(id, '', block['designJson']);
-                        } else {
-                            blockObj = new bc(id);
-                        }
+                        let blockObj: Block = new bc(id);
 
-                        if (block['interface'] && blockObj instanceof BaseInterfaceBlock) {
-                            blockObj.setInterface(block['interface']);
-                            if (block['targetId']) {
-                                blockObj.setTargetId(block['targetId']);
-                            }
-                            if (block['group']) {
-                                blockObj.group = block['group'];
-                            }
-                        }
-
-                        blockObj.x = block['editor']['x'];
-                        blockObj.y = block['editor']['y'];
+                        blockObj.setDataJson(block);
 
                         this.addBlock(blockObj);
 
-                        if (blockObj instanceof TSBlock) {
-                            blockObj.setCode(block['code']);
-                        }
                         blockObj.setConfigData(block['config']);
                     }
                 }
@@ -781,7 +659,6 @@ export class Controller {
                 }
             }
             // this._emitDataChanged();
-            // End of load
         } catch (error) {
             this.removeAllBlocks();
             // console.error(error);
