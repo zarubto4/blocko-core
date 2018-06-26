@@ -1,8 +1,11 @@
 import { DigitalInput } from './DigitalInput';
-import { ConnectorEvent } from '../../Core';
+import { ConfigProperty, ConnectorEvent } from '../../Core';
 import { ConnectorEventType } from '../../Core/Connector';
+import { Types } from 'common-lib';
 
 export class PushButton extends DigitalInput {
+
+    protected buttonValue: ConfigProperty;
 
     public constructor(id: string) {
         super(id, 'pushButton');
@@ -10,36 +13,19 @@ export class PushButton extends DigitalInput {
         this.description = 'TODO';
     }
 
-    // TODO
-    /*public onMouseDown(): void {
+    public initialize(): void {
+        super.initialize();
+        this.buttonValue = this.addConfigProperty(Types.ConfigPropertyType.Boolean, 'buttonValue', 'Button value', false, { controlPanel: true, controlPanelButton: true });
+    }
+
+    public configChanged(): void {
         if (this.controller) {
             let event: ConnectorEvent = {
                 connector: this.connectorOutput,
                 eventType:  ConnectorEventType.ValueChange,
-                value: true
+                value: this.buttonValue.value
             };
             this.sendValueToOutputConnector(event);
-            if (this.renderer) {
-                // this.renderer.refreshDisplayName();
-            }
         }
     }
-
-    public onMouseUp(): void {
-        if (this.controller) {
-            let event: ConnectorEvent = {
-                connector: this.connectorOutput,
-                eventType:  ConnectorEventType.ValueChange,
-                value: false
-            };
-            this.sendValueToOutputConnector(event);
-            if (this.renderer) {
-                // this.renderer.refreshDisplayName();
-            }
-        }
-    }
-
-    public onMouseDrag(event: {dx: number, dy: number}): boolean {
-        return true;
-    }*/
 }
