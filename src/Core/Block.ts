@@ -22,13 +22,13 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
 
     protected _controller: Controller = null;
 
+    protected _data: object; // Object that can contain any additional data
+
     protected inputConnectors: Array<Connector<boolean|number|object|Message>>;
     protected outputConnectors: Array<Connector<boolean|number|object|Message>>;
     protected externalInputConnectors: Array<ExternalConnector<any>>;
     protected externalOutputsConnectors: Array<ExternalConnector<any>>;
     protected configProperties: Array<ConfigProperty>;
-
-    protected _color: string = null;
 
     public id: string; // Id in blocko program (assigned from blocko)
     public name: string;
@@ -45,6 +45,8 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
         super();
         this.id = id;
         this.type = type;
+
+        this._data = {};
 
         this.inputConnectors = [];
         this.outputConnectors = [];
@@ -71,6 +73,10 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
         }
     }
 
+    public get data(): object {
+        return this._data;
+    }
+
     protected afterControllerSet() {}
 
     public getDataJson(): object {
@@ -80,6 +86,7 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
             name: this.name,
             description: this.description,
             config: this.getConfigData(),
+            data: this._data,
             outputs: {}
         };
 
@@ -112,6 +119,10 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
 
         if (data['description']) {
             this.description = data['description'];
+        }
+
+        if (data['data']) {
+            this._data = data['data'];
         }
     }
 

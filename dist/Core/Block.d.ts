@@ -7,12 +7,12 @@ import { Types, Events } from 'common-lib';
 import { BindInterfaceEvent, ConfigPropertyAddedEvent, ConfigPropertyRemovedEvent, ConnectorAddedEvent, ConnectorRemovedEvent, DataChangedEvent, DestroyEvent, RuntimeErrorEvent } from './Events';
 export declare abstract class Block extends Events.Emitter<ConnectorAddedEvent | ConnectorRemovedEvent | ConfigPropertyAddedEvent | ConfigPropertyRemovedEvent | DestroyEvent | RuntimeErrorEvent | BindInterfaceEvent | DataChangedEvent> {
     protected _controller: Controller;
+    protected _data: object;
     protected inputConnectors: Array<Connector<boolean | number | object | Message>>;
     protected outputConnectors: Array<Connector<boolean | number | object | Message>>;
     protected externalInputConnectors: Array<ExternalConnector<any>>;
     protected externalOutputsConnectors: Array<ExternalConnector<any>>;
     protected configProperties: Array<ConfigProperty>;
-    protected _color: string;
     id: string;
     name: string;
     description: string;
@@ -23,6 +23,7 @@ export declare abstract class Block extends Events.Emitter<ConnectorAddedEvent |
     constructor(id: string, type: string);
     abstract initialize(): void;
     controller: Controller;
+    readonly data: object;
     protected afterControllerSet(): void;
     getDataJson(): object;
     setDataJson(data: object): void;

@@ -10,7 +10,6 @@ class Block extends common_lib_1.Events.Emitter {
     constructor(id, type) {
         super();
         this._controller = null;
-        this._color = null;
         this.configPropertiesDescription = null;
         this._codeBlock = false;
         this.outputEventCallbacks = [];
@@ -20,6 +19,7 @@ class Block extends common_lib_1.Events.Emitter {
         this.configChangedCallbacks = [];
         this.id = id;
         this.type = type;
+        this._data = {};
         this.inputConnectors = [];
         this.outputConnectors = [];
         this.externalInputConnectors = [];
@@ -35,6 +35,9 @@ class Block extends common_lib_1.Events.Emitter {
             this.afterControllerSet();
         }
     }
+    get data() {
+        return this._data;
+    }
     afterControllerSet() { }
     getDataJson() {
         let data = {
@@ -43,6 +46,7 @@ class Block extends common_lib_1.Events.Emitter {
             name: this.name,
             description: this.description,
             config: this.getConfigData(),
+            data: this._data,
             outputs: {}
         };
         this.outputConnectors.forEach((connector) => {
@@ -67,6 +71,9 @@ class Block extends common_lib_1.Events.Emitter {
         }
         if (data['description']) {
             this.description = data['description'];
+        }
+        if (data['data']) {
+            this._data = data['data'];
         }
     }
     get codeBlock() {
