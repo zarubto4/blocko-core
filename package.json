@@ -1,6 +1,6 @@
 {
   "name": "blocko-core",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "BLOCKOcore",
   "main": "dist/index.js",
   "typings": "dist/index",
@@ -22,7 +22,7 @@
   "dependencies": {
     "atob": "^2.1.1",
     "btoa": "^1.2.1",
-    "common-lib": "git+ssh://git@github.com:ByzanceIoT/common-lib.git#v0.0.33",
+    "common-lib": "git+ssh://git@github.com:ByzanceIoT/common-lib.git#v0.0.34",
     "detect-node": "^2.0.3",
     "later": "github:RickCarlino/later",
     "node-fetch": "^1.6.3",
