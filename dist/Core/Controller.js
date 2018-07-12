@@ -72,8 +72,8 @@ class Controller extends common_lib_1.Events.Emitter {
         }
         block.registerInputEventCallback((connector, eventType, value) => this.inputConnectorEvent(connector, eventType, value));
         block.registerOutputEventCallback((connector, eventType, value) => this.outputConnectorEvent(connector, eventType, value));
-        block.registerExternalInputEventCallback((connector, eventType, value) => this.externalInputConnectorEvent(connector, eventType, value));
-        block.registerExternalOutputEventCallback((connector, eventType, value) => this.externalOutputConnectorEvent(connector, eventType, value));
+        block.registerExternalInputEventCallback(this.externalInputConnectorEvent.bind(this));
+        block.registerExternalOutputEventCallback(this.externalOutputConnectorEvent.bind(this));
         block.controller = this;
         this.blocks.push(block);
         this.blockAddedCallbacks.forEach(callback => callback(block));
@@ -170,11 +170,11 @@ class Controller extends common_lib_1.Events.Emitter {
     outputConnectorEvent(connector, eventType, value) {
         this.outputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
-    externalInputConnectorEvent(connector, eventType, value) {
-        this.externalInputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
+    externalInputConnectorEvent(block, event) {
+        this.externalInputConnectorEventCallbacks.forEach(callback => callback(block, event));
     }
-    externalOutputConnectorEvent(connector, eventType, value) {
-        this.externalOutputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
+    externalOutputConnectorEvent(block, event) {
+        this.externalOutputConnectorEventCallbacks.forEach(callback => callback(block, event));
     }
     registerErrorCallback(callback) {
         this.errorCallbacks.push(callback);

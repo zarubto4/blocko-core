@@ -8,7 +8,7 @@ import {
 } from '../Core/ExternalConnector';
 import { Message, MessageHelpers } from '../Core/Message';
 import { Types } from 'common-lib';
-import { Block, ConnectorEvent, DigitalConnector, ExternalConnectorEvent } from '../Core';
+import { Block, ConnectorEvent, ConnectorEventType, DigitalConnector, ExternalConnectorEvent } from '../Core';
 import { BoundInterface } from '../Core/Controller';
 import { BindInterfaceEvent } from '../Core/Events';
 
@@ -409,19 +409,25 @@ export abstract class BaseInterfaceBlock extends Block {
     public externalInputEvent(event: ExternalConnectorEvent): void {
         if (event.connector) {
             let name = '';
-            if (event.connector instanceof ExternalAnalogConnector) {
-                name = 'a_' + event.connector.name;
-            }
-            if (event.connector instanceof ExternalDigitalConnector) {
-                name = 'd_' + event.connector.name;
-            }
-            if (event.connector instanceof ExternalMessageConnector) {
-                name = 'm_' + event.connector.name;
+
+            switch (event.connector.type) {
+                case 'digital': {
+                    name = 'd_' + event.connector.name;
+                    break;
+                }
+                case 'analog': {
+                    name = 'a_' + event.connector.name;
+                    break;
+                }
+                case 'message': {
+                    name = 'm_' + event.connector.name;
+                    break;
+                }
             }
 
             let con = this.getOutputConnectorById(name);
             if (con) {
-                con._outputSetValue(event.value, event.interfaceId);
+                con._outputSetValue(event.value, event.eventType === ConnectorEventType.GroupInput ? event.targetId : null);
             }
         }
     }

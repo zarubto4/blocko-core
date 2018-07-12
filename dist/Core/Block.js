@@ -283,7 +283,7 @@ class Block extends common_lib_1.Events.Emitter {
         this.externalOutputEventCallbacks.push(callback);
     }
     _externalOutputEvent(event) {
-        this.externalOutputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
+        this.externalOutputEventCallbacks.forEach(callback => callback(this, event));
         this.externalOutputEvent(event);
     }
     externalOutputEvent(event) {
@@ -292,7 +292,7 @@ class Block extends common_lib_1.Events.Emitter {
         this.externalInputEventCallbacks.push(callback);
     }
     _externalInputEvent(event) {
-        this.externalInputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
+        this.externalInputEventCallbacks.forEach(callback => callback(this, event));
         this.externalInputEvent(event);
     }
     externalInputEvent(event) {

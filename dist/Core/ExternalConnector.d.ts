@@ -7,10 +7,13 @@ export declare enum ExternalConnectorType {
     Output = 1,
 }
 export interface ExternalConnectorEvent {
-    connector: ExternalConnector<boolean | number | Message>;
+    targetId: string;
+    connector: {
+        name: string;
+        type: 'digital' | 'analog' | 'message';
+    };
     eventType: ConnectorEventType;
     value: boolean | number | Message;
-    interfaceId?: string;
 }
 export declare class ExternalConnector<T extends boolean | number | Message> {
     block: Block;

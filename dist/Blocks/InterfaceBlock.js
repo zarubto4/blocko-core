@@ -319,18 +319,23 @@ class BaseInterfaceBlock extends Core_1.Block {
     externalInputEvent(event) {
         if (event.connector) {
             let name = '';
-            if (event.connector instanceof ExternalConnector_1.ExternalAnalogConnector) {
-                name = 'a_' + event.connector.name;
-            }
-            if (event.connector instanceof ExternalConnector_1.ExternalDigitalConnector) {
-                name = 'd_' + event.connector.name;
-            }
-            if (event.connector instanceof ExternalConnector_1.ExternalMessageConnector) {
-                name = 'm_' + event.connector.name;
+            switch (event.connector.type) {
+                case 'digital': {
+                    name = 'd_' + event.connector.name;
+                    break;
+                }
+                case 'analog': {
+                    name = 'a_' + event.connector.name;
+                    break;
+                }
+                case 'message': {
+                    name = 'm_' + event.connector.name;
+                    break;
+                }
             }
             let con = this.getOutputConnectorById(name);
             if (con) {
-                con._outputSetValue(event.value, event.interfaceId);
+                con._outputSetValue(event.value, event.eventType === Core_1.ConnectorEventType.GroupInput ? event.targetId : null);
             }
         }
     }

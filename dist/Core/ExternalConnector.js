@@ -27,10 +27,13 @@ class ExternalConnector {
             type = Connector_1.ConnectorEventType.NewMessage;
         }
         let event = {
-            connector: this,
+            targetId: interfaceId ? interfaceId : this._targetId,
+            connector: {
+                name: this._name,
+                type: this instanceof ExternalDigitalConnector ? 'digital' : this instanceof ExternalAnalogConnector ? 'analog' : 'message'
+            },
             eventType: type,
             value: value,
-            interfaceId: interfaceId
         };
         if (this.type === ExternalConnectorType.Input) {
             this.block._externalInputEvent(event);

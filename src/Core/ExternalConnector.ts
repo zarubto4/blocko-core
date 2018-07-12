@@ -6,10 +6,13 @@ import { Types } from 'common-lib';
 export enum ExternalConnectorType {Input, Output}
 
 export interface ExternalConnectorEvent {
-    connector: ExternalConnector<boolean|number|Message>;
+    targetId: string;
+    connector: {
+        name: string;
+        type: 'digital'|'analog'|'message';
+    };
     eventType: ConnectorEventType;
     value: boolean|number|Message;
-    interfaceId?: string;
 }
 
 export class ExternalConnector<T extends boolean|number|Message> {
@@ -40,10 +43,13 @@ export class ExternalConnector<T extends boolean|number|Message> {
             type = ConnectorEventType.NewMessage;
         }
         let event: ExternalConnectorEvent = {
-            connector: this,
+            targetId: interfaceId ? interfaceId : this._targetId,
+            connector: {
+                name: this._name,
+                type: this instanceof ExternalDigitalConnector ? 'digital' : this instanceof ExternalAnalogConnector ? 'analog' : 'message'
+            },
             eventType: type,
             value: value,
-            interfaceId: interfaceId
         };
         if (this.type === ExternalConnectorType.Input) {
             this.block._externalInputEvent(event)

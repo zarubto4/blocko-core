@@ -53,11 +53,11 @@ export declare abstract class Block extends Events.Emitter<ConnectorAddedEvent |
     _inputEvent(event: ConnectorEvent): void;
     protected inputChanged(event: ConnectorEvent): void;
     private externalOutputEventCallbacks;
-    registerExternalOutputEventCallback(callback: (connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
+    registerExternalOutputEventCallback(callback: (block: Block, event: ExternalConnectorEvent) => void): void;
     _externalOutputEvent(event: ExternalConnectorEvent): void;
     externalOutputEvent(event: ExternalConnectorEvent): void;
     private externalInputEventCallbacks;
-    registerExternalInputEventCallback(callback: (connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean | number | Message) => void): void;
+    registerExternalInputEventCallback(callback: (block: Block, event: ExternalConnectorEvent) => void): void;
     _externalInputEvent(event: ExternalConnectorEvent): void;
     externalInputEvent(event: ExternalConnectorEvent): void;
     private configChangedCallbacks;

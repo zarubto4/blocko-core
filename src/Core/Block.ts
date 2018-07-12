@@ -389,13 +389,13 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
     }
 
     // external inputs/outputs
-    private externalOutputEventCallbacks: Array<(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void> = [];
-    public registerExternalOutputEventCallback(callback: (connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void): void {
+    private externalOutputEventCallbacks: Array<(block: Block, event: ExternalConnectorEvent) => void> = [];
+    public registerExternalOutputEventCallback(callback: (block: Block, event: ExternalConnectorEvent) => void): void {
         this.externalOutputEventCallbacks.push(callback);
     }
 
     public _externalOutputEvent(event: ExternalConnectorEvent) {
-        this.externalOutputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
+        this.externalOutputEventCallbacks.forEach(callback => callback(this, event));
         this.externalOutputEvent(event);
         // TODO render refresh?
     }
@@ -404,13 +404,13 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
     }
 
 
-    private externalInputEventCallbacks: Array<(connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void> = [];
-    public registerExternalInputEventCallback(callback: (connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void): void {
+    private externalInputEventCallbacks: Array<(block: Block, event: ExternalConnectorEvent) => void> = [];
+    public registerExternalInputEventCallback(callback: (block: Block, event: ExternalConnectorEvent) => void): void {
         this.externalInputEventCallbacks.push(callback);
     }
 
     public _externalInputEvent(event: ExternalConnectorEvent) {
-        this.externalInputEventCallbacks.forEach(callback => callback(event.connector, event.eventType, event.value));
+        this.externalInputEventCallbacks.forEach(callback => callback(this, event));
         this.externalInputEvent(event);
         // TODO render refresh?
     }

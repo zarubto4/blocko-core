@@ -4,8 +4,10 @@ import { BlockClass, BlockRegistration } from './BlockRegistration';
 import { Connector, ConnectorEventType } from './Connector';
 import { ServicesHandler } from '../Blocks/Libraries/ServiceLib';
 import { Service } from '../Blocks/Services/Service';
-import { ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnector,
-    ExternalMessageConnector } from './ExternalConnector';
+import {
+    ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnector,
+    ExternalMessageConnector, ExternalConnectorEvent
+} from './ExternalConnector';
 import { InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface } from '../Blocks/InterfaceBlock';
 import { TSBlock } from '../Blocks/TSBlock/TSBlock';
 import { Message, MessageJson } from './Message';
@@ -107,8 +109,8 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
         block.registerInputEventCallback((connector: Connector<boolean|number|object|Message>, eventType: ConnectorEventType, value: boolean|number|MessageJson) => this.inputConnectorEvent(connector, eventType, value));
         block.registerOutputEventCallback((connector: Connector<boolean|number|object|Message>, eventType: ConnectorEventType, value: boolean|number|MessageJson) => this.outputConnectorEvent(connector, eventType, value));
 
-        block.registerExternalInputEventCallback((connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => this.externalInputConnectorEvent(connector, eventType, value));
-        block.registerExternalOutputEventCallback((connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => this.externalOutputConnectorEvent(connector, eventType, value));
+        block.registerExternalInputEventCallback(this.externalInputConnectorEvent.bind(this));
+        block.registerExternalOutputEventCallback(this.externalOutputConnectorEvent.bind(this));
 
         block.controller = this;
 
@@ -247,15 +249,15 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
 
     // External connectors
 
-    private externalInputConnectorEventCallbacks: Array<(block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void> = [];
+    private externalInputConnectorEventCallbacks: Array<(block: Block, event: ExternalConnectorEvent) => void> = [];
 
-    public registerExternalInputConnectorEventCallback(callback: (block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void): void {
+    public registerExternalInputConnectorEventCallback(callback: (block: Block, event: ExternalConnectorEvent) => void): void {
         this.externalInputConnectorEventCallbacks.push(callback);
     }
 
-    private externalOutputConnectorEventCallbacks: Array<(block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void> = [];
+    private externalOutputConnectorEventCallbacks: Array<(block: Block, event: ExternalConnectorEvent) => void> = [];
 
-    public registerExternalOutputConnectorEventCallback(callback: (block: Block, connector: ExternalConnector<any>, eventType: ConnectorEventType, value: boolean|number|Message) => void): void {
+    public registerExternalOutputConnectorEventCallback(callback: (block: Block, event: ExternalConnectorEvent) => void): void {
         this.externalOutputConnectorEventCallbacks.push(callback);
     }
 
@@ -281,12 +283,12 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
         this.outputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
     }
 
-    private externalInputConnectorEvent(connector: ExternalAnalogConnector|ExternalDigitalConnector|ExternalMessageConnector, eventType: ConnectorEventType, value: boolean|number|Message): void {
-        this.externalInputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
+    private externalInputConnectorEvent(block: Block, event: ExternalConnectorEvent): void {
+        this.externalInputConnectorEventCallbacks.forEach(callback => callback(block, event));
     }
 
-    private externalOutputConnectorEvent(connector: ExternalAnalogConnector|ExternalDigitalConnector|ExternalMessageConnector, eventType: ConnectorEventType, value: boolean|number|Message): void {
-        this.externalOutputConnectorEventCallbacks.forEach(callback => callback(connector.block, connector, eventType, value));
+    private externalOutputConnectorEvent(block: Block, event: ExternalConnectorEvent): void {
+        this.externalOutputConnectorEventCallbacks.forEach(callback => callback(block, event));
     }
 
     // Error callback
