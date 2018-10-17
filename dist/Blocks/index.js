@@ -23,6 +23,7 @@ __export(require("./IO/Light"));
 __export(require("./IO/PushButton"));
 __export(require("./IO/Switch"));
 __export(require("./IO/WebHook"));
+__export(require("./IO/DatabaseBlock"));
 __export(require("./Logic/And"));
 __export(require("./Logic/Not"));
 __export(require("./Logic/Or"));

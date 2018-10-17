@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const Service_1 = require("./Service");
-const Database_1 = require("../../Core/Database");
 class DatabaseService extends Service_1.Service {
     constructor(configuration = {}) {
         super(configuration);
@@ -12,8 +11,8 @@ class DatabaseService extends Service_1.Service {
     get name() {
         return DatabaseService.serviceName;
     }
-    db(secret) {
-        return new Database_1.DatabaseDao(secret);
+    db(connectionString, databaseName, collectionName) {
+        return this._handler.controller.database.getDao(connectionString, databaseName, collectionName);
     }
 }
 DatabaseService.serviceName = 'dbService';
@@ -24,7 +23,7 @@ DatabaseService.libTypings = `
             /**
              * Get database data access object.
              */
-            db(secret: string): DatabaseDao;
+            db(connectionString: string, databaseName: string, collectionName: string): Promise<DatabaseDao>;
         }
 
 

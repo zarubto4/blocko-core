@@ -10,7 +10,7 @@ export class DatabaseService extends Service {
             /**
              * Get database data access object.
              */
-            db(secret: string): DatabaseDao;
+            db(connectionString: string, databaseName: string, collectionName: string): Promise<DatabaseDao>;
         }
 
 
@@ -31,7 +31,7 @@ export class DatabaseService extends Service {
         return DatabaseService.serviceName
     }
 
-    public db(secret: string): DatabaseDao {
-        return new DatabaseDao(secret);
+    public db(connectionString: string, databaseName: string, collectionName: string): Promise<DatabaseDao> {
+        return this._handler.controller.database.getDao(connectionString, databaseName, collectionName)
     }
 }

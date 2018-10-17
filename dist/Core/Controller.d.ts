@@ -7,6 +7,7 @@ import { Service } from '../Blocks/Services/Service';
 import { ExternalConnectorEvent } from './ExternalConnector';
 import { BlockoTargetInterface } from '../Blocks/InterfaceBlock';
 import { Message, MessageJson } from './Message';
+import { Database } from './Database';
 import { Events } from 'common-lib';
 import { BlockAddedEvent, BlockRemovedEvent, ConnectionAddedEvent, ConnectionRemovedEvent } from './Events';
 export interface BlockoInstanceConfig {
@@ -28,9 +29,11 @@ export declare class Controller extends Events.Emitter<BlockAddedEvent | BlockRe
     gui: boolean;
     configuration: BlockoInstanceConfig;
     protected _servicesHandler: ServicesHandler;
+    protected _database: Database;
     constructor(configuration?: BlockoInstanceConfig);
     registerService(service: Service): void;
     readonly servicesHandler: ServicesHandler;
+    readonly database: Database;
     registerBlocks(blocksClass: Array<BlockClass>): void;
     registerBlock(blockClass: BlockClass): void;
     getBlockClassByType(type: string): BlockClass;

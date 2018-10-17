@@ -3,80 +3,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const isNode = require("detect-node");
 let MongoDb;
 class DatabaseDao {
-    constructor(secret) {
-        if (isNode) {
-            this._database = new Database(secret);
-        }
-    }
-    insert(data) {
-        if (isNode) {
-            this._database.insert(data);
-        }
-    }
-}
-exports.DatabaseDao = DatabaseDao;
-class Database {
-    constructor(secret) {
+    constructor(collection) {
         this._queue = [];
-        if (isNode) {
-            try {
-                MongoDb = require('mongodb');
-            }
-            catch (e) {
-                console.error('require(\'mongodb\') failed. Is mongodb module installed?');
-            }
-        }
-        else {
-            throw new DatabaseError('Database cannot be accessed in the browser.');
-        }
-        MongoDb.MongoClient.connect(Database._connectionString, (error, client) => {
-            if (error) {
-            }
-            else {
-                this._mongoClient = client;
-                this._mongoDb = this._mongoClient.db('byzance-bigdata-00');
-                this._mongoCollection = this._mongoDb.collection(secret);
-            }
-        });
-    }
-    static set connectionString(value) {
-        Database._connectionString = value;
+        this._collection = collection;
     }
     insert(data) {
         this.validateData(data);
-        if (this.isConnected()) {
-            let toInsert;
-            if (this._queue.length > 0) {
-                toInsert = this._queue.slice();
-                this._queue = [];
-            }
-            if (toInsert) {
-                if (Array.isArray(data)) {
-                    toInsert.concat(data);
+        if (isNode) {
+            if (this._collection) {
+                let toInsert;
+                if (this._queue.length > 0) {
+                    toInsert = this._queue.slice();
+                    this._queue = [];
+                }
+                if (toInsert) {
+                    if (Array.isArray(data)) {
+                        toInsert.concat(data);
+                    }
+                    else {
+                        toInsert.push(data);
+                    }
+                    this.doInsert(toInsert);
                 }
                 else {
-                    toInsert.push(data);
+                    this.doInsert(data);
                 }
-                this.doInsert(toInsert);
             }
             else {
-                this.doInsert(data);
+                while (this._queue.length > 100) {
+                    this._queue.shift();
+                }
+                if (Array.isArray(data)) {
+                    this._queue.concat(data);
+                }
+                else {
+                    this._queue.push(data);
+                }
             }
         }
-        else {
-            while (this._queue.length > 100) {
-                this._queue.shift();
-            }
-            if (Array.isArray(data)) {
-                this._queue.concat(data);
-            }
-            else {
-                this._queue.push(data);
-            }
-        }
-    }
-    isConnected() {
-        return this._mongoClient && this._mongoClient.isConnected('byzance-bigdata');
     }
     validateData(data) {
         if (Array.isArray(data)) {
@@ -98,14 +62,60 @@ class Database {
             }
         };
         if (Array.isArray(data)) {
-            this._mongoCollection.insertMany(data, callback);
+            this._collection.insertMany(data, callback);
         }
         else {
-            this._mongoCollection.insertOne(data, callback);
+            this._collection.insertOne(data, callback);
+        }
+    }
+}
+exports.DatabaseDao = DatabaseDao;
+class Database {
+    constructor(controller) {
+        this._clients = {};
+        this._controller = controller;
+    }
+    getClient(connectionString) {
+        if (this._clients.hasOwnProperty(connectionString)) {
+            return Promise.resolve(this._clients[connectionString]);
+        }
+        else {
+            return mongodb().MongoClient.connect(connectionString, { useNewUrlParser: true })
+                .then((client) => {
+                this._clients[connectionString] = client;
+                return client;
+            });
+        }
+    }
+    getDao(connectionString, databaseName, collectionName) {
+        if (isNode) {
+            return this.getClient(connectionString)
+                .then((client) => {
+                return new DatabaseDao(client.db(databaseName).collection(collectionName));
+            });
+        }
+        else {
+            return Promise.resolve(new DatabaseDao(null));
         }
     }
 }
 exports.Database = Database;
+function mongodb() {
+    if (isNode) {
+        if (!MongoDb) {
+            try {
+                MongoDb = require('mongodb');
+            }
+            catch (e) {
+                console.error('require(\'mongodb\') failed. Is mongodb module installed?');
+            }
+        }
+        return MongoDb;
+    }
+    else {
+        throw new DatabaseError('Database cannot be accessed in the browser.');
+    }
+}
 class DatabaseError extends Error {
 }
 exports.DatabaseError = DatabaseError;

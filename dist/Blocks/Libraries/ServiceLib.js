@@ -26,7 +26,8 @@ const machineWrap = (o, machine) => {
     });
 };
 class ServicesHandler {
-    constructor(name) {
+    constructor(controller, name) {
+        this._controller = controller;
         this._name = name;
         this._services = {};
     }
@@ -45,6 +46,7 @@ class ServicesHandler {
     ;
     addService(service) {
         this._services[service.name] = service;
+        this._services[service.name].handler = this;
         this._services[service.name].configuration = this._configuration;
     }
     removeService(service) {
@@ -64,6 +66,9 @@ class ServicesHandler {
     }
     get configuration() {
         return this._configuration;
+    }
+    get controller() {
+        return this._controller;
     }
 }
 exports.ServicesHandler = ServicesHandler;

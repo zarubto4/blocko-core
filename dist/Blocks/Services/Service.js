@@ -10,6 +10,8 @@ class Service {
     get name() { return null; }
     get configuration() { return this._configuration; }
     set configuration(configuration) { this._configuration = configuration; }
+    set handler(handler) { this._handler = handler; }
+    ;
 }
 Service.libTypings = '';
 exports.Service = Service;

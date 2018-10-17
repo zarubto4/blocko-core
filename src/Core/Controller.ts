@@ -51,17 +51,14 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
     };
 
     protected _servicesHandler: ServicesHandler;
+    protected _database: Database;
 
     public constructor(configuration?: BlockoInstanceConfig) {
         super();
         this.blocks = [];
         this.connections = [];
         this.blocksRegister = [];
-        this._servicesHandler = new ServicesHandler('BlockoServiceHandler');
-
-        if (configuration && configuration.dbConnectionString) {
-            Database.connectionString = configuration.dbConnectionString;
-        }
+        this._servicesHandler = new ServicesHandler(this, 'BlockoServiceHandler');
     }
 
     public registerService(service: Service) {
@@ -70,6 +67,13 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
 
     public get servicesHandler(): ServicesHandler {
         return this._servicesHandler;
+    }
+
+    public get database(): Database {
+        if (!this._database) {
+            this._database = new Database(this);
+        }
+        return this._database;
     }
 
     public registerBlocks(blocksClass: Array<BlockClass>): void {

@@ -33,16 +33,19 @@ class Controller extends common_lib_1.Events.Emitter {
         this.blocks = [];
         this.connections = [];
         this.blocksRegister = [];
-        this._servicesHandler = new ServiceLib_1.ServicesHandler('BlockoServiceHandler');
-        if (configuration && configuration.dbConnectionString) {
-            Database_1.Database.connectionString = configuration.dbConnectionString;
-        }
+        this._servicesHandler = new ServiceLib_1.ServicesHandler(this, 'BlockoServiceHandler');
     }
     registerService(service) {
         this._servicesHandler.addService(service);
     }
     get servicesHandler() {
         return this._servicesHandler;
+    }
+    get database() {
+        if (!this._database) {
+            this._database = new Database_1.Database(this);
+        }
+        return this._database;
     }
     registerBlocks(blocksClass) {
         blocksClass.forEach((bc) => {

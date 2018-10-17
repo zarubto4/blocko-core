@@ -22,7 +22,8 @@ export * from './IO/DigitalOutput';
 export * from './IO/Light';
 export * from './IO/PushButton';
 export * from './IO/Switch';
-export * from './IO/WebHook'
+export * from './IO/WebHook';
+export * from './IO/DatabaseBlock';
 
 export * from './Logic/And';
 export * from './Logic/Not';

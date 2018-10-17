@@ -1,6 +1,7 @@
 
 import { Library, Machine } from 'script-engine';
 import { Service } from '../Services/Service';
+import { Controller } from '../../Core';
 
 declare const Proxy: any;
 
@@ -38,8 +39,10 @@ export class ServicesHandler {
     private _name: string;
     protected _services: {[key: string]: Service};
     protected _configuration: any;
+    protected _controller: Controller;
 
-    constructor(name: string) {
+    constructor(controller: Controller, name: string) {
+        this._controller = controller;
         this._name = name;
         this._services = {};
     }
@@ -62,6 +65,7 @@ export class ServicesHandler {
 
     public addService(service: Service) {
         this._services[service.name] = service;
+        this._services[service.name].handler = this;
         this._services[service.name].configuration = this._configuration;
     }
 
@@ -85,6 +89,10 @@ export class ServicesHandler {
 
     public get configuration(): any {
         return this._configuration;
+    }
+
+    public get controller(): Controller {
+        return this._controller;
     }
 }
 

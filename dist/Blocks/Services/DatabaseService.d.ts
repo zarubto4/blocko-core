@@ -8,5 +8,5 @@ export declare class DatabaseService extends Service {
     });
     readonly libTypings: string;
     readonly name: string;
-    db(secret: string): DatabaseDao;
+    db(connectionString: string, databaseName: string, collectionName: string): Promise<DatabaseDao>;
 }

@@ -16,7 +16,8 @@ export class Manager {
             Blocks.AnalogOutput,
             Blocks.InputsInterfaceBlock,
             Blocks.OutputsInterfaceBlock,
-            Blocks.WebHook
+            Blocks.WebHook,
+            Blocks.DatabaseBlock
         ];
     }
 }
