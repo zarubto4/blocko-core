@@ -10,7 +10,8 @@ export interface MessageValue {
 }
 export declare class ValueChangedEvent extends Events.Event {
     readonly value: boolean | number;
-    constructor(value: boolean | number);
+    readonly interfaceId: string;
+    constructor(value: boolean | number, interfaceId?: string);
 }
 export declare class ConfigValueChangedEvent extends Events.Event {
     readonly value: any;
@@ -18,7 +19,8 @@ export declare class ConfigValueChangedEvent extends Events.Event {
 }
 export declare class MessageReceivedEvent extends Events.Event {
     readonly message: MessageValue | object;
-    constructor(message: MessageValue | object);
+    readonly interfaceId: string;
+    constructor(message: MessageValue | object, interfaceId?: string);
 }
 export declare class GroupInputEvent extends Events.Event {
     readonly value: boolean | number | object | MessageValue;

@@ -427,7 +427,7 @@ export abstract class BaseInterfaceBlock extends Block {
 
             let con = this.getOutputConnectorById(name);
             if (con) {
-                con._outputSetValue(event.value, event.eventType === ConnectorEventType.GroupInput ? event.targetId : null);
+                con._outputSetValue(event.value, event.targetId, event.eventType === ConnectorEventType.GroupInput);
             }
         }
     }

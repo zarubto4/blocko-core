@@ -425,7 +425,7 @@ class Controller extends common_lib_1.Events.Emitter {
             if (block) {
                 let connector = block.getNetworkStatusOutput();
                 if (connector) {
-                    connector._outputSetValue(online, block.group ? targetId : null);
+                    connector._outputSetValue(online, targetId, block.group);
                 }
             }
         }

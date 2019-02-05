@@ -1,6 +1,8 @@
 import * as isNode from 'detect-node';
 import { Controller } from './Controller';
 
+declare function require(name: string);
+
 let MongoDb;
 
 export class DatabaseDao {
@@ -129,9 +131,9 @@ function mongodb() {
     if (isNode) {
         if (!MongoDb) {
             try {
-                MongoDb = require('mongodb')
+                MongoDb = require('mongodb');
             } catch (e) {
-                console.error('require(\'mongodb\') failed. Is mongodb module installed?')
+                console.error('require(\'mongodb\') failed. Is mongodb module installed?');
             }
         }
         return MongoDb;

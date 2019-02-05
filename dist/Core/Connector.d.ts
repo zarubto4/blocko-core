@@ -33,33 +33,33 @@ export declare abstract class Connector<T extends boolean | number | object | Me
     connect(target: Connector<T>): Connection;
     _removeConnection(connection: Connection): void;
     canConnect(target: Connector<T>): boolean;
-    _outputSetValue(value: T, interfaceId?: string): void;
-    _inputSetValue(value: T, interfaceId?: string): void;
+    _outputSetValue(value: T, interfaceId?: string, group?: boolean): void;
+    _inputSetValue(value: T, interfaceId?: string, group?: boolean): void;
 }
 export declare class DigitalConnector extends Connector<boolean> {
     constructor(block: Block, id: string, name: string, type: Types.ConnectorType);
-    _outputSetValue(value: boolean, interfaceId?: string): void;
-    _inputSetValue(value: boolean, interfaceId?: string): void;
+    _outputSetValue(value: boolean, interfaceId?: string, group?: boolean): void;
+    _inputSetValue(value: boolean, interfaceId?: string, group?: boolean): void;
     isDigital(): boolean;
 }
 export declare class AnalogConnector extends Connector<number> {
     constructor(block: Block, id: string, name: string, type: Types.ConnectorType);
-    _outputSetValue(value: number, interfaceId?: string): void;
-    _inputSetValue(value: number, interfaceId?: string): void;
+    _outputSetValue(value: number, interfaceId?: string, group?: boolean): void;
+    _inputSetValue(value: number, interfaceId?: string, group?: boolean): void;
     isAnalog(): boolean;
 }
 export declare class MessageConnector extends Connector<Message> {
     argTypes: Types.Type[];
     constructor(block: Block, id: string, name: string, type: Types.ConnectorType, argTypes: Types.Type[]);
-    _outputSetValue(value: Message, interfaceId?: string): void;
-    _inputSetValue(value: Message, interfaceId?: string): void;
+    _outputSetValue(value: Message, interfaceId?: string, group?: boolean): void;
+    _inputSetValue(value: Message, interfaceId?: string, group?: boolean): void;
     isMessage(): boolean;
     canConnect(target: Connector<Message>): boolean;
     readonly stringArgTypes: Array<string>;
 }
 export declare class JsonConnector extends Connector<object> {
     constructor(block: Block, id: string, name: string, type: Types.ConnectorType);
-    _outputSetValue(value: object, interfaceId?: string): void;
-    _inputSetValue(value: object, interfaceId?: string): void;
+    _outputSetValue(value: object, interfaceId?: string, group?: boolean): void;
+    _inputSetValue(value: object, interfaceId?: string, group?: boolean): void;
     isJson(): boolean;
 }

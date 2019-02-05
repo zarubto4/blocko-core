@@ -84,7 +84,7 @@ class Block extends common_lib_1.Events.Emitter {
             return;
         }
         if (this.outputConnectors.indexOf(event.connector) !== -1) {
-            event.connector._outputSetValue(event.value, event.interfaceId);
+            event.connector._outputSetValue(event.value, event.interfaceId, !!event.interfaceId);
         }
         else {
             console.warn('Connector named ' + event.connector.id + ' is not output connector on block ' + this.id);
@@ -265,7 +265,7 @@ class Block extends common_lib_1.Events.Emitter {
     outputChanged(event) {
         event.connector.connections.forEach(connection => {
             let cOther = connection.getOtherConnector(event.connector);
-            cOther._inputSetValue(event.value, event.interfaceId);
+            cOther._inputSetValue(event.value, event.interfaceId, event.eventType === Connector_1.ConnectorEventType.GroupInput);
         });
     }
     registerInputEventCallback(callback) {

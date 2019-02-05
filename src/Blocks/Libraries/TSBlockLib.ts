@@ -14,7 +14,7 @@ export interface MessageValue {
 }
 
 export class ValueChangedEvent extends Events.Event {
-    constructor(public readonly value: boolean|number) {
+    constructor(public readonly value: boolean|number, public readonly interfaceId?: string) {
         super('valueChanged');
     };
 }
@@ -26,7 +26,7 @@ export class ConfigValueChangedEvent extends Events.Event {
 }
 
 export class MessageReceivedEvent extends Events.Event {
-    constructor(public readonly message: MessageValue|object) {
+    constructor(public readonly message: MessageValue|object, public readonly interfaceId?: string) {
         super('messageReceived');
     };
 }
@@ -367,11 +367,11 @@ declare const context: BlockContext;
             tsEvent = new MessageReceivedEvent({
                 types: (<MessageConnector>connector).argTypes.map((at) => Types.TypeToStringTable[at]),
                 values: <any[]>value
-            });
+            }, interfaceId);
         } else if (strings.type === 'json') {
-            tsEvent = new MessageReceivedEvent(<object>value);
+            tsEvent = new MessageReceivedEvent(<object>value, interfaceId);
         } else {
-            tsEvent = new ValueChangedEvent(<boolean|number>value);
+            tsEvent = new ValueChangedEvent(<boolean|number>value, interfaceId);
         }
 
         if (strings.direction === 'input') {
@@ -402,22 +402,22 @@ declare const context: BlockContext;
 
                 let tsEvent;
                 if (event.eventType === ConnectorEventType.ValueChange) {
-                    tsEvent = new ValueChangedEvent(<boolean|number>event.value);
+                    tsEvent = new ValueChangedEvent(<boolean|number>event.value, event.interfaceId);
                 } else if (event.eventType === ConnectorEventType.NewMessage) {
                     if (strings.type === 'message') {
                         let message = (<Message>event.value);
                         tsEvent = new MessageReceivedEvent({
                             types: message.argTypes.map((at) => Types.TypeToStringTable[at]),
                             values: message.values
-                        });
+                        }, event.interfaceId);
                     } else if (strings.type === 'json') {
-                        tsEvent = new MessageReceivedEvent(<object>event.value);
+                        tsEvent = new MessageReceivedEvent(<object>event.value, event.interfaceId);
                     }
                 } else if (event.eventType === ConnectorEventType.GroupInput) {
                     tsEvent = new GroupInputEvent(strings.type !== 'message' ? <boolean|number|object>event.value : <MessageValue>{
                         types: (<Message>event.value).argTypes.map((at) => Types.TypeToStringTable[at]),
                         values: (<Message>event.value).values
-                    }, event.interfaceId)
+                    }, event.interfaceId);
                 }
 
                 if (strings.direction === 'input') {

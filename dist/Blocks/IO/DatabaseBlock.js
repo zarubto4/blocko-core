@@ -12,12 +12,17 @@ class DatabaseBlock extends Core_1.Block {
     initialize() {
         this.input = this.addInputConnector('input', common_lib_1.Types.ConnectorType.JsonInput, 'JSON Input');
         this.connectionString = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'connectionString', 'Connection String', 'changeme');
-        this.databaseName = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'databaseName', 'Database Name', 'changeme');
+        this.databaseName = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'databaseId', 'Database ID', 'changeme');
         this.collectionName = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'collectionName', 'Collection Name', 'changeme');
     }
     inputChanged(event) {
         if (this.dao) {
-            this.dao.insert(event.value);
+            try {
+                this.dao.insert(event.value);
+            }
+            catch (e) {
+                this.controller._emitError(this, e);
+            }
         }
         else {
         }

@@ -335,7 +335,7 @@ class BaseInterfaceBlock extends Core_1.Block {
             }
             let con = this.getOutputConnectorById(name);
             if (con) {
-                con._outputSetValue(event.value, event.eventType === Core_1.ConnectorEventType.GroupInput ? event.targetId : null);
+                con._outputSetValue(event.value, event.targetId, event.eventType === Core_1.ConnectorEventType.GroupInput);
             }
         }
     }

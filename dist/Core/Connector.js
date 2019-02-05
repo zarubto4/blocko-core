@@ -85,13 +85,13 @@ class Connector extends common_lib_1.Events.Emitter {
         }
         return true;
     }
-    _outputSetValue(value, interfaceId) {
+    _outputSetValue(value, interfaceId, group) {
         if (this.isOutput()) {
             let type = ConnectorEventType.ValueChange;
             if (this.type === common_lib_1.Types.ConnectorType.MessageInput || this.type === common_lib_1.Types.ConnectorType.MessageOutput || this.type === common_lib_1.Types.ConnectorType.JsonInput || this.type === common_lib_1.Types.ConnectorType.JsonOutput) {
                 type = ConnectorEventType.NewMessage;
             }
-            if (interfaceId) {
+            if (group) {
                 type = ConnectorEventType.GroupInput;
             }
             this._value = value;
@@ -109,13 +109,13 @@ class Connector extends common_lib_1.Events.Emitter {
             console.error('Connector::_outputSetValue - attempt to set input value on output connector');
         }
     }
-    _inputSetValue(value, interfaceId) {
+    _inputSetValue(value, interfaceId, group) {
         if (this.isInput()) {
             let type = ConnectorEventType.ValueChange;
             if (this.type === common_lib_1.Types.ConnectorType.MessageInput || this.type === common_lib_1.Types.ConnectorType.MessageOutput || this.type === common_lib_1.Types.ConnectorType.JsonInput || this.type === common_lib_1.Types.ConnectorType.JsonOutput) {
                 type = ConnectorEventType.NewMessage;
             }
-            if (interfaceId) {
+            if (group) {
                 type = ConnectorEventType.GroupInput;
             }
             this._value = value;
@@ -138,14 +138,14 @@ class DigitalConnector extends Connector {
         super(block, id, name, type);
         this._value = false;
     }
-    _outputSetValue(value, interfaceId) {
+    _outputSetValue(value, interfaceId, group) {
         if (typeof value === 'boolean') {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
-    _inputSetValue(value, interfaceId) {
+    _inputSetValue(value, interfaceId, group) {
         if (typeof value === 'boolean') {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
     isDigital() {
@@ -158,14 +158,14 @@ class AnalogConnector extends Connector {
         super(block, id, name, type);
         this._value = 0;
     }
-    _outputSetValue(value, interfaceId) {
+    _outputSetValue(value, interfaceId, group) {
         if (typeof value === 'number') {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
-    _inputSetValue(value, interfaceId) {
+    _inputSetValue(value, interfaceId, group) {
         if (typeof value === 'number') {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
     isAnalog() {
@@ -180,14 +180,14 @@ class MessageConnector extends Connector {
         this.argTypes = argTypes;
         this._value = null;
     }
-    _outputSetValue(value, interfaceId) {
+    _outputSetValue(value, interfaceId, group) {
         if (value instanceof Message_1.Message && value.isArgTypesEqual(this.argTypes)) {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
-    _inputSetValue(value, interfaceId) {
+    _inputSetValue(value, interfaceId, group) {
         if (value instanceof Message_1.Message && value.isArgTypesEqual(this.argTypes)) {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
     isMessage() {
@@ -211,14 +211,14 @@ class JsonConnector extends Connector {
     constructor(block, id, name, type) {
         super(block, id, name, type);
     }
-    _outputSetValue(value, interfaceId) {
+    _outputSetValue(value, interfaceId, group) {
         if (typeof value === 'object') {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
-    _inputSetValue(value, interfaceId) {
+    _inputSetValue(value, interfaceId, group) {
         if (typeof value === 'object') {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
     isJson() {

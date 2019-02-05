@@ -1,22 +1,11 @@
-
-import {
-    ConnectorEvent, Connector, ConnectorEventType, DigitalConnector, AnalogConnector,
-    MessageConnector, JsonConnector
-} from './Connector';
-import {
-    ExternalConnector, ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnectorType,
-    ExternalMessageConnector, ExternalConnectorEvent
-} from './ExternalConnector';
+import { AnalogConnector, Connector, ConnectorEvent, ConnectorEventType, DigitalConnector, JsonConnector, MessageConnector } from './Connector';
+import { ExternalAnalogConnector, ExternalConnector, ExternalConnectorEvent, ExternalConnectorType, ExternalDigitalConnector, ExternalMessageConnector } from './ExternalConnector';
 import { ConfigProperty } from './ConfigProperty';
 import { Controller } from './Controller';
 import { Connection } from './Connection';
 import { Message, MessageJson } from './Message';
-import { Types, Events } from 'common-lib';
-import {
-    BindInterfaceEvent,
-    ConfigPropertyAddedEvent, ConfigPropertyRemovedEvent, ConnectorAddedEvent,
-    ConnectorRemovedEvent, DataChangedEvent, DestroyEvent, RuntimeErrorEvent
-} from './Events';
+import { Events, Types } from 'common-lib';
+import { BindInterfaceEvent, ConfigPropertyAddedEvent, ConfigPropertyRemovedEvent, ConnectorAddedEvent, ConnectorRemovedEvent, DataChangedEvent, DestroyEvent, RuntimeErrorEvent } from './Events';
 
 export abstract class Block extends Events.Emitter<ConnectorAddedEvent|ConnectorRemovedEvent|ConfigPropertyAddedEvent|ConfigPropertyRemovedEvent|DestroyEvent|RuntimeErrorEvent|BindInterfaceEvent|DataChangedEvent> {
 
@@ -136,7 +125,7 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
         }
 
         if (this.outputConnectors.indexOf(event.connector) !== -1) {
-            event.connector._outputSetValue(event.value, event.interfaceId);
+            event.connector._outputSetValue(event.value, event.interfaceId, !!event.interfaceId);
         } else {
             console.warn('Connector named ' + event.connector.id + ' is not output connector on block ' + this.id);
         }
@@ -366,7 +355,7 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
     protected outputChanged(event: ConnectorEvent): void {
         event.connector.connections.forEach(connection => {
             let cOther: Connector<boolean|number|object|Message> = connection.getOtherConnector(event.connector);
-            cOther._inputSetValue(event.value, event.interfaceId);
+            cOther._inputSetValue(event.value, event.interfaceId, event.eventType === ConnectorEventType.GroupInput);
         });
     }
 
@@ -397,7 +386,6 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
     public _externalOutputEvent(event: ExternalConnectorEvent) {
         this.externalOutputEventCallbacks.forEach(callback => callback(this, event));
         this.externalOutputEvent(event);
-        // TODO render refresh?
     }
 
     public externalOutputEvent(event: ExternalConnectorEvent): void {
@@ -412,7 +400,6 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
     public _externalInputEvent(event: ExternalConnectorEvent) {
         this.externalInputEventCallbacks.forEach(callback => callback(this, event));
         this.externalInputEvent(event);
-        // TODO render refresh?
     }
 
     public externalInputEvent(event: ExternalConnectorEvent): void {

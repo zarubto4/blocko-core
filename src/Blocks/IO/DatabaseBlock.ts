@@ -21,13 +21,17 @@ export class DatabaseBlock extends Block {
     public initialize(): void {
         this.input = <JsonConnector>this.addInputConnector('input', Types.ConnectorType.JsonInput, 'JSON Input');
         this.connectionString = this.addConfigProperty(ConfigPropertyType.String, 'connectionString', 'Connection String', 'changeme');
-        this.databaseName = this.addConfigProperty(ConfigPropertyType.String, 'databaseName', 'Database Name', 'changeme');
+        this.databaseName = this.addConfigProperty(ConfigPropertyType.String, 'databaseId', 'Database ID', 'changeme');
         this.collectionName = this.addConfigProperty(ConfigPropertyType.String, 'collectionName', 'Collection Name', 'changeme');
     }
 
     public inputChanged(event: ConnectorEvent): void {
         if (this.dao) {
-            this.dao.insert(event.value);
+            try {
+                this.dao.insert(event.value);
+            } catch (e) {
+                this.controller._emitError(this, e);
+            }
         } else {
             // TODO some error?
         }

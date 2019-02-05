@@ -591,7 +591,7 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
             if (block) {
                 let connector: Connector<boolean> = block.getNetworkStatusOutput();
                 if (connector) {
-                    connector._outputSetValue(online, block.group ? targetId : null);
+                    connector._outputSetValue(online, targetId, block.group);
                 }
             }
         } else {

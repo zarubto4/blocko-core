@@ -5,9 +5,10 @@ const TSBlockError_1 = require("../TSBlock/TSBlockError");
 const Message_1 = require("../../Core/Message");
 const Connector_1 = require("../../Core/Connector");
 class ValueChangedEvent extends common_lib_1.Events.Event {
-    constructor(value) {
+    constructor(value, interfaceId) {
         super('valueChanged');
         this.value = value;
+        this.interfaceId = interfaceId;
     }
     ;
 }
@@ -21,9 +22,10 @@ class ConfigValueChangedEvent extends common_lib_1.Events.Event {
 }
 exports.ConfigValueChangedEvent = ConfigValueChangedEvent;
 class MessageReceivedEvent extends common_lib_1.Events.Event {
-    constructor(message) {
+    constructor(message, interfaceId) {
         super('messageReceived');
         this.message = message;
+        this.interfaceId = interfaceId;
     }
     ;
 }
@@ -290,13 +292,13 @@ class TSBlockLib {
             tsEvent = new MessageReceivedEvent({
                 types: connector.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                 values: value
-            });
+            }, interfaceId);
         }
         else if (strings.type === 'json') {
-            tsEvent = new MessageReceivedEvent(value);
+            tsEvent = new MessageReceivedEvent(value, interfaceId);
         }
         else {
-            tsEvent = new ValueChangedEvent(value);
+            tsEvent = new ValueChangedEvent(value, interfaceId);
         }
         if (strings.direction === 'input') {
             let connectorWrapper = this.inputConnectors[connector.id];
@@ -319,7 +321,7 @@ class TSBlockLib {
                 let strings = common_lib_1.Types.getStringsFromConnectorType(event.connector.type);
                 let tsEvent;
                 if (event.eventType === Connector_1.ConnectorEventType.ValueChange) {
-                    tsEvent = new ValueChangedEvent(event.value);
+                    tsEvent = new ValueChangedEvent(event.value, event.interfaceId);
                 }
                 else if (event.eventType === Connector_1.ConnectorEventType.NewMessage) {
                     if (strings.type === 'message') {
@@ -327,10 +329,10 @@ class TSBlockLib {
                         tsEvent = new MessageReceivedEvent({
                             types: message.argTypes.map((at) => common_lib_1.Types.TypeToStringTable[at]),
                             values: message.values
-                        });
+                        }, event.interfaceId);
                     }
                     else if (strings.type === 'json') {
-                        tsEvent = new MessageReceivedEvent(event.value);
+                        tsEvent = new MessageReceivedEvent(event.value, event.interfaceId);
                     }
                 }
                 else if (event.eventType === Connector_1.ConnectorEventType.GroupInput) {

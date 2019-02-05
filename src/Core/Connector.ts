@@ -121,7 +121,7 @@ export abstract class Connector<T extends boolean|number|object|Message> extends
     }
 
     // This is 'inner' method, call it only if you know what you do!!
-    public _outputSetValue(value: T, interfaceId?: string) {
+    public _outputSetValue(value: T, interfaceId?: string, group?: boolean) {
         if (this.isOutput()) {
 
             let type: ConnectorEventType = ConnectorEventType.ValueChange;
@@ -130,7 +130,7 @@ export abstract class Connector<T extends boolean|number|object|Message> extends
                 type = ConnectorEventType.NewMessage;
             }
 
-            if (interfaceId) {
+            if (group) {
                 type = ConnectorEventType.GroupInput;
             }
 
@@ -154,7 +154,7 @@ export abstract class Connector<T extends boolean|number|object|Message> extends
     }
 
     // This is 'inner' method, call it only if you know what you do!!
-    public _inputSetValue(value: T, interfaceId?: string) {
+    public _inputSetValue(value: T, interfaceId?: string, group?: boolean) {
         if (this.isInput()) {
             let type: ConnectorEventType = ConnectorEventType.ValueChange;
 
@@ -162,7 +162,7 @@ export abstract class Connector<T extends boolean|number|object|Message> extends
                 type = ConnectorEventType.NewMessage;
             }
 
-            if (interfaceId) {
+            if (group) {
                 type = ConnectorEventType.GroupInput;
             }
 
@@ -192,15 +192,15 @@ export class DigitalConnector extends Connector<boolean> {
         this._value = false;
     }
 
-    public _outputSetValue(value: boolean, interfaceId?: string): void {
+    public _outputSetValue(value: boolean, interfaceId?: string, group?: boolean): void {
         if (typeof value === 'boolean') {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
 
-    public _inputSetValue(value: boolean, interfaceId?: string): void {
+    public _inputSetValue(value: boolean, interfaceId?: string, group?: boolean): void {
         if (typeof value === 'boolean') {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
 
@@ -219,15 +219,15 @@ export class AnalogConnector extends Connector<number> {
         this._value = 0;
     }
 
-    public _outputSetValue(value: number, interfaceId?: string): void {
+    public _outputSetValue(value: number, interfaceId?: string, group?: boolean): void {
         if (typeof value === 'number') {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
 
-    public _inputSetValue(value: number, interfaceId?: string): void {
+    public _inputSetValue(value: number, interfaceId?: string, group?: boolean): void {
         if (typeof value === 'number') {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
 
@@ -249,15 +249,15 @@ export class MessageConnector extends Connector<Message> {
         this._value = null;
     }
 
-    public _outputSetValue(value: Message, interfaceId?: string): void {
+    public _outputSetValue(value: Message, interfaceId?: string, group?: boolean): void {
         if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
 
-    public _inputSetValue(value: Message, interfaceId?: string): void {
+    public _inputSetValue(value: Message, interfaceId?: string, group?: boolean): void {
         if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
 
@@ -290,15 +290,15 @@ export class JsonConnector extends Connector<object> {
         super(block, id, name, type);
     }
 
-    public _outputSetValue(value: object, interfaceId?: string): void {
+    public _outputSetValue(value: object, interfaceId?: string, group?: boolean): void {
         if (typeof value === 'object') {
-            super._outputSetValue(value, interfaceId);
+            super._outputSetValue(value, interfaceId, group);
         }
     }
 
-    public _inputSetValue(value: object, interfaceId?: string): void {
+    public _inputSetValue(value: object, interfaceId?: string, group?: boolean): void {
         if (typeof value === 'object') {
-            super._inputSetValue(value, interfaceId);
+            super._inputSetValue(value, interfaceId, group);
         }
     }
 
