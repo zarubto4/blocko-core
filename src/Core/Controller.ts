@@ -2,22 +2,13 @@ import { Block } from './Block';
 import { Connection } from './Connection';
 import { BlockClass, BlockRegistration } from './BlockRegistration';
 import { Connector, ConnectorEventType } from './Connector';
-import { ServicesHandler } from '../Blocks/Libraries/ServiceLib';
+import { ServicesHandler, TSBlock, InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface, BaseInterfaceBlock, WebHook } from '../Blocks';
 import { Service } from '../Blocks/Services/Service';
-import {
-    ExternalAnalogConnector, ExternalDigitalConnector, ExternalConnector,
-    ExternalMessageConnector, ExternalConnectorEvent
-} from './ExternalConnector';
-import { InputsInterfaceBlock, OutputsInterfaceBlock, BlockoTargetInterface } from '../Blocks/InterfaceBlock';
-import { TSBlock } from '../Blocks/TSBlock/TSBlock';
+import { ExternalAnalogConnector, ExternalDigitalConnector, ExternalMessageConnector, ExternalConnectorEvent } from './ExternalConnector';
 import { Message, MessageJson } from './Message';
-import { BaseInterfaceBlock, WebHook } from '../Blocks';
 import { Database } from './Database';
 import { Events } from 'common-lib';
-import {
-    BindInterfaceEvent, BlockAddedEvent, BlockRemovedEvent, ConnectionAddedEvent,
-    ConnectionRemovedEvent
-} from './Events';
+import { BlockAddedEvent, BlockRemovedEvent, ConnectionAddedEvent, ConnectionRemovedEvent } from './Events';
 
 export interface BlockoInstanceConfig {
     dbConnectionString?: string;
@@ -141,7 +132,7 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
         this.emit(this, new ConnectionAddedEvent(connection));
 
         if (connection.getInputConnector().isDigital() || connection.getInputConnector().isAnalog()) {
-            connection.getInputConnector()._inputSetValue(connection.getOutputConnector().value);
+            connection.getInputConnector().setValue(connection.getOutputConnector().value);
         }
 
         this.connectionAddedCallbacks.forEach(callback => callback(connection));
@@ -161,10 +152,10 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
             this.connections.splice(index, 1);
 
             if (connection.getInputConnector().isDigital()) {
-                connection.getInputConnector()._inputSetValue(false);
+                connection.getInputConnector().setValue(false);
             }
             if (connection.getInputConnector().isAnalog()) {
-                connection.getInputConnector()._inputSetValue(0);
+                connection.getInputConnector().setValue(0);
             }
 
             this.emit(this, new ConnectionRemovedEvent(connection));
@@ -384,7 +375,7 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
             });
 
             if (webHookBlock) {
-                webHookBlock.getJsonOutput()._outputSetValue(message);
+                webHookBlock.getJsonOutput().setValue(message);
                 return true;
             } else {
                 console.warn('Controller::setWebHookValue - cannot find any WebHook block with id:', blockId);
@@ -402,7 +393,7 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
                 // TODO what about interface connectors rename? ... m_, d_, a_ ??
                 let connector: Connector<boolean|number|object|Message> = block.getInputConnectorById(connectorName);
                 if (connector) {
-                    connector._inputSetValue(value);
+                    connector.setValue(value);
                 }
             }
         });
@@ -414,7 +405,7 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
                 // TODO what about interface connectors rename? ... m_, d_, a_ ??
                 let connector: Connector<boolean|number|object|Message> = block.getOutputConnectorById(connectorName);
                 if (connector) {
-                    connector._outputSetValue(value);
+                    connector.setValue(value);
                 }
             }
         });
@@ -591,7 +582,7 @@ export class Controller extends Events.Emitter<BlockAddedEvent|BlockRemovedEvent
             if (block) {
                 let connector: Connector<boolean> = block.getNetworkStatusOutput();
                 if (connector) {
-                    connector._outputSetValue(online, targetId, block.group);
+                    connector.setValue(online, targetId, block.group);
                 }
             }
         } else {

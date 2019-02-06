@@ -120,64 +120,36 @@ export abstract class Connector<T extends boolean|number|object|Message> extends
         // TODO: ignorovat stejnou konexi
     }
 
-    // This is 'inner' method, call it only if you know what you do!!
-    public _outputSetValue(value: T, interfaceId?: string, group?: boolean) {
-        if (this.isOutput()) {
+    public setValue(value: T, interfaceId?: string, group?: boolean) {
 
-            let type: ConnectorEventType = ConnectorEventType.ValueChange;
+        let type: ConnectorEventType = ConnectorEventType.ValueChange;
 
-            if (this.type === Types.ConnectorType.MessageInput || this.type === Types.ConnectorType.MessageOutput || this.type === Types.ConnectorType.JsonInput || this.type === Types.ConnectorType.JsonOutput) {
-                type = ConnectorEventType.NewMessage;
-            }
-
-            if (group) {
-                type = ConnectorEventType.GroupInput;
-            }
-
-            this._value = value;
-
-            let ioEvent = new IOEvent();
-
-            this.emit(this, ioEvent);
-
-            this.connections.forEach(connection => connection.emit(connection, ioEvent));
-
-            this.block._outputEvent({
-                connector: this,
-                eventType: type,
-                value: value,
-                interfaceId: interfaceId
-            });
-        } else {
-            console.error('Connector::_outputSetValue - attempt to set input value on output connector');
+        if (this.type === Types.ConnectorType.MessageInput || this.type === Types.ConnectorType.MessageOutput || this.type === Types.ConnectorType.JsonInput || this.type === Types.ConnectorType.JsonOutput) {
+            type = ConnectorEventType.NewMessage;
         }
-    }
 
-    // This is 'inner' method, call it only if you know what you do!!
-    public _inputSetValue(value: T, interfaceId?: string, group?: boolean) {
-        if (this.isInput()) {
-            let type: ConnectorEventType = ConnectorEventType.ValueChange;
+        if (group) {
+            type = ConnectorEventType.GroupInput;
+        }
 
-            if (this.type === Types.ConnectorType.MessageInput || this.type === Types.ConnectorType.MessageOutput || this.type === Types.ConnectorType.JsonInput || this.type === Types.ConnectorType.JsonOutput) {
-                type = ConnectorEventType.NewMessage;
-            }
+        this._value = value;
 
-            if (group) {
-                type = ConnectorEventType.GroupInput;
-            }
+        let ioEvent = new IOEvent();
 
-            this._value = value;
+        this.emit(this, ioEvent);
 
-            this.emit(this, new IOEvent());
+        let connectorEvent: ConnectorEvent = {
+            connector: this,
+            eventType: type,
+            value: value,
+            interfaceId: interfaceId
+        };
 
-            this.block._inputEvent({
-                connector: this,
-                eventType: type,
-                value: value,
-                interfaceId: interfaceId
-            });
+        if (this.isOutput()) {
+            this.connections.forEach(connection => connection.emit(connection, ioEvent));
+            this.block._outputEvent(connectorEvent);
         } else {
-            console.error('Connector::_inputSetValue - attempt to set output value on input connector');
+            this.block._inputEvent(connectorEvent);
         }
     }
 }
@@ -192,15 +164,9 @@ export class DigitalConnector extends Connector<boolean> {
         this._value = false;
     }
 
-    public _outputSetValue(value: boolean, interfaceId?: string, group?: boolean): void {
+    public setValue(value: boolean, interfaceId?: string, group?: boolean) {
         if (typeof value === 'boolean') {
-            super._outputSetValue(value, interfaceId, group);
-        }
-    }
-
-    public _inputSetValue(value: boolean, interfaceId?: string, group?: boolean): void {
-        if (typeof value === 'boolean') {
-            super._inputSetValue(value, interfaceId, group);
+            super.setValue(value, interfaceId, group);
         }
     }
 
@@ -219,15 +185,9 @@ export class AnalogConnector extends Connector<number> {
         this._value = 0;
     }
 
-    public _outputSetValue(value: number, interfaceId?: string, group?: boolean): void {
+    public setValue(value: number, interfaceId?: string, group?: boolean) {
         if (typeof value === 'number') {
-            super._outputSetValue(value, interfaceId, group);
-        }
-    }
-
-    public _inputSetValue(value: number, interfaceId?: string, group?: boolean): void {
-        if (typeof value === 'number') {
-            super._inputSetValue(value, interfaceId, group);
+            super.setValue(value, interfaceId, group);
         }
     }
 
@@ -249,15 +209,9 @@ export class MessageConnector extends Connector<Message> {
         this._value = null;
     }
 
-    public _outputSetValue(value: Message, interfaceId?: string, group?: boolean): void {
+    public setValue(value: Message, interfaceId?: string, group?: boolean) {
         if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
-            super._outputSetValue(value, interfaceId, group);
-        }
-    }
-
-    public _inputSetValue(value: Message, interfaceId?: string, group?: boolean): void {
-        if (value instanceof Message && value.isArgTypesEqual(this.argTypes)) {
-            super._inputSetValue(value, interfaceId, group);
+            super.setValue(value, interfaceId, group);
         }
     }
 
@@ -290,15 +244,9 @@ export class JsonConnector extends Connector<object> {
         super(block, id, name, type);
     }
 
-    public _outputSetValue(value: object, interfaceId?: string, group?: boolean): void {
+    public setValue(value: object, interfaceId?: string, group?: boolean) {
         if (typeof value === 'object') {
-            super._outputSetValue(value, interfaceId, group);
-        }
-    }
-
-    public _inputSetValue(value: object, interfaceId?: string, group?: boolean): void {
-        if (typeof value === 'object') {
-            super._inputSetValue(value, interfaceId, group);
+            super.setValue(value, interfaceId, group);
         }
     }
 

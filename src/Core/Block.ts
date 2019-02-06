@@ -125,7 +125,7 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
         }
 
         if (this.outputConnectors.indexOf(event.connector) !== -1) {
-            event.connector._outputSetValue(event.value, event.interfaceId, !!event.interfaceId);
+            event.connector.setValue(event.value, event.interfaceId, !!event.interfaceId);
         } else {
             console.warn('Connector named ' + event.connector.id + ' is not output connector on block ' + this.id);
         }
@@ -355,7 +355,7 @@ export abstract class Block extends Events.Emitter<ConnectorAddedEvent|Connector
     protected outputChanged(event: ConnectorEvent): void {
         event.connector.connections.forEach(connection => {
             let cOther: Connector<boolean|number|object|Message> = connection.getOtherConnector(event.connector);
-            cOther._inputSetValue(event.value, event.interfaceId, event.eventType === ConnectorEventType.GroupInput);
+            cOther.setValue(event.value, event.interfaceId, event.eventType === ConnectorEventType.GroupInput);
         });
     }
 
