@@ -81,7 +81,10 @@ export class DatabaseDao {
 
         let callback: (error, result) => void = (error, result) => {
             if (error) {
+                console.error(error);
                 throw new DatabaseError('Insert failed.');
+            } else {
+                console.log(result);
             }
         };
 
