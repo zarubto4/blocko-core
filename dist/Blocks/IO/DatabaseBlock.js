@@ -12,7 +12,7 @@ class DatabaseBlock extends Core_1.Block {
     initialize() {
         this.input = this.addInputConnector('input', common_lib_1.Types.ConnectorType.JsonInput, 'JSON Input');
         this.connectionString = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'connectionString', 'Connection String', 'changeme');
-        this.databaseName = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'databaseId', 'Database ID', 'changeme');
+        this.databaseName = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'databaseName', 'Database ID', 'changeme');
         this.collectionName = this.addConfigProperty(Types_1.ConfigPropertyType.String, 'collectionName', 'Collection Name', 'changeme');
     }
     inputChanged(event) {
@@ -34,6 +34,7 @@ class DatabaseBlock extends Core_1.Block {
                 this.dao = dao;
             })
                 .catch((error) => {
+                this.controller._emitError(this, error);
                 console.error(error);
             });
         }

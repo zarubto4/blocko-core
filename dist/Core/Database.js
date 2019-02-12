@@ -58,7 +58,11 @@ class DatabaseDao {
     doInsert(data) {
         let callback = (error, result) => {
             if (error) {
+                console.error(error);
                 throw new DatabaseError('Insert failed.');
+            }
+            else {
+                console.log(result);
             }
         };
         if (Array.isArray(data)) {
